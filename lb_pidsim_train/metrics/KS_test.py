@@ -27,12 +27,12 @@ def KS_test ( x_gen ,
     Number of equal-width bins in the computed range used to approximate 
     the two PDFs with binned data (`100`, by default).
 
-  w_gen : array_like, optional
-    An array of weights, of the same shape as `x_gen`. Each value in `x_gen` 
+  w_gen : `int` or `float` or array_like, optional
+    An array of weights, of the same length as `x_gen`. Each value in `x_gen` 
     only contributes its associated weight towards the bin count (instead of 1).
 
-  w_ref : array_like, optional
-    An array of weights, of the same shape as `x_ref`. Each value in `x_ref` 
+  w_ref : `int` or `float` or array_like, optional
+    An array of weights, of the same length as `x_ref`. Each value in `x_ref` 
     only contributes its associated weight towards the bin count (instead of 1).
 
   Returns
@@ -42,7 +42,7 @@ def KS_test ( x_gen ,
 
   See Also
   --------
-  lb-pidsim-train.core.metrics.utils.getBinPDFs : 
+  lb_pidsim_train.utils.getBinPDFs : 
     Internal function used to compute the binned PDFs of the input datasets.
 
   Notes

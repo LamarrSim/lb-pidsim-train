@@ -25,12 +25,12 @@ def getBinPDFs ( x_gen ,
     Number of equal-width bins in the computed range used to approximate 
     the two PDFs with binned data (`100`, by default).
 
-  w_gen : array_like, optional
-    An array of weights, of the same shape as `x_gen`. Each value in `x_gen` 
+  w_gen : `int` or `float` or array_like, optional
+    An array of weights, of the same length as `x_gen`. Each value in `x_gen` 
     only contributes its associated weight towards the bin count (instead of 1).
 
-  w_ref : array_like, optional
-    An array of weights, of the same shape as `x_ref`. Each value in `x_ref` 
+  w_ref : `int` or `float` or array_like, optional
+    An array of weights, of the same length as `x_ref`. Each value in `x_ref` 
     only contributes its associated weight towards the bin count (instead of 1).
 
   Returns
@@ -46,13 +46,13 @@ def getBinPDFs ( x_gen ,
   numpy.histogram :
     Numpy function used to compute the binned PDFs of the input datasets.
 
-  lb-pidsim-train.core.metrics.KL_divergence : 
+  lb_pidsim_train.metrics.KL_divergence : 
     The binned PDFs are used to compute the Kullback–Leibler divergence.
 
-  lb-pidsim-train.core.metrics.JS_divergence : 
+  lb_pidsim_train.metrics.JS_divergence : 
     The binned PDFs are used to compute the Jensen-Shannon divergence.
 
-  lb-pidsim-train.core.metrics.KS_test : 
+  lb_pidsim_train.metrics.KS_test : 
     The binned PDFs are used to perform the Kolmogorov–Smirnov test.
   """
   ## Input samples --> Numpy arrays
