@@ -6,6 +6,9 @@ import tensorflow as tf
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
 
 d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
 """Metric instance to track the discriminator loss score."""
@@ -19,10 +22,16 @@ class GAN (tf.keras.Model):
   
   Parameters
   ----------
-  discriminator : `tf.keras.Sequential`
+  X_shape : `int` or array_like
     ...
 
-  generator : `tf.keras.Sequential`
+  Y_shape : `int` or array_like
+    ...
+
+  discriminator : `list` of `tf.keras.layers`
+    ...
+
+  generator : `list` of `tf.keras.layers`
     ...
 
   latent_dim : `int`, optional
@@ -34,6 +43,9 @@ class GAN (tf.keras.Model):
     ...
 
   generator : `tf.keras.Sequential`
+    ...
+
+  latent_dim : `int`
     ...
 
   Notes
@@ -53,20 +65,50 @@ class GAN (tf.keras.Model):
   ...
   """
   def __init__ ( self , 
+                 X_shape ,
+                 Y_shape ,
                  discriminator ,
                  generator     , 
                  latent_dim = 64 ) -> None:
     super(GAN, self) . __init__()
-    self._discriminator = discriminator
-    self._generator = generator
+
+    ## Feature space dimension
+    if isinstance ( X_shape, (tuple, list, np.ndarray, tf.Tensor) ):
+      X_shape = int ( X_shape[1] )
+    if isinstance ( Y_shape, (tuple, list, np.ndarray, tf.Tensor) ):
+      Y_shape = int ( Y_shape[1] )
+
+    self._X_shape = X_shape
+    self._Y_shape = Y_shape
+
+    ## Data-type control
+    try:
+      latent_dim = int ( latent_dim )
+    except:
+      raise TypeError ("The latent space dimension should be an integer.")
+
     self._latent_dim = latent_dim
+
+    ## Discriminator sequential model
+    self._discriminator = Sequential ( name = "discriminator" )
+    for d_layer in discriminator:
+      self._discriminator . add ( d_layer )
+    self._discriminator . add ( Dense ( units = 1 , 
+                                        activation = "sigmoid" , 
+                                        kernel_initializer = "he_normal" ) )
+
+    ## Generator sequential model
+    self._generator = Sequential ( name = "generator" )
+    for g_layer in generator:
+      self._generator . add ( g_layer )
+    self._generator . add ( Dense (units = Y_shape) )
 
   def compile ( self , 
                 d_optimizer ,
                 g_optimizer , 
                 d_updt_per_batch = 1 ,
                 g_updt_per_batch = 1 ) -> None:
-    """Configure the models for training.
+    """Configure the models for GAN training.
     
     Parameters
     ----------
@@ -83,6 +125,11 @@ class GAN (tf.keras.Model):
       ... (`1`, by default).
     """
     super(GAN, self) . compile()
+
+    ## Build discriminator and generator models
+    self._discriminator . build ( input_shape = (None, self._X_shape + self._Y_shape) )
+    self._generator . build ( input_shape = (None, self._X_shape + self._latent_dim) )
+
     self._d_optimizer = d_optimizer
     self._g_optimizer = g_optimizer
 
@@ -90,11 +137,11 @@ class GAN (tf.keras.Model):
     try:
       d_updt_per_batch = int ( d_updt_per_batch )
     except:
-      raise ValueError ("The number of discriminator updates per batch should be an integer.")
+      raise TypeError ("The number of discriminator updates per batch should be an integer.")
     try:
       g_updt_per_batch = int ( g_updt_per_batch )
     except:
-      raise ValueError ("The number of generator updates per batch should be an integer.")
+      raise TypeError ("The number of generator updates per batch should be an integer.")
 
     ## Data-value control
     if d_updt_per_batch == 0:
@@ -104,6 +151,11 @@ class GAN (tf.keras.Model):
 
     self._d_updt_per_batch = d_updt_per_batch
     self._g_updt_per_batch = g_updt_per_batch
+
+  def summary (self) -> None:
+    """Print a string summary of the discriminator and generator networks."""
+    self._discriminator . summary()
+    self._generator . summary()
 
   @staticmethod
   def _unpack_data (data):
@@ -261,7 +313,7 @@ class GAN (tf.keras.Model):
 
     Returns
     -------
-    d_loss : `tf.Tensor`
+    g_loss : `tf.Tensor`
       ...
     """
     ## Noise injection to stabilize GAN training
@@ -307,6 +359,11 @@ class GAN (tf.keras.Model):
   def generator (self) -> tf.keras.Sequential:
     """The generator of the GAN system."""
     return self._generator
+
+  @property
+  def latent_dim (self) -> int:
+    """The dimension of the latent space."""
+    return self._latent_dim
 
   @property
   def metrics (self) -> list:
