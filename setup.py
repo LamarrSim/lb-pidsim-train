@@ -10,7 +10,7 @@ with io.open (os.path.join (PATH, 'README.md'), encoding = 'utf-8') as f:
 
 setup (
         name = 'lb-pidsim-train',
-        version = '0.0.3',
+        version = '0.0.4',
         packages = find_packages(),
         package_data = {'data': ['Zmumu.root']},
         author = 'Matteo Barbetti',
