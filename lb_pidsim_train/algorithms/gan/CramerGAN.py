@@ -159,8 +159,8 @@ class CramerGAN (GAN):
     ref_sample : `tf.Tensor`
       ...
 
-    weights : `tf.Tensor`
-      ...
+    weights : `tf.Tensor`, optional
+      ... (`None`, by default).
 
     Returns
     -------
@@ -173,11 +173,13 @@ class CramerGAN (GAN):
 
     gen_sample_1 , gen_sample_2 = gen_sample[:batch_size] , gen_sample[batch_size:batch_size*2]
     ref_sample = ref_sample[:batch_size]
-    weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
+      
 
     ## Discriminator loss computation
-    loss = weights_1 * weights_2 * ( self._critic (gen_sample_1 , gen_sample_2) - \
-                                     self._critic (ref_sample   , gen_sample_2) )
+    loss = self._critic (gen_sample_1, gen_sample_2) - self._critic (ref_sample, gen_sample_2)
+    if weights is not None:
+      weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
+      loss *= weights_1 * weights_2
     loss = tf.reduce_mean (loss)
 
     rnd = tf.random.uniform (
@@ -210,8 +212,8 @@ class CramerGAN (GAN):
     ref_sample : `tf.Tensor`
       ...
 
-    weights : `tf.Tensor`
-      ...
+    weights : `tf.Tensor`, optional
+      ... (`None`, by default).
 
     Returns
     -------
@@ -224,13 +226,13 @@ class CramerGAN (GAN):
 
     gen_sample_1 , gen_sample_2 = gen_sample[:batch_size] , gen_sample[batch_size:batch_size*2]
     ref_sample = ref_sample[:batch_size]
-    weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
 
     ## Generator loss computation
-    loss = weights_1 * weights_2 * ( self._critic (ref_sample   , gen_sample_2) - \
-                                     self._critic (gen_sample_1 , gen_sample_2) )
-    loss = tf.reduce_mean (loss)
-    return loss
+    loss = self._critic (ref_sample, gen_sample_2) - self._critic (gen_sample_1, gen_sample_2)
+    if weights is not None:
+      weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
+      loss *= weights_1 * weights_2
+    return tf.reduce_mean (loss)
 
   @property
   def critic_dim (self) -> int:

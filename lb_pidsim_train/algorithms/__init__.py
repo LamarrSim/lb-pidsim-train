@@ -1,1 +1,1 @@
-from .gan import GAN, CramerGAN
+from .gan import GAN, BceGAN, CramerGAN

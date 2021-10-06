@@ -263,18 +263,15 @@ class GAN (tf.keras.Model):
     ref_sample : `tf.Tensor`
       ...
 
-    weights : `tf.Tensor`
-      ...
+    weights : `tf.Tensor`, optional
+      ... (`None`, by default).
 
     Returns
     -------
     d_loss : `tf.Tensor`
       ...
     """
-    loss = - self._compute_g_loss (gen_sample, ref_sample, weights)
-    if weights is not None:
-      loss = weights * loss
-    return tf.reduce_mean (loss)
+    return - self._compute_g_loss (gen_sample, ref_sample, weights)
 
   @tf.function
   def _train_g_step (self, X, Y, w = None) -> None:
@@ -308,8 +305,8 @@ class GAN (tf.keras.Model):
     ref_sample : `tf.Tensor`
       ...
 
-    weights : `tf.Tensor`
-      ...
+    weights : `tf.Tensor`, optional
+      ... (`None`, by default).
 
     Returns
     -------
