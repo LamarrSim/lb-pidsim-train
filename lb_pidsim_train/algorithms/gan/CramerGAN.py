@@ -173,33 +173,30 @@ class CramerGAN (GAN):
 
     gen_sample_1 , gen_sample_2 = gen_sample[:batch_size] , gen_sample[batch_size:batch_size*2]
     ref_sample = ref_sample[:batch_size]
-      
 
     ## Discriminator loss computation
-    loss = self._critic (gen_sample_1, gen_sample_2) - self._critic (ref_sample, gen_sample_2)
+    d_loss = self._critic (gen_sample_1, gen_sample_2) - self._critic (ref_sample, gen_sample_2)
     if weights is not None:
       weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
-      loss *= weights_1 * weights_2
-    loss = tf.reduce_mean (loss)
+      d_loss = weights_1 * weights_2 * d_loss
+    d_loss = tf.reduce_mean (d_loss)
 
-    rnd = tf.random.uniform (
-                              shape  = (tf.shape(ref_sample)[0], 1) , 
-                              minval = 0. , 
-                              maxval = 1. ,
-                            )
-    hat_sample = rnd * ref_sample + (1 - rnd) * gen_sample_1   # interpolation
-    
-    crit_hat = self._critic ( hat_sample , gen_sample_2 )
-    grad_hat = tf.gradients ( crit_hat   , hat_sample   )
-    grad_hat = tf.concat  ( grad_hat , axis = 1 )
-    grad_hat = tf.reshape ( grad_hat , shape = (tf.shape(grad_hat)[0], -1) )
-
-    slopes  = tf.norm ( grad_hat , axis = 1 )
+    alpha = tf.random.uniform (
+                                shape  = (tf.shape(ref_sample)[0], 1) , 
+                                minval = 0. , 
+                                maxval = 1. ,
+                              )
+    differences  = gen_sample_1 - ref_sample
+    interpolates = ref_sample + alpha * differences
+    critic_int = self._critic ( interpolates , gen_sample_2 )
+    grad = tf.gradients ( critic_int , interpolates )
+    grad = tf.concat  ( grad , axis = 1 )
+    grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
+    slopes  = tf.norm ( grad , axis = 1 )
     gp_term = tf.square ( tf.maximum ( tf.abs (slopes) - 1., 0. ) )
-    gp_term = self._grad_penalty * tf.reduce_mean (gp_term)
-
-    loss += gp_term
-    return loss
+    gp_term = self._grad_penalty * tf.reduce_mean (gp_term)   # gradient penalty
+    d_loss += gp_term
+    return d_loss
 
   def _compute_g_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
     """Return the generator loss.
@@ -228,11 +225,21 @@ class CramerGAN (GAN):
     ref_sample = ref_sample[:batch_size]
 
     ## Generator loss computation
-    loss = self._critic (ref_sample, gen_sample_2) - self._critic (gen_sample_1, gen_sample_2)
+    g_loss = self._critic (ref_sample, gen_sample_2) - self._critic (gen_sample_1, gen_sample_2)
     if weights is not None:
       weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
-      loss *= weights_1 * weights_2
-    return tf.reduce_mean (loss)
+      g_loss = weights_1 * weights_2 * g_loss
+    return tf.reduce_mean (g_loss)
+
+  @property
+  def discriminator (self) -> tf.keras.Sequential:
+    """The discriminator of the CramerGAN system."""
+    return self._discriminator
+
+  @property
+  def generator (self) -> tf.keras.Sequential:
+    """The generator of the CramerGAN system."""
+    return self._generator
 
   @property
   def critic_dim (self) -> int:

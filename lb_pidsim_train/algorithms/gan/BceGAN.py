@@ -57,6 +57,32 @@ class BceGAN (GAN):
   -------
   ...
   """
+  def compile ( self , 
+                d_optimizer , 
+                g_optimizer ,
+                d_updt_per_batch = 1 , 
+                g_updt_per_batch = 1 ) -> None:
+    """Configure the models for BceGAN training.
+    
+    Parameters
+    ----------
+    d_optimizer : `tf.keras.optimizers.Optimizer`
+      ...
+
+    g_optimizer : `tf.keras.optimizers.Optimizer`
+      ...
+
+    d_updt_per_batch : `int`, optional
+      ... (`1`, by default).
+
+    g_updt_per_batch : `int`, optional
+      ... (`1`, by default).
+    """
+    super(BceGAN, self) . compile ( d_optimizer = d_optimizer , 
+                                    g_optimizer = g_optimizer , 
+                                    d_updt_per_batch = d_updt_per_batch , 
+                                    g_updt_per_batch = g_updt_per_batch )
+
   def _compute_g_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
     """Return the generator loss.
     
@@ -85,11 +111,21 @@ class BceGAN (GAN):
     ## Loss computation
     true_gen = 0.9
     true_ref = 0.1
-    loss = true_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1. ) ) + \
-           (1 - true_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1. ) ) + \
-           true_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
-           (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
+    g_loss = true_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1. ) ) + \
+             (1 - true_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1. ) ) + \
+             true_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
+             (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
     if weights is not None:
-      loss = weights * loss
-    return tf.reduce_mean (loss)
+      g_loss = weights * g_loss
+    return tf.reduce_mean (g_loss)
+
+  @property
+  def discriminator (self) -> tf.keras.Sequential:
+    """The discriminator of the BceGAN system."""
+    return self._discriminator
+
+  @property
+  def generator (self) -> tf.keras.Sequential:
+    """The generator of the BceGAN system."""
+    return self._generator
     

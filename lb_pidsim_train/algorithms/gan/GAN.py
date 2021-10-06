@@ -320,10 +320,10 @@ class GAN (tf.keras.Model):
     D_ref = self._discriminator ( ref_sample + rnd_ref )
 
     ## Loss computation
-    loss = tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) * tf.clip_by_value (1 - D_gen, 1e-12, 1.) )
+    g_loss = tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) * tf.clip_by_value (1 - D_gen, 1e-12, 1.) )
     if weights is not None:
-      loss = weights * loss
-    return tf.reduce_mean (loss)
+      g_loss = weights * g_loss
+    return tf.reduce_mean (g_loss)
 
   def generate (self, X) -> tf.Tensor:
     """Method to generate the target variables `Y` given the input features `X`.
