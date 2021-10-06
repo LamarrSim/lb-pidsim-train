@@ -55,7 +55,7 @@ class BaseTrainer:
     timestamp = str (datetime.now()) . split (".") [0]
     timestamp = timestamp . replace (" ","_")
     version = ""
-    for time, unit in zip (timestamp.split(":"), ["h","m","s"]):
+    for time, unit in zip ( timestamp.split(":"), ["h","m","s"] ):
       version += time + unit   # YYYY-MM-DD_HHdMMmSSs
 
     self._name = name
@@ -150,7 +150,7 @@ class BaseTrainer:
       data.query (queries, inplace = True)
 
     self._datachunk = data
-    self._more_data_avail= False
+    self._more_data_avail = False
 
   def feed_from_root_files ( self ,
                              root_files  , 
@@ -217,11 +217,11 @@ class BaseTrainer:
     try:
       chunk_size = int ( chunk_size )
     except:
-      ValueError ("The chunk-size should be an integer.")
+      TypeError ("The chunk-size should be an integer.")
     try:
       max_nfiles = int ( max_nfiles )
     except:
-      ValueError ("The maximum number of files should be an integer.")
+      TypeError ("The maximum number of files should be an integer.")
 
     self._chunk_size = chunk_size
     self._max_nfiles = max_nfiles
@@ -230,11 +230,13 @@ class BaseTrainer:
     if weight_var:
       branches = input_vars + output_vars + weight_var
     else:
-      branches = input_vars + output_vars 
+      branches = input_vars + output_vars
+
+    self._branches = branches
 
     ## Length match
     if tree_names is None:
-      tree_names = [ None for i in range (len(root_files)) ]
+      tree_names = [ None for i in range ( len(root_files) ) ]
 
     ## Check files and tree names match
     if len(root_files) != len(tree_names):
@@ -252,6 +254,8 @@ class BaseTrainer:
       t = file [key]
       trees . append (t)
 
+    self._trees = trees
+
     ## Data selection
     if selections:
       selections = "&".join ("(%s)" % s for s in selections)
@@ -265,7 +269,7 @@ class BaseTrainer:
                              chunk_size = chunk_size )
 
     self._datachunk = data
-    self._all_data  = False
+    self._more_data_avail = True
 
   def _load_data (self, dtype = NP_FLOAT) -> tuple:
     """"description
@@ -275,14 +279,24 @@ class BaseTrainer:
     dtype : `np.dtype`, optional
       ...
     """
-    X = nan_filter ( np.stack ( [ self._datachunk[v] for v in self._input_vars  ] ) ) . T
-    Y = nan_filter ( np.stack ( [ self._datachunk[v] for v in self._output_vars ] ) ) . T
-    self._data_rows = len (X)
+    ## Load new data-chunk if available
+    if self._more_data_avail:
+      data = data_from_trees ( trees = self._trees ,
+                               branches = self._branches ,
+                               cut = self._selections    ,
+                               max_ntrees = self._max_nfiles ,
+                               chunk_size = self._chunk_size )
+    else:
+      data = self._datachunk
+
+    X = nan_filter ( np.stack ( [ data[v] for v in self._input_vars  ] ) ) . T
+    Y = nan_filter ( np.stack ( [ data[v] for v in self._output_vars ] ) ) . T
+    self._data_rows = len(X)
 
     if self._weight_var:
-      w =  np.c_ [ self._datachunk[self._weight_var] ]
+      w = np.c_ [ data[self._weight_var] ]
     else:
-      w =  np.ones ( X.shape[0], dtype = dtype )
+      w = np.ones ( X.shape[0], dtype = dtype )
 
     X = X.astype ( dtype )
     Y = Y.astype ( dtype )

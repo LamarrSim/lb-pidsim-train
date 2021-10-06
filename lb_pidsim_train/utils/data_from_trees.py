@@ -80,11 +80,11 @@ def data_from_trees ( trees ,
   try:
     max_ntrees = int ( max_ntrees )
   except:
-    raise ValueError ("The maximum number of trees should be an integer.")
+    raise TypeError ("The maximum number of trees should be an integer.")
   try:
     chunk_size = int ( chunk_size )
   except:
-    raise ValueError ("The chunk-size should be an integer.")
+    raise TypeError ("The chunk-size should be an integer.")
 
   ## Total entries
   tot_entries = 0

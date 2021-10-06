@@ -73,7 +73,7 @@ def getBinPDFs ( x_gen ,
   try:
     bins = int ( bins )
   except:
-    raise ValueError ("The number of bins should be an integer.")
+    raise TypeError ("The number of bins should be an integer.")
 
   ## Default weights
   if w_gen is None: w_gen = 1.

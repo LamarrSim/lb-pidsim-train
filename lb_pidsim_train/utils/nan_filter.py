@@ -41,7 +41,7 @@ def nan_filter (x, when_nan = 0.) -> np.ndarray:
   try:
     when_nan = float (when_nan)
   except:
-    raise ValueError ("The value replacing NaN elements should be a float.")
+    raise TypeError ("The value replacing NaN elements should be a float.")
 
   ## Filter application
   x_finite = np.isfinite (x)
