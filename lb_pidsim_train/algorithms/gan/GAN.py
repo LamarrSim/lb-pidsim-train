@@ -1,13 +1,9 @@
-from __future__ import annotations
+#from __future__ import annotations
 
-import os
 import numpy as np
 import tensorflow as tf
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
-from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
 
 
 d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )

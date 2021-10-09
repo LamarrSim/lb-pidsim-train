@@ -1,12 +1,6 @@
-from __future__ import annotations
+#from __future__ import annotations
 
-import os
-import numpy as np
 import tensorflow as tf
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from tensorflow.python.ops.gradients_impl import gradients
-
 from lb_pidsim_train.algorithms.gan import GAN
 
 
@@ -63,7 +57,7 @@ class WGAN_GP (GAN):
                 g_optimizer ,
                 d_updt_per_batch = 1 , 
                 g_updt_per_batch = 1 ,
-                grad_penalty = 0.001 ) -> None:
+                grad_penalty = 10 ) -> None:
     """Configure the models for WGAN-GP training.
     
     Parameters
@@ -122,7 +116,7 @@ class WGAN_GP (GAN):
     
     ## Gradient penalty
     alpha = tf.random.uniform (
-                                shape  = tf.shape(ref_sample)[0] ,
+                                shape  = (tf.shape(ref_sample)[0], 1) ,
                                 minval = 0. ,
                                 maxval = 1. ,
                               )
@@ -159,7 +153,8 @@ class WGAN_GP (GAN):
     """
     ## Standard WGAN loss
     D_gen = self._discriminator ( gen_sample )
-    g_loss = - D_gen
+    D_ref = self._discriminator ( ref_sample )
+    g_loss = D_ref - D_gen
     if weights is not None:
       g_loss = weights * g_loss
     return tf.reduce_mean (g_loss)

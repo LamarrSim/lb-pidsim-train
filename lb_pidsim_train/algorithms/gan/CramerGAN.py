@@ -1,14 +1,10 @@
-from __future__ import annotations
+#from __future__ import annotations
 
-import os
 import numpy as np
 import tensorflow as tf
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
-from lb_pidsim_train.algorithms.gan import GAN
-from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
+from lb_pidsim_train.algorithms.gan import GAN
 
 
 d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
@@ -113,7 +109,7 @@ class CramerGAN (GAN):
                 g_optimizer , 
                 d_updt_per_batch = 1 ,
                 g_updt_per_batch = 1 ,
-                grad_penalty = 0.001 ) -> None:
+                grad_penalty = 10 ) -> None:
     """Configure the models for CramerGAN training.
     
     Parameters

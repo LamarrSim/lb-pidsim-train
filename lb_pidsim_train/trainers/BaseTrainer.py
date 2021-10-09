@@ -1,4 +1,4 @@
-from __future__ import annotations
+#from __future__ import annotations
 
 import os
 import uproot
@@ -56,7 +56,7 @@ class BaseTrainer:
     timestamp = timestamp . replace (" ","_")
     version = ""
     for time, unit in zip ( timestamp.split(":"), ["h","m","s"] ):
-      version += time + unit   # YYYY-MM-DD_HHdMMmSSs
+      version += time + unit   # YYYY-MM-DD_HHhMMmSSs
 
     self._name = name
 
@@ -135,7 +135,7 @@ class BaseTrainer:
     self._weight_var  = weight_var
 
     ## List of column names
-    if weight_var:
+    if weight_var is not None:
       cols = input_vars + output_vars + weight_var
     else:
       cols = input_vars + output_vars 
@@ -227,7 +227,7 @@ class BaseTrainer:
     self._max_nfiles = max_nfiles
 
     ## List of branch names
-    if weight_var:
+    if weight_var is not None:
       branches = input_vars + output_vars + weight_var
     else:
       branches = input_vars + output_vars
@@ -246,7 +246,7 @@ class BaseTrainer:
     trees = list()
     for fname, tname in zip (root_files, tree_names):
       file = uproot.open (fname)
-      if tname:
+      if tname is not None:
         key = tname
       else:
         key = file.keys()
@@ -293,7 +293,7 @@ class BaseTrainer:
     Y = nan_filter ( np.stack ( [ data[v] for v in self._output_vars ] ) ) . T
     self._data_rows = len(X)
 
-    if self._weight_var:
+    if self._weight_var is not None:
       w = np.c_ [ data[self._weight_var] ]
     else:
       w = np.ones ( X.shape[0], dtype = dtype )
