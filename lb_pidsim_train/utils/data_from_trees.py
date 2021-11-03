@@ -1,6 +1,5 @@
 #from __future__ import annotations
 
-import os
 import uproot
 import numpy as np
 import pandas as pd
@@ -9,8 +8,8 @@ import pandas as pd
 def data_from_trees ( trees ,
                       branches ,
                       cut = None ,
-                      max_ntrees = 10 ,
-                      chunk_size = 1000 ) -> pd.DataFrame:
+                      max_ntrees = None ,
+                      chunk_size = None ) -> pd.DataFrame:
   """Stratified data shuffling from list of `uproot.TTree`.
 
   The number of entries picked from each `uproot.TTree` is proportional to 
@@ -33,10 +32,10 @@ def data_from_trees ( trees ,
   max_ntrees : `int`, optional
     Maximum number of trees from which to pick data. Can be decreased
     if trees are similar to each other and accessing too often to all 
-    of them affects performance (`10`, by default).
+    of them affects performance (`None`, by default).
 
   chunk_size : `int`, optional
-    Total number of data rows picked from trees (`1000`, by default).
+    Total number of data rows picked from trees (`None`, by default).
     Note: it may not correspond with the actual length of the output 
     dataframe, since the filtering is applied as final step.
 
@@ -57,7 +56,7 @@ def data_from_trees ( trees ,
   >>> events = uproot.open ("https://scikit-hep.org/uproot3/examples/Zmumu.root:events")
   >>> print ( events.keys() [3:11] )
   ['E1', 'px1', 'py1', 'pz1', 'pt1', 'eta1', 'phi1', 'Q1']
-  >>> from lb-pidsim-train.core.trainers.utils import data_from_trees
+  >>> from lb_pidsim_train.utils import data_from_trees
   >>> trees = [events]
   >>> branches = ['px1', 'py1', 'pz1']
   >>> df = data_from_trees (tree, branches, chunk_size = 10)
@@ -74,20 +73,27 @@ def data_from_trees ( trees ,
   8 -33.957113 -23.001362  22.853348
   9 -33.957113 -23.001362  22.853348
   """
-  ## Data-type control
-  try:
-    max_ntrees = int ( max_ntrees )
-  except:
-    raise TypeError ("The maximum number of trees should be an integer.")
-  try:
-    chunk_size = int ( chunk_size )
-  except:
-    raise TypeError ("The chunk-size should be an integer.")
-
   ## Total entries
   tot_entries = 0
   for t in trees:
     tot_entries += t.num_entries
+
+  ## Data-type control
+  if max_ntrees is not None:
+    try:
+      max_ntrees = int ( max_ntrees )
+    except:
+      raise TypeError ("The maximum number of trees should be an integer.")
+  else:
+    max_ntrees = int ( len(trees) )
+
+  if chunk_size is not None:
+    try:
+      chunk_size = int ( chunk_size )
+    except:
+      raise TypeError ("The chunk-size should be an integer.")
+  else:
+    chunk_size = int ( tot_entries )
 
   data = list()
   indices = np.random.permutation (len(trees)) [:max_ntrees]
@@ -116,8 +122,7 @@ def data_from_trees ( trees ,
 
 if __name__ == "__main__":
   ## Open ROOT tree
-  PATH = os.path.dirname (__file__)
-  events = uproot.open (PATH + "/tests/Zmumu.root:events")
+  events = uproot.open ("../data/Zmumu.root:events")
   print ( events.keys() [3:11] )
 
   ## Tree -> dataframe

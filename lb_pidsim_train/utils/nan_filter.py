@@ -26,7 +26,7 @@ def nan_filter (x, when_nan = 0.) -> np.ndarray:
   >>> nan_arr[1:] = np.NaN
   >>> print (nan_arr)
   [ 1. nan nan nan nan]
-  >>> from lb-pidsim-train.core.trainers.utils import nan_filter
+  >>> from lb_pidsim_train.utils import nan_filter
   >>> filt_arr = nan_filter (nan_arr)
   >>> print (filt_arr)
   [1. 0. 0. 0. 0.]

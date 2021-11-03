@@ -19,7 +19,7 @@ def name_not_passed (attr_name, default = None) -> str:
 
   Examples
   --------
-  >>> from lb-pidsim-train.core.trainers.utils.warn_message import name_not_passed
+  >>> from lb_pidsim_train.utils.warn_message import name_not_passed
   >>> mess = name_not_passed ("export dirname", "./results")
   >>> print (mess)
   No export dirname passed, './results' will be assigned by default.
@@ -43,7 +43,7 @@ def directory_not_found (dirname) -> str:
 
   Examples
   --------
-  >>> from lb-pidsim-train.core.trainers.utils.warn_message import directory_not_found
+  >>> from lb_pidsim-train.utils.warn_message import directory_not_found
   >>> mess = directory_not_found ("./results")
   >>> print (mess)
   './results' not found, the directory will be created.
