@@ -50,8 +50,8 @@ def data_from_trees ( trees ,
   --------
   uproot.models.TTree.arrays
 
-  Examples:
-  ---------
+  Examples
+  --------
   >>> import uproot
   >>> events = uproot.open ("https://scikit-hep.org/uproot3/examples/Zmumu.root:events")
   >>> print ( events.keys() [3:11] )
@@ -108,7 +108,7 @@ def data_from_trees ( trees ,
     entry_stop  = entry_start + tree_chunk
 
     ## Data load
-    data . append ( tree.arrays ( branches,
+    data . append ( tree.arrays ( expressions = branches ,
                                   cut = cut ,
                                   entry_start = entry_start ,
                                   entry_stop  = entry_stop  ,
