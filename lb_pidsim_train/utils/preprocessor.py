@@ -23,7 +23,8 @@ def preprocessor ( data ,
 
   cols_to_transform : `list` of `int` or `np.ndarray`, optional
     Indices of the data columns to which apply the preprocessing 
-    transformation (`None`, by default).
+    transformation (`None`, by default). If `None` is selected, 
+    all the data columns are preprocessed.
 
   Returns
   -------
