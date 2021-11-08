@@ -6,25 +6,17 @@ import pickle
 import uproot
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from datetime import datetime
 from warnings import warn
 from sklearn.utils import shuffle
 
-import lb_pidsim_train as pidsim
 from lb_pidsim_train.utils import warn_message as wm
 from lb_pidsim_train.utils import data_from_trees, nan_filter, preprocessor
 
-tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
-
-TF_FLOAT = tf.float32
-"""Default data-type for tensors."""
-
-NP_FLOAT = TF_FLOAT.as_numpy_dtype
+NP_FLOAT = np.float32
 """Default data-type for arrays."""
 
 
@@ -270,7 +262,8 @@ class BaseTrainer:
                         Y_preprocessing = None ,
                         X_vars_to_preprocess = None ,
                         Y_vars_to_preprocess = None ,
-                        subsample_size = 100000 ,
+                        subsample_size = 100000  ,
+                        save_transformers = True ,
                         verbose = 0 ) -> None:
     """Split the data-chunk into X, Y and w, and perform preprocessing.
 
@@ -298,6 +291,10 @@ class BaseTrainer:
       Data-chunk subsample size used to compute the preprocessing transformer 
       parameters (`100000`, by default).
 
+    save_transformers : `bool`, optional
+      Boolean flag to save and export the transformers, if preprocessing 
+      is enabled (`True`, by default).
+
     verbose : {0, 1, 2}, optional
       Verbosity mode. `0` = silent (default), `1` = time for preprocessing 
       steps is printed, `2`= also time for shuffling is printed together
@@ -314,7 +311,9 @@ class BaseTrainer:
     stop = time.time()
     if (verbose > 1): print ( f"Shuffle-time: {stop-start:.3f} s" )
 
-    ## Weight array
+    ## Shuffled arrays
+    self._X = X
+    self._Y = Y
     self._w = w
 
     ## Data-type control
@@ -335,12 +334,14 @@ class BaseTrainer:
         X_cols_to_preprocess = None
       scaler_X = preprocessor ( X[:subsample_size], strategy = X_preprocessing, 
                                 cols_to_transform = X_cols_to_preprocess )
-      self._X  = scaler_X . transform (X)   # transform the input-set
+      self._X_scaled  = scaler_X . transform (X)   # transform the input-set
       stop = time.time()
-      if (verbose > 0): print ( f"Preprocessing time for X: {stop-start:.3f} s" )
-      self._save_transformer ( "transform_X", scaler_X, verbose = (verbose > 1) )
+      if (verbose > 0): 
+        print ( f"Preprocessing time for X: {stop-start:.3f} s" )
+      if save_transformers: 
+        self._save_transformer ( "transform_X", scaler_X, verbose = (verbose > 1) )
     else:
-      self._X = X
+      self._X_scaled = X
 
     ## Preprocessed output array
     if Y_preprocessing is not None:
@@ -354,12 +355,14 @@ class BaseTrainer:
         Y_cols_to_preprocess = None
       scaler_Y = preprocessor ( Y[:subsample_size], strategy = Y_preprocessing, 
                                 cols_to_transform = Y_cols_to_preprocess )
-      self._Y  = scaler_Y . transform (Y)   # transform the output-set
+      self._Y_scaled  = scaler_Y . transform (Y)   # transform the output-set
       stop = time.time()
-      if (verbose > 0): print ( f"Preprocessing time for Y: {stop-start:.3f} s" )
-      self._save_transformer ( "transform_Y", scaler_Y, verbose = (verbose > 1) )
+      if (verbose > 0): 
+        print ( f"Preprocessing time for Y: {stop-start:.3f} s" )
+      if save_transformers:
+        self._save_transformer ( "transform_Y", scaler_Y, verbose = (verbose > 1) )
     else:
-      self._Y = Y
+      self._Y_scaled = Y
 
   def _unpack_data (self) -> tuple:
     """Unpack the data-chunk into input, output and weights 
@@ -445,17 +448,28 @@ class BaseTrainer:
 
   @property
   def X (self) -> np.ndarray:
-    """Array containing the input-set after preprocessing."""
+    """Array containing a shuffled version of the input-set."""
     return self._X
 
   @property
+  def X_scaled (self) -> np.ndarray:
+    """Array containing a preprocessed version of the input-set."""
+    return self._X_scaled
+
+  @property
   def Y (self) -> np.ndarray:
-    """Array containing the output-set after preprocessing."""
+    """Array containing a shuffled version of the output-set."""
     return self._Y
 
   @property
+  def Y_scaled (self) -> np.ndarray:
+    """Array containing a preprocessed version of the output-set."""
+    return self._Y_scaled
+
+  @property
   def w (self) -> np.ndarray:
-    """Array containing the weights (array of ones, if not available)."""
+    """Array containing a shuffled version of the weights 
+    (array of ones, if not available)."""
     return self._w
 
     
