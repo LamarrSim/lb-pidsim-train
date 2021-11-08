@@ -227,7 +227,6 @@ class GAN (tf.keras.Model):
     gen_sample = tf.concat ( [X, generated], axis = 1 )
     return ref_sample, gen_sample
 
-  @tf.function
   def _train_d_step (self, X, Y, w = None) -> None:
     """Training step for the discriminator.
     
@@ -269,7 +268,6 @@ class GAN (tf.keras.Model):
     """
     return - self._compute_g_loss (gen_sample, ref_sample, weights)
 
-  @tf.function
   def _train_g_step (self, X, Y, w = None) -> None:
     """Training step for the generator.
     

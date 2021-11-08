@@ -87,7 +87,6 @@ class WGAN_GP (GAN):
 
     self._grad_penalty = grad_penalty
 
-  @tf.function
   def _compute_d_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
     """Return the discriminator loss.
     
