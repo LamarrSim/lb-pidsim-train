@@ -2,12 +2,12 @@
 
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, QuantileTransformer, FunctionTransformer
-from sklearn.compose       import ColumnTransformer
+from lb_pidsim_train.utils import CustomColumnTransformer
 
 
 def preprocessor ( data ,
                    strategy = "quantile" , 
-                   cols_to_transform = None ) -> ColumnTransformer:
+                   cols_to_transform = None ) -> CustomColumnTransformer:
   """Scikit-Learn transformer for data preprocessing.
   
   Parameters
@@ -28,7 +28,7 @@ def preprocessor ( data ,
 
   Returns
   -------
-  scaler : `sklearn.compose.ColumnTransformer`
+  scaler : `lb_pidsim_train.utils.CustomColumnTransformer`
     Scikit-Learn transformer fitted and ready to use (calling the 
     `transform` method).
 
@@ -51,24 +51,33 @@ def preprocessor ( data ,
   >>> c = np.where (a < 0, -1, 1)
   >>> data = np.c_ [a, b, c]
   >>> print (data)
-  [[-2.73768881  2.40009296 -1.        ]
-   [ 2.90420319  2.97191117  1.        ]
-   [-3.54111824  3.56929996 -1.        ]
+  [[-3.49523994  3.15785198 -1.        ]
+   [-3.98305793  4.76562602 -1.        ]
+   [-3.06980643  0.23196773 -1.        ]
    ...
-   [-1.89415656  1.00781813 -1.        ]
-   [-1.88903141  3.10907516 -1.        ]
-   [-3.23689531  1.37872621 -1.        ]]
+   [-4.43405151  0.45379785 -1.        ]
+   [ 2.91133207  0.18502709  1.        ]
+   [-0.13924445  2.01237511 -1.        ]]
   >>> from lb_pidsim_train.utils import preprocessor
   >>> scaler = preprocessor (data, "quantile", [0,1])
   >>> data_scaled = scaler . transform (data)
   >>> print (data_scaled)
-  [[-0.73808885  0.52066149 -1.        ]
-   [ 0.83023416  0.7347981   1.        ]
-   [-1.0887225   0.98969684 -1.        ]
+  [[-1.04874761  0.87719565 -1.        ]
+   [-1.35262276  1.33406614 -1.        ]
+   [-0.89577982 -1.24750548 -1.        ]
    ...
-   [-0.47802469 -0.29398578 -1.        ]
-   [-0.46960306  0.79532164 -1.        ]
-   [-0.93390994 -0.03136936 -1.        ]]
+   [-1.67418578 -0.83023416 -1.        ]
+   [ 0.7987689  -1.35891295  1.        ]
+   [-0.05648561  0.32822342 -1.        ]]
+  >>> data_inv_tr = scaler . inverse_transform (data_scaled)
+  >>> print (data_inv_tr)
+  [[-3.49523994  3.15785198 -1.        ]
+   [-3.98305793  4.76562602 -1.        ]
+   [-3.06980643  0.23196773 -1.        ]
+   ...
+   [-4.43405151  0.45379785 -1.        ]
+   [ 2.91133207  0.18502709  1.        ]
+   [-0.13924445  2.01237511 -1.        ]]
   """
   ## Strategy selection
   if strategy == "minmax":
@@ -93,10 +102,10 @@ def preprocessor ( data ,
     cols_to_transform = list ( all_cols )
     cols_to_ignore = []
 
-  scaler = ColumnTransformer ( [
-                                 ( "num", num_scaler, cols_to_transform ) ,
-                                 ( "cls", FunctionTransformer(), cols_to_ignore )
-                               ] )
+  scaler = CustomColumnTransformer ( [
+                                       ( "num", num_scaler, cols_to_transform ) ,
+                                       ( "cls", FunctionTransformer(), cols_to_ignore )
+                                     ] )
   
   scaler . fit ( data )
   return scaler
@@ -115,3 +124,7 @@ if __name__ == "__main__":
   scaler = preprocessor (data, "quantile", [0,1])
   data_scaled = scaler . transform (data)
   print (data_scaled)
+
+  ## Dataset back-projected
+  data_inv_tr = scaler . inverse_transform (data_scaled)
+  print (data_inv_tr)
