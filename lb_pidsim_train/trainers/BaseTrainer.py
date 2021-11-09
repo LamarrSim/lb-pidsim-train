@@ -1,15 +1,15 @@
 #from __future__ import annotations
 
 import os
-import time
 import pickle
 import uproot
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from datetime import datetime
+from time import time
 from warnings import warn
+from datetime import datetime
 from sklearn.utils import shuffle
 
 from lb_pidsim_train.utils import warn_message as wm
@@ -21,7 +21,7 @@ NP_FLOAT = np.float32
 
 
 class BaseTrainer:
-  """Base class for training generative models.
+  """Base class for training models.
   
   Parameters
   ----------
@@ -249,12 +249,12 @@ class BaseTrainer:
     if selections:
       selections = "&".join ("(%s)" % s for s in selections)
 
-    start = time.time()
+    start = time()
     self._datachunk = data_from_trees ( trees = trees , 
                                         branches = branches ,
                                         cut = selections    ,
                                         chunk_size = chunk_size )
-    stop = time.time()
+    stop = time()
     if (verbose > 0): print ( f"Data-chunk correctly loaded in {stop-start:.3f} s" )
 
   def prepare_dataset ( self ,
@@ -262,8 +262,8 @@ class BaseTrainer:
                         Y_preprocessing = None ,
                         X_vars_to_preprocess = None ,
                         Y_vars_to_preprocess = None ,
-                        subsample_size = 100000  ,
-                        save_transformers = True ,
+                        subsample_size = 100000 ,
+                        save_transformer = True ,
                         verbose = 0 ) -> None:
     """Split the data-chunk into X, Y and w, and perform preprocessing.
 
@@ -291,14 +291,14 @@ class BaseTrainer:
       Data-chunk subsample size used to compute the preprocessing transformer 
       parameters (`100000`, by default).
 
-    save_transformers : `bool`, optional
+    save_transformer : `bool`, optional
       Boolean flag to save and export the transformers, if preprocessing 
       is enabled (`True`, by default).
 
     verbose : {0, 1, 2}, optional
-      Verbosity mode. `0` = silent (default), `1` = time for preprocessing 
-      steps is printed, `2`= also time for shuffling is printed together
-      with control messages. 
+      Verbosity mode. `0` = silent (default), `1` = control messages after 
+      transformers saving is printed, `2`= also times for shuffling and 
+      preprocessing are printed. 
 
     See Also
     --------
@@ -306,9 +306,9 @@ class BaseTrainer:
       Scikit-Learn transformer for data preprocessing.
     """
     X, Y, w = self._unpack_data()
-    start = time.time()
+    start = time()
     X, Y, w = shuffle (X, Y, w)
-    stop = time.time()
+    stop = time()
     if (verbose > 1): print ( f"Shuffle-time: {stop-start:.3f} s" )
 
     ## Shuffled arrays
@@ -324,7 +324,7 @@ class BaseTrainer:
 
     ## Preprocessed input array
     if X_preprocessing is not None:
-      start = time.time()
+      start = time()
       if X_vars_to_preprocess is not None:
         X_cols_to_preprocess = list()
         for idx, var in enumerate (self._X_vars):
@@ -335,17 +335,17 @@ class BaseTrainer:
       scaler_X = preprocessor ( X[:subsample_size], strategy = X_preprocessing, 
                                 cols_to_transform = X_cols_to_preprocess )
       self._X_scaled  = scaler_X . transform (X)   # transform the input-set
-      stop = time.time()
-      if (verbose > 0): 
+      stop = time()
+      if (verbose > 1): 
         print ( f"Preprocessing time for X: {stop-start:.3f} s" )
-      if save_transformers: 
-        self._save_transformer ( "transform_X", scaler_X, verbose = (verbose > 1) )
+      if save_transformer: 
+        self._save_transformer ( "transform_X", scaler_X, verbose = (verbose > 0) )
     else:
       self._X_scaled = X
 
     ## Preprocessed output array
     if Y_preprocessing is not None:
-      start = time.time()
+      start = time()
       if Y_vars_to_preprocess is not None:
         Y_cols_to_preprocess = list()
         for idx, var in enumerate (self._Y_vars):
@@ -356,11 +356,11 @@ class BaseTrainer:
       scaler_Y = preprocessor ( Y[:subsample_size], strategy = Y_preprocessing, 
                                 cols_to_transform = Y_cols_to_preprocess )
       self._Y_scaled  = scaler_Y . transform (Y)   # transform the output-set
-      stop = time.time()
-      if (verbose > 0): 
+      stop = time()
+      if (verbose > 1): 
         print ( f"Preprocessing time for Y: {stop-start:.3f} s" )
-      if save_transformers:
-        self._save_transformer ( "transform_Y", scaler_Y, verbose = (verbose > 1) )
+      if save_transformer:
+        self._save_transformer ( "transform_Y", scaler_Y, verbose = (verbose > 0) )
     else:
       self._Y_scaled = Y
 
@@ -403,7 +403,7 @@ class BaseTrainer:
     name : `str`
       Name of the pickle file containing the transformer.
 
-    transformer : `ColumnTransformer`
+    transformer : `sklearn.compose.ColumnTransformer`
       Preprocessing transformer resulting from `lb_pidsim_train.utils.preprocessor`.
 
     verbose : `bool`, optional
@@ -420,6 +420,10 @@ class BaseTrainer:
     filename = f"{dirname}/{name}.pkl"
     pickle . dump ( transformer, open (filename, "wb") )
     if verbose: print ( f"Transformer correctly exported to {filename}" )
+
+  def train_model (self) -> None:
+    """short description"""
+    raise NotImplementedError ("error")   # docs to add
        
   @property
   def name (self) -> str:
