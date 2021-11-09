@@ -1,7 +1,10 @@
 *.swp
 *.swo
+*.pkl
+*.html
+saved_model/
 build/
 dist/
 *.egg-info/
 __pycache__/
-models/
+.ipynb_checkpoints/
