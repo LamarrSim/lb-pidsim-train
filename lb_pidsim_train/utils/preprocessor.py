@@ -28,7 +28,7 @@ def preprocessor ( data ,
 
   Returns
   -------
-  scaler : `ColumnTransformer`
+  scaler : `sklearn.compose.ColumnTransformer`
     Scikit-Learn transformer fitted and ready to use (calling the 
     `transform` method).
 
