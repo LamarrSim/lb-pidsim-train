@@ -2,6 +2,7 @@
 
 import os
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 from lb_pidsim_train.trainers import TensorTrainer
 
@@ -11,6 +12,24 @@ TF_FLOAT = tf.float32
 
 
 class GanTrainer (TensorTrainer):
+  def _training_plots(self, report, history):
+    plt.figure (figsize = (8,5), dpi = 100)
+    plt.plot (history.history["d_loss"], linewidth=1.5, color="dodgerblue", label = "discriminator")
+    plt.plot (history.history["g_loss"], linewidth=1.5, color="coral", label = "generator")
+    plt.legend (loc="upper right")
+    report.add_figure(); plt.clf(); plt.close()
+
+    plt.figure (figsize = (8,5), dpi = 100)
+    plt.plot (history.history["kl_div"], linewidth=1.5, color="forestgreen", label = "K-L divergence")
+    plt.legend (loc="upper right")
+    report.add_figure(); plt.clf(); plt.close()
+
+    plt.figure (figsize = (8,5), dpi = 100)
+    plt.plot (history.history["d_lr"], linewidth=1.5, color="dodgerblue", label = "d_lr")
+    plt.plot (history.history["g_lr"], linewidth=1.5, color="coral", label = "g_lr")
+    plt.legend (loc="center right")
+    report.add_figure(); plt.clf(); plt.close()
+
   def _save_model ( self, name, model, verbose = False ) -> None:
     """Save the trained model.
     

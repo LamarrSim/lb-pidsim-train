@@ -99,7 +99,7 @@ class TensorTrainer (BaseTrainer):
                     batch_size = 1 ,
                     num_epochs = 1 ,
                     validation_split = 0.0 ,
-                    lr_scheduler = None , 
+                    plots_on_report = True ,
                     save_model = True ,
                     verbose = 0 ) -> None:   # docs to add
     """...
@@ -117,9 +117,6 @@ class TensorTrainer (BaseTrainer):
 
     validation_split : `float`, optional
       ... (`0.0`, by default).
-
-    lr_scheduler : `lb_pidsim_train.schedulers.Scheduler`, optional
-      ... (`None`, by default).
 
     save_model : `bool`, optional
       Boolean flag to save and export the trained model (`True`, by default).
@@ -178,12 +175,8 @@ class TensorTrainer (BaseTrainer):
     else:
       val_ds = None
 
-    ## Callbacks setting
-    callbacks = list()
-    if lr_scheduler is not None:
-      callbacks . append ( tf.keras.callbacks.LearningRateScheduler(lr_scheduler) )
-    else:
-      callbacks = None
+    ## Callbacks settings
+    callbacks = None
 
     ## Training procedure
     history = model . fit ( train_ds , 
@@ -193,6 +186,11 @@ class TensorTrainer (BaseTrainer):
                             callbacks = callbacks ,
                             verbose = verbose )
     self._model = model
+
+    if plots_on_report:
+      report = Report()
+      self._training_plots (report, history)
+      report . write_report (filename = f"{self._report_dir}/{self._report_name}.html")
 
     if save_model:
       self._save_model ( f"{self._name}_ep{num_epochs:04d}", model, verbose = (verbose > 0) )
@@ -239,6 +237,9 @@ class TensorTrainer (BaseTrainer):
     dataset = dataset.cache()
     dataset = dataset.prefetch ( tf.data.AUTOTUNE )
     return dataset
+
+  def _training_plots (self, report, history):
+    raise NotImplementedError ("error")   # docs to add
 
   def _save_model ( self, name, model, verbose = False ) -> None:
     """Save the trained model.
