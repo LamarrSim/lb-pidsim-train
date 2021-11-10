@@ -12,6 +12,9 @@ d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
 g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
 """Metric instance to track the generator loss score."""
 
+kl_div_tracker = tf.keras.metrics.KLDivergence ( name = "kl_div" )
+"""Metric instance to track the K-L divergence."""
+
 
 class GAN (tf.keras.Model):
   """Keras model class to build and train GAN system.
@@ -175,25 +178,45 @@ class GAN (tf.keras.Model):
     for j in range(self._g_updt_per_batch):
       self._train_g_step (X, Y, w)
 
+    ## Loss computation
     ref_sample, gen_sample = self._arrange_samples (X, Y)
     d_loss = self._compute_d_loss (gen_sample, ref_sample, weights = w)
     g_loss = self._compute_g_loss (gen_sample, ref_sample, weights = w)
 
+    ## Update metrics state
     d_loss_tracker . update_state (d_loss)
     g_loss_tracker . update_state (g_loss)
-    return {"d_loss": d_loss_tracker.result(), "g_loss": g_loss_tracker.result()}
+
+    Y_gen = self.generate (X)
+    kl_div_tracker . update_state (Y, Y_gen, sample_weight = w)
+
+    return { "d_loss" : d_loss_tracker.result() , 
+             "g_loss" : g_loss_tracker.result() ,
+             "kl_div" : kl_div_tracker.result() ,
+             "d_lr"   : self._d_optimizer.lr    ,
+             "g_lr"   : self._g_optimizer.lr    }
 
   def test_step (self, data) -> dict:
     """Test step for Keras APIs."""
     X, Y, w = self._unpack_data (data)
 
+    ## Loss computation
     ref_sample, gen_sample = self._arrange_samples (X, Y)
     d_loss = self._compute_d_loss (gen_sample, ref_sample, weights = w)
     g_loss = self._compute_g_loss (gen_sample, ref_sample, weights = w)
 
+    ## Update metrics state
     d_loss_tracker . update_state (d_loss)
     g_loss_tracker . update_state (g_loss)
-    return {"d_loss": d_loss_tracker.result(), "g_loss": g_loss_tracker.result()}
+
+    Y_gen = self.generate (X)
+    kl_div_tracker . update_state (Y, Y_gen, sample_weight = w)
+
+    return { "d_loss" : d_loss_tracker.result() , 
+             "g_loss" : g_loss_tracker.result() ,
+             "kl_div" : kl_div_tracker.result() ,
+             "d_lr"   : self._d_optimizer.lr    ,
+             "g_lr"   : self._g_optimizer.lr    }
 
   def _arrange_samples (self, X, Y) -> tuple:
     """Arrange the reference and generated samples.
