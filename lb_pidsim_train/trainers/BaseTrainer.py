@@ -57,6 +57,8 @@ class BaseTrainer:   # TODO class description
     for time, unit in zip ( timestamp.split(":"), ["h","m","s"] ):
       version += time + unit   # YYYY-MM-DD_HHhMMmSSs
 
+    self._name = f"{name}"
+
     if export_dir is None:
       export_dir = "./models"
       message = wm.name_not_passed ("export dirname", export_dir)
@@ -404,9 +406,9 @@ class BaseTrainer:   # TODO class description
     Parameters
     ----------
     name : `str`
-      Name of the pickle file containing the transformer.
+      Name of the pickle file containing the Scikit-Learn transformer.
 
-    transformer : `sklearn.compose.ColumnTransformer`
+    transformer : `lb_pidsim_train.utils.CustomColumnTransformer`
       Preprocessing transformer resulting from `lb_pidsim_train.utils.preprocessor`.
 
     verbose : `bool`, optional

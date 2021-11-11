@@ -129,6 +129,8 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     tf.keras.Model.fit :
       Train the model for a fixed number of epochs (iterations on a dataset).
     """
+    report = Report()
+
     ## Data-type control
     try:
       batch_size = int ( batch_size )
@@ -189,12 +191,12 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     self._model = model
 
     if plots_on_report:
-      report = Report()
       self._training_plots (report, history)
-      report . write_report (filename = f"{self._report_dir}/{self._report_name}.html")
 
     if save_model:
       self._save_model ( f"{self._name}_ep{num_epochs:04d}", model, verbose = (verbose > 0) )
+    
+    report . write_report ( filename = f"{self._report_dir}/{self._report_name}.html" )
 
   @staticmethod
   def _create_dataset ( data, batch_size = 100 ) -> tf.data.Dataset:   # TODO complete docstring
@@ -268,7 +270,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       os.makedirs (dirname)
     filename = f"{dirname}/{name}"
     model . save ( f"{filename}/saved_model", save_format = "tf" )
-    if verbose: print ( f"Trained generator correctly exported to {filename}" )
+    if verbose: print ( f"Trained model correctly exported to {filename}" )
 
   @property
   def model (self) -> tf.keras.Model:

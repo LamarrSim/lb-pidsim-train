@@ -60,8 +60,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.legend (title = "Training players:", loc = "center right", fontsize = 10)
     report.add_figure(); plt.clf(); plt.close()
 
-  def _save_model ( self, name, model, verbose = False ) -> None:
-    """Save the trained model.
+  def _save_model ( self, name, model, verbose = False ) -> None:   # TODO fix docstring
+    """Save the trained generator.
     
     Parameters
     ----------
@@ -69,13 +69,18 @@ class GanTrainer (TensorTrainer):   # TODO class description
       Name of the directory containing the TensorFlow SavedModel file.
 
     model : `tf.keras.Model`
-      TensorFlow model configured for the training procedure.
+      GAN model taken from `lb_pidsim_train.algorithms.gan` and configured 
+      for the training procedure.
 
     verbose : `bool`, optional
-      Verbosity mode. `False` = silent (default), `True` = a control message is printed. 
+      Verbosity mode. `False` = silent (default), `True` = a control message 
+      is printed. 
 
     See Also
     --------
+    lb_pidsim_train.algorithms.gan :
+      ...
+
     tf.keras.Model :
       Set of layers with training and inference features.
 
