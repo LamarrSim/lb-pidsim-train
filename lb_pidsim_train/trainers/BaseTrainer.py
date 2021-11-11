@@ -477,6 +477,6 @@ class BaseTrainer:   # TODO class description
     
 
 if __name__ == "__main__":   # TODO complete __main__
-  trainer = BaseTrainer ("test", "./generators", "test", "./reports", "test")
-  trainer . feed_from_root_files ("../data/Zmumu.root", ["px1", "py1", "pz1"], "E1")
-  print (trainer.datachunk.describe())
+  trainer = BaseTrainer ( "test", export_dir = "./models", report_dir = "./reports" )
+  trainer . feed_from_root_files ( "../data/Zmumu.root", ["px1", "py1", "pz1"], "E1" )
+  print ( trainer.datachunk.describe() )
