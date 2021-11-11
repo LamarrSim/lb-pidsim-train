@@ -2,13 +2,19 @@
 
 import os
 import pickle
+from re import T
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
+from time import time
 from warnings import warn
+from html_reports import Report
 from sklearn.utils import shuffle
+from tensorflow.python.types.core import Value
 from lb_pidsim_train.trainers import BaseTrainer
 from lb_pidsim_train.utils import warn_message as wm
+from lb_pidsim_train.metrics import KL_divergence, JS_divergence, KS_test
 
 
 NP_FLOAT = np.float32
@@ -18,7 +24,7 @@ TF_FLOAT = tf.float32
 """Default data-type for tensors."""
 
 
-class BdtClassifier (BaseTrainer):
+class BdtClassifier (BaseTrainer):   # TODO class description
   def __init__ ( self , 
                  name ,
                  model_dir  ,
@@ -29,7 +35,11 @@ class BdtClassifier (BaseTrainer):
                  report_name = None , 
                  verbose = False ) -> None:
 
-    self._generator = tf.keras.models.load_model (f"{model_dir}/{model_name}/saved_model")
+    self._model_dir  = model_dir    # TODO check existence
+    self._model_name = model_name   # TODO add default value
+    self._generator  = tf.keras.models.load_model (f"{model_dir}/{model_name}/saved_model")
+
+    self._name = f"{name}_{model_name}"
 
     if export_dir is None:
       export_dir = "./models"
@@ -42,7 +52,8 @@ class BdtClassifier (BaseTrainer):
       os.makedirs (self._export_dir)
 
     if export_name is None:
-      export_name = f"{name}_{model_name}"
+      model_dirname = f"{model_dir}".split("/")[-1]
+      export_name = f"{name}_{model_dirname}"
       message = wm.name_not_passed ("export filename", export_name)
       if verbose: warn (message)
     self._export_name = export_name
@@ -58,20 +69,64 @@ class BdtClassifier (BaseTrainer):
       os.makedirs (self._report_dir)
 
     if report_name is None:
-      report_name = f"{name}_{model_name}"
+      model_dirname = f"{model_dir}".split("/")[-1]
+      report_name = f"{name}_{model_dirname}"
       message = wm.name_not_passed ("report filename", report_name)
       if verbose: warn (message)
     self._report_name = report_name
 
-  def prepare_dataset(self, X_preprocessing=None, Y_preprocessing=None, X_vars_to_preprocess=None, Y_vars_to_preprocess=None, subsample_size=100000, save_transformer=True, verbose=0) -> None:
-    return super().prepare_dataset(X_preprocessing=X_preprocessing, Y_preprocessing=Y_preprocessing, X_vars_to_preprocess=X_vars_to_preprocess, Y_vars_to_preprocess=Y_vars_to_preprocess, subsample_size=subsample_size, save_transformer=save_transformer, verbose=verbose)
+  def prepare_dataset (self, verbose = 0) -> None:   # TODO complete docstring
+    """Split the data-chunk into X, Y and w, and perform the saved preprocessing.
+    
+    Parameters
+    ----------
+    verbose : {0, 1, 2}, optional
+      Verbosity mode. `0` = silent (default), `1` = control messages after 
+      transformers loading is printed, `2`= also times for shuffling and 
+      preprocessing are printed.
+    """
+    super(BdtClassifier, self) . prepare_dataset ( X_preprocessing = None ,
+                                                   Y_preprocessing = None ,
+                                                   verbose = verbose )
+
+    ## Preprocessed input array
+    file_X = f"{self._model_dir}/transform_X.pkl"
+    if os.path.exists (file_X):
+      start = time()
+      self._scaler_X = pickle.load ( open (file_X, "rb") )
+      if (verbose > 0):
+        print (f"Transformer correctly loaded from {file_X}.")
+      self._X_scaled = self._scaler_X . transform ( self._X )
+      stop = time()
+      if (verbose > 1):
+        print (f"Preprocessing time for X: {stop-start:.3f} s")
+    else:
+      self._scaler_X = None
+
+    ## Preprocessed output array
+    file_Y = f"{self._model_dir}/transform_Y.pkl"
+    if os.path.exists (file_Y):
+      start = time()
+      self._scaler_Y = pickle.load ( open (file_Y, "rb") )
+      if (verbose > 0):
+        print (f"Transformer correctly loaded from {file_Y}.")
+      self._Y_scaled = self._scaler_Y . transform ( self._Y )
+      stop = time()
+      if (verbose > 1):
+        print (f"Preprocessing time for Y: {stop-start:.3f} s")
+    else:
+      self._scaler_Y = None
 
   def train_model ( self ,
                     model ,
-                    validation_split = 0.0 ,
+                    validation_split = 0.2 ,
+                    inverse_transform = False ,
+                    performance_metric = "ks_test" ,
                     plots_on_report = True ,
                     save_model = True ,
-                    verbose = 0 ) -> None:
+                    verbose = 0 ) -> None:   # TODO work in progress
+    report = Report()
+
     ## Data-type control
     try:
       validation_split = float ( validation_split )
@@ -81,7 +136,7 @@ class BdtClassifier (BaseTrainer):
 
     ## Data-value control
     if (validation_split < 0.0) or (validation_split > 1.0):
-      raise ValueError ("error")   # docs to add
+      raise ValueError ("error")   # TODO add error message
 
     self._validation_split = validation_split
 
@@ -91,34 +146,196 @@ class BdtClassifier (BaseTrainer):
 
     ## Training dataset
     trainset = ( self._X_scaled[:trainset_size], self._Y_scaled[:trainset_size], self._w[:trainset_size] )
-    feats, labels, w = self._create_dataset ( data = trainset, model = self._generator, latent_dim = 64)
+    train_feats, train_labels, train_w = self._rearrange_dataset ( data = trainset , 
+                                                                   inverse_transform = inverse_transform )
 
-    print (self._w)
-    print (w)
+    ## Validation dataset
+    if validation_split != 0.0:
+      valset = ( self._X_scaled[trainset_size:], self._Y_scaled[trainset_size:], self._w[trainset_size:] )
+      val_feats, val_labels, val_w = self._rearrange_dataset ( data = valset , 
+                                                               inverse_transform = inverse_transform )
 
-    model . fit (feats, labels, sample_weight = w)
-    print (model.predict_proba(feats[0,:]))
+    ## Training procedure
+    start = time()
+    model . fit (train_feats, train_labels, sample_weight = train_w)
+    stop  = time()
+    if (verbose > 1): print (f"Classifier training completed in {(stop-start):.0f} s.")
 
-  @staticmethod
-  def _create_dataset (data, model, latent_dim) -> tuple:
+    self._model = model
+
+    result = { "weights"     : train_w ,
+               "true_labels" : train_labels ,
+               "pred_labels" : model.predict (train_feats) ,
+               "pred_probas" : model.predict_proba (train_feats) }
+
+    if validation_split != 0.0:
+      result.update ( { "val_weights"     : val_w ,
+                        "val_true_labels" : val_labels ,
+                        "val_pred_labels" : model.predict (val_feats) ,
+                        "val_pred_probas" : model.predict_proba (val_feats) } )
+
+    ## Score computation
+    score = self._compute_score ( result = result , 
+                                  validation = (self._validation_split != 0.0) , 
+                                  strategy = performance_metric ,
+                                  bins = 100 )
+
+    if plots_on_report:
+      self._proba_plots (result, report, bins = 100, strategy = performance_metric)
+
+    if save_model:
+      self._save_model ( f"{self._name}", model, verbose = (verbose > 0) )
+
+    report . write_report ( filename = f"{self._report_dir}/{self._report_name}.html" )
+
+  def _rearrange_dataset ( self , 
+                           data , 
+                           inverse_transform = False ) -> tuple:   # TODO add docstring
+    """short description"""
+    ## Size from latent space
     batch_size = int ( data[0].shape[0] / 2 )
+    latent_dim = int ( self._generator.input_shape[1] - self._X.shape[1] )
 
-    X_gen = np.array ( data[0][:batch_size], dtype = NP_FLOAT )
-    X_ref = np.array ( data[0][batch_size:], dtype = NP_FLOAT )
+    ## Latent space --> generated space
+    X_gen = tf.convert_to_tensor ( data[0][:batch_size], dtype = TF_FLOAT )
+    latent_tensor = tf.random.normal ( shape = (batch_size, latent_dim), dtype = TF_FLOAT )
+    input_tensor  = tf.concat ( [X_gen, latent_tensor], axis = 1 )
+    output_tensor = self._generator ( input_tensor )
 
-    X_gen_tensor  = tf.convert_to_tensor (X_gen)
-    latent_tensor = tf.random.normal ( shape = (batch_size, latent_dim) )
-    input_tensor  = tf.concat ( [X_gen_tensor, latent_tensor], axis = 1 )
+    ## Output arrays
+    Y_gen = output_tensor . numpy()
+    Y_ref = data[1][batch_size:] . astype (NP_FLOAT)
 
-    Y_gen = model ( tf.cast (input_tensor, dtype = TF_FLOAT) ) . numpy() # manca il preprocessing
-    Y_ref = np.array ( data[1][batch_size:], dtype = NP_FLOAT )
+    ## Feature space
+    X = data[0] . astype (NP_FLOAT)
+    Y = np.concatenate ( [Y_gen, Y_ref], axis = 0 ) . astype (NP_FLOAT)
+    if inverse_transform:
+      X = self._scaler_X . inverse_transform (X)
+      Y = self._scaler_Y . inverse_transform (Y)
 
-    XY_gen = np.c_ [X_gen, Y_gen]
-    XY_ref = np.c_ [X_ref, Y_ref]
-
-    feats = np.r_ [XY_gen, XY_ref]
-    labels = np.concatenate ( [ np.ones (len(X_gen)) , np.zeros (len(X_ref)) ] )
-    weights = np.array ( data[2], dtype = NP_FLOAT ) . reshape (len(labels),)
+    ## Classification datasets
+    feats = np.c_ [ X , Y ]
+    labels = np.concatenate ( [ np.ones (Y_gen.shape[0]) , np.zeros (Y_ref.shape[0]) ] )
+    weights = data[2] . astype (NP_FLOAT) . reshape (labels.shape)
     
     feats, labels, weights = shuffle (feats, labels, weights)
     return feats, labels, weights
+
+  def _compute_score ( self , 
+                       result ,
+                       validation = False   ,
+                       strategy = "ks_test" , 
+                       bins = 100 ) -> float:   # TODO add docstring
+    """short description"""
+    p_gen, p_ref, w_gen, w_ref = self._class_probas (result, validation = validation)
+
+    if strategy == "ks_test":
+      score = KS_test (p_gen, p_ref, bins, w_gen, w_ref) . max()
+    elif strategy == "kl_div":
+      score = KL_divergence (p_gen, p_ref, bins, w_gen, w_ref) . max()
+    elif strategy == "js_div":
+      score = JS_divergence (p_gen, p_ref, bins, w_gen, w_ref) . max()
+    else:
+      ValueError ("error.")   # TODO add error message
+    return score
+
+  def _class_probas (self, result, validation = False) -> tuple:   # TODO add docstring
+    """short description"""
+    if not validation:
+      p_gen = result["pred_probas"][:,0][result["true_labels"] == 1]
+      p_ref = result["pred_probas"][:,0][result["true_labels"] == 0]
+      w_gen = result["weights"][result["true_labels"] == 1]
+      w_ref = result["weights"][result["true_labels"] == 0]
+    else:
+      if self._validation_split == 0.0:
+        raise ValueError ("error.")   # TODO add error message
+      p_gen = result["val_pred_probas"][:,0][result["val_true_labels"] == 1]
+      p_ref = result["val_pred_probas"][:,0][result["val_true_labels"] == 0]
+      w_gen = result["val_weights"][result["val_true_labels"] == 1]
+      w_ref = result["val_weights"][result["val_true_labels"] == 0]
+    return p_gen, p_ref, w_gen, w_ref
+
+  def _proba_plots ( self , 
+                     result , 
+                     report , 
+                     bins = 100 , 
+                     strategy = "ks_test" ) -> None:   # TODO add docstring
+    """short description"""
+    ## Class probabilities
+    train_p_gen, train_p_ref, train_w_gen, train_w_ref = self._class_probas (result, validation = False)
+    train_w_gen /= len(train_w_gen) ; train_w_ref /= len(train_w_ref)
+    if self._validation_split != 0.0:
+      val_p_gen, val_p_ref, val_w_gen, val_w_ref = self._class_probas (result, validation = True)
+      val_w_gen /= len(val_w_gen) ; val_w_ref /= len(val_w_ref)
+
+    ## Score computation
+    score = self._compute_score ( result = result , 
+                                  validation = (self._validation_split != 0.0) , 
+                                  strategy = strategy ,
+                                  bins = bins )
+
+    ## Metric names
+    if strategy == "ks_test":
+      metric_name = "K-S test"
+    elif strategy == "kl_div":
+      metric_name = "K-L div"
+    elif strategy == "js_div":
+      metric_name = "J-S div"
+    else:
+      ValueError ("error.")   # TODO add error message
+
+    ## Plot histograms
+    h_0 = h_1 = h_2 = 0.0
+    plt.figure (figsize = (8,5), dpi = 100)
+    plt.title  ("Class probability distributions", fontsize = 14)
+    plt.xlabel ("Predicted GEN probability", fontsize = 12)
+    plt.ylabel ("Normalized entries", fontsize = 12)
+
+    if self._validation_split != 0.0:
+      h_0 = plt.hist (val_p_ref, bins = bins, range = (0, 1), weights = val_w_ref,
+                      color = "royalblue", alpha = 0.5, label = "reference validation set")
+      h_1 = plt.hist (val_p_gen, bins = bins, range = (0, 1), weights = val_w_gen,
+                      color = "deeppink", alpha = 0.5, label = "generated validation set")
+      h_2 = plt.hist (train_p_gen, bins = bins, range = (0, 1), weights = train_w_gen,
+                      color = "deeppink", histtype = "step", label = "generated training set")
+    else:
+      h_0 = plt.hist (train_p_ref, bins = bins, range = (0, 1), weights = train_w_ref,
+                      color = "royalblue", alpha = 0.5, label = "reference training set")
+      h_1 = plt.hist (train_p_gen, bins = bins, range = (0, 1), weights = train_w_gen,
+                      color = "deeppink", alpha = 0.5, label = "generated training set")
+    
+    plt.legend (loc = "upper left", fontsize = 10)
+    h_max = max ( max(h_0[0]), max(h_1[0]), max(h_2[0]) )
+    plt.text (0.05, 0.75 * h_max, f"{metric_name}: {score:.3f}", fontsize = 12)
+    report.add_figure(); plt.clf(); plt.close()
+
+  def _save_model ( self, name, model, verbose = False ) -> None:   # TODO complete docstring
+    """Save the trained classifier.
+    
+    Parameters
+    ----------
+    name : `str`
+      Name of the pickle file containing the Scikit-Learn classifier.
+
+    model : ...
+      ...
+
+    verbose : `bool`, optional
+      Verbosity mode. `False` = silent (default), `True` = a control message is printed.
+    """
+    dirname = f"{self._export_dir}/{self._export_name}"
+    if not os.path.exists (dirname):
+      os.makedirs (dirname)
+    filename = f"{dirname}/{name}.pkl"
+    pickle . dump ( model, open (filename, "wb") )
+    if verbose: print ( f"Trained classifier correctly exported to {filename}" )
+
+  @property
+  def model (self):
+    """The classifier after the training procedure."""
+    return self._model
+
+
+
+if __name__ == "__main__":   # TODO complete __main__
+  print ("Work in progress")
