@@ -88,8 +88,8 @@ def KL_divergence ( x_gen ,
     q = q [:, np.newaxis]
 
   ## Cleaning datasets from 0s
-  p = np.where (p != 0, p, 1e-12)
-  q = np.where (q != 0, q, 1e-12)
+  p = np.where (p > 0, p, 1e-12)
+  q = np.where (q > 0, q, 1e-12)
 
   ## K-L divergence computation
   return np.sum ( p * np.log2 (p / q), axis = 1 )
