@@ -4,7 +4,6 @@ import os
 import tensorflow as tf
 
 from html_reports import Report
-
 from lb_pidsim_train.trainers import BaseTrainer
 
 
@@ -159,6 +158,8 @@ class TensorTrainer (BaseTrainer):
     if (validation_split < 0.0) or (validation_split > 1.0):
       raise ValueError ("error")   # docs to add
 
+    self._validation_split = validation_split
+
     ## Sizes computation
     sample_size = self._X . shape[0]
     trainset_size = int ( (1.0 - validation_split) * sample_size )
@@ -195,9 +196,8 @@ class TensorTrainer (BaseTrainer):
     if save_model:
       self._save_model ( f"{self._name}_ep{num_epochs:04d}", model, verbose = (verbose > 0) )
 
-    return history
-
-  def _create_dataset ( self, data, batch_size = 100 ) -> tf.data.Dataset:   # docs to add
+  @staticmethod
+  def _create_dataset ( data, batch_size = 100 ) -> tf.data.Dataset:   # docs to add
     """...
     
     Parameters

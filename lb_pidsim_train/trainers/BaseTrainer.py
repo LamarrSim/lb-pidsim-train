@@ -11,7 +11,6 @@ from time import time
 from warnings import warn
 from datetime import datetime
 from sklearn.utils import shuffle
-
 from lb_pidsim_train.utils import warn_message as wm
 from lb_pidsim_train.utils import data_from_trees, nan_filter, preprocessor
 
@@ -39,13 +38,18 @@ class BaseTrainer:
 
   report_name : `str`, optional
     Report file name for the trained model.
+
+  verbose : `bool`, optional
+    Verbosity mode. `False` = silent (default), 
+    `True` = warning messages are enabled. 
   """
   def __init__ ( self ,
                  name ,
                  export_dir  = None ,
                  export_name = None ,
                  report_dir  = None ,
-                 report_name = None ) -> None:
+                 report_name = None ,
+                 verbose = False ) -> None:
 
     timestamp = str (datetime.now()) . split (".") [0]
     timestamp = timestamp . replace (" ","_")
@@ -53,38 +57,36 @@ class BaseTrainer:
     for time, unit in zip ( timestamp.split(":"), ["h","m","s"] ):
       version += time + unit   # YYYY-MM-DD_HHhMMmSSs
 
-    self._name = name
-
     if export_dir is None:
-      export_dir = "./results"
+      export_dir = "./models"
       message = wm.name_not_passed ("export dirname", export_dir)
-      warn (message)
+      if verbose: warn (message)
     self._export_dir = export_dir
     if not os.path.exists (self._export_dir):
       message = wm.directory_not_found (self._export_dir)
-      warn (message)
+      if verbose: warn (message)
       os.makedirs (self._export_dir)
 
     if export_name is None:
-      export_name = "{}_{}" . format (name, version)
+      export_name = f"{name}_{version}"
       message = wm.name_not_passed ("export filename", export_name)
-      warn (message)
+      if verbose: warn (message)
     self._export_name = export_name
 
     if report_dir is None:
       report_dir = "./reports"
       message = wm.name_not_passed ("report dirname", report_dir)
-      warn (message)
+      if verbose: warn (message)
     self._report_dir = report_dir
     if not os.path.exists (self._report_dir):
       message = wm.directory_not_found (self._report_dir)
-      warn (message)
+      if verbose: warn (message)
       os.makedirs (self._report_dir)
 
     if report_name is None:
-      report_name = "{}_{}" . format (name, version)
+      report_name = f"{name}_{version}"
       message = wm.name_not_passed ("report filename", report_name)
-      warn (message)
+      if verbose: warn (message)
     self._report_name = report_name
 
 #  def feed_with_dataframes ( self ,
@@ -424,11 +426,6 @@ class BaseTrainer:
   def train_model (self) -> None:
     """short description"""
     raise NotImplementedError ("error")   # docs to add
-       
-  @property
-  def name (self) -> str:
-    """Name of the trained model."""
-    return self._name
 
   @property
   def X_vars (self) -> list:
