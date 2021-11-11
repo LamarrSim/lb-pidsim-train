@@ -2,6 +2,7 @@
 
 import numpy as np
 import tensorflow as tf
+
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
 
@@ -12,8 +13,8 @@ d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
 g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
 """Metric instance to track the generator loss score."""
 
-kl_div_tracker = tf.keras.metrics.KLDivergence ( name = "kl_div" )
-"""Metric instance to track the K-L divergence."""
+mse_tracker = tf.keras.metrics.MeanSquaredError ( name = "mse" )
+"""Metric instance to track the mean square error."""
 
 
 class GAN (tf.keras.Model):
@@ -70,6 +71,7 @@ class GAN (tf.keras.Model):
                  generator     , 
                  latent_dim = 64 ) -> None:
     super(GAN, self) . __init__()
+    self._loss_name = "Loss function"
 
     ## Feature space dimension
     if isinstance ( X_shape, (tuple, list, np.ndarray, tf.Tensor) ):
@@ -188,11 +190,11 @@ class GAN (tf.keras.Model):
     g_loss_tracker . update_state (g_loss)
 
     Y_gen = self.generate (X)
-    kl_div_tracker . update_state (Y, Y_gen, sample_weight = w)
+    mse_tracker . update_state (Y, Y_gen, sample_weight = w)
 
-    return { "d_loss" : d_loss_tracker.result() , 
+    return { "mse"    : mse_tracker.result()    ,
+             "d_loss" : d_loss_tracker.result() , 
              "g_loss" : g_loss_tracker.result() ,
-             "kl_div" : kl_div_tracker.result() ,
              "d_lr"   : self._d_optimizer.lr    ,
              "g_lr"   : self._g_optimizer.lr    }
 
@@ -210,11 +212,11 @@ class GAN (tf.keras.Model):
     g_loss_tracker . update_state (g_loss)
 
     Y_gen = self.generate (X)
-    kl_div_tracker . update_state (Y, Y_gen, sample_weight = w)
+    mse_tracker . update_state (Y, Y_gen, sample_weight = w)
 
-    return { "d_loss" : d_loss_tracker.result() , 
+    return { "mse"    : mse_tracker.result()    ,
+             "d_loss" : d_loss_tracker.result() , 
              "g_loss" : g_loss_tracker.result() ,
-             "kl_div" : kl_div_tracker.result() ,
              "d_lr"   : self._d_optimizer.lr    ,
              "g_lr"   : self._g_optimizer.lr    }
 
@@ -357,12 +359,18 @@ class GAN (tf.keras.Model):
     """
     ## Sample random points in the latent space
     batch_size = tf.shape(X)[0]
-    latent_vectors = tf.random.normal ( shape = (batch_size, self._latent_dim) )
+    latent_dim = self.latent_dim
+    latent_tensor = tf.random.normal ( shape = (batch_size, latent_dim) )
 
     ## Map the latent space into the generated space
-    input_vectors = tf.concat ( [X, latent_vectors], axis = 1 )
-    generated = self._generator (input_vectors)
-    return generated
+    input_tensor = tf.concat ( [X, latent_tensor], axis = 1 )
+    Y_gen = self.generator (input_tensor)
+    return Y_gen
+
+  @property
+  def loss_name (self) -> str:
+    """Name of the loss function used for training."""
+    return self._loss_name
 
   @property
   def discriminator (self) -> tf.keras.Sequential:
@@ -381,4 +389,4 @@ class GAN (tf.keras.Model):
 
   @property
   def metrics (self) -> list:
-    return [d_loss_tracker, g_loss_tracker]
+    return [d_loss_tracker, g_loss_tracker, mse_tracker]

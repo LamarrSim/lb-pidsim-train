@@ -89,6 +89,7 @@ class CramerGAN (GAN):
                                         discriminator = discriminator , 
                                         generator     = generator     ,
                                         latent_dim    = latent_dim    )
+    self._loss_name = "Energy distance"
 
     ## Data-type control
     try:

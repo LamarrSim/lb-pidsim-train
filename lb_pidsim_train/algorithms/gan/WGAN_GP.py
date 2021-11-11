@@ -52,6 +52,19 @@ class WGAN_GP (GAN):
   -------
   ...
   """
+  def __init__ ( self ,
+                 X_shape ,
+                 Y_shape ,
+                 discriminator ,
+                 generator     ,
+                 latent_dim = 64 ) -> None:
+    super(WGAN_GP, self) . __init__ ( X_shape = X_shape ,
+                                      Y_shape = Y_shape ,
+                                      discriminator = discriminator , 
+                                      generator     = generator     ,
+                                      latent_dim    = latent_dim    )
+    self._loss_name = "Wasserstein distance"
+
   def compile ( self , 
                 d_optimizer , 
                 g_optimizer ,
