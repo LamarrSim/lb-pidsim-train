@@ -11,7 +11,7 @@ TF_FLOAT = tf.float32
 """Default data-type for tensors."""
 
 
-class TensorTrainer (BaseTrainer):
+class TensorTrainer (BaseTrainer):   # TODO class description
   """Base class for training models in TensorFlow.
   
   Parameters
@@ -100,7 +100,7 @@ class TensorTrainer (BaseTrainer):
                     validation_split = 0.0 ,
                     plots_on_report = True ,
                     save_model = True ,
-                    verbose = 0 ) -> None:   # docs to add
+                    verbose = 0 ) -> None:   # TODO complete docstring
     """...
     
     Parameters
@@ -150,13 +150,13 @@ class TensorTrainer (BaseTrainer):
 
     ## Data-value control
     if batch_size <= 0:
-      raise ValueError ("error")   # docs to add
+      raise ValueError ("error")   # TODO insert error message
 
     if num_epochs <= 0:
-      raise ValueError ("error")   # docs to add
+      raise ValueError ("error")   # TODO insert error message
 
     if (validation_split < 0.0) or (validation_split > 1.0):
-      raise ValueError ("error")   # docs to add
+      raise ValueError ("error")   # TODO insert error message
 
     self._validation_split = validation_split
 
@@ -197,7 +197,7 @@ class TensorTrainer (BaseTrainer):
       self._save_model ( f"{self._name}_ep{num_epochs:04d}", model, verbose = (verbose > 0) )
 
   @staticmethod
-  def _create_dataset ( data, batch_size = 100 ) -> tf.data.Dataset:   # docs to add
+  def _create_dataset ( data, batch_size = 100 ) -> tf.data.Dataset:   # TODO complete docstring
     """...
     
     Parameters
@@ -239,7 +239,7 @@ class TensorTrainer (BaseTrainer):
     return dataset
 
   def _training_plots (self, report, history):
-    raise NotImplementedError ("error")   # docs to add
+    raise NotImplementedError ("error")   # TODO insert error message
 
   def _save_model ( self, name, model, verbose = False ) -> None:
     """Save the trained model.
@@ -274,3 +274,10 @@ class TensorTrainer (BaseTrainer):
   def model (self) -> tf.keras.Model:
     """`tf.keras.Model` after the training procedure."""
     return self._model
+
+
+
+if __name__ == "__main__":   # TODO complete __main__
+  trainer = TensorTrainer ( "test", export_dir = "./models", report_dir = "./reports" )
+  trainer . feed_from_root_files ( "../data/Zmumu.root", ["px1", "py1", "pz1"], "E1" )
+  print ( trainer.datachunk.describe() )

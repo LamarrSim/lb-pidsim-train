@@ -19,7 +19,7 @@ NP_FLOAT = np.float32
 """Default data-type for arrays."""
 
 
-class BaseTrainer:
+class BaseTrainer:   # TODO class description
   """Base class for training models.
   
   Parameters
@@ -49,7 +49,7 @@ class BaseTrainer:
                  export_name = None ,
                  report_dir  = None ,
                  report_name = None ,
-                 verbose = False ) -> None:
+                 verbose = False ) -> None:   # TODO new variable name for warnings
 
     timestamp = str (datetime.now()) . split (".") [0]
     timestamp = timestamp . replace (" ","_")
@@ -89,6 +89,7 @@ class BaseTrainer:
       if verbose: warn (message)
     self._report_name = report_name
 
+#  TODO implement more feed functions
 #  def feed_with_dataframes ( self ,
 #                             dataframes , 
 #                             X_vars , 
@@ -475,7 +476,7 @@ class BaseTrainer:
 
     
 
-if __name__ == "__main__":
+if __name__ == "__main__":   # TODO complete __main__
   trainer = BaseTrainer ("test", "./generators", "test", "./reports", "test")
   trainer . feed_from_root_files ("../data/Zmumu.root", ["px1", "py1", "pz1"], "E1")
   print (trainer.datachunk.describe())

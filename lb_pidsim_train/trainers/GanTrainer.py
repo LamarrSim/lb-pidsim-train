@@ -1,18 +1,22 @@
 #from __future__ import annotations
 
 import os
+import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
 from lb_pidsim_train.trainers import TensorTrainer
 
 
+NP_FLOAT = np.float32
+"""Default data-type for arrays."""
+
 TF_FLOAT = tf.float32
 """Default data-type for tensors."""
 
 
-class GanTrainer (TensorTrainer):
-  def _training_plots (self, report, history) -> None:   # docs to add
+class GanTrainer (TensorTrainer):   # TODO class description
+  def _training_plots (self, report, history) -> None:   # TODO complete docstring
     """short description
     
     Parameters
@@ -29,7 +33,7 @@ class GanTrainer (TensorTrainer):
       ...
     """
     plt.figure (figsize = (8,5), dpi = 100)
-    plt.title  ("Learning curves", fontsize = 14)
+    plt.title  ("Learning curves", fontsize = 14)   # TODO plot loss variance
     plt.xlabel ("Training epochs", fontsize = 12)
     plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
     plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
@@ -85,28 +89,37 @@ class GanTrainer (TensorTrainer):
     model.generator . save ( f"{filename}/saved_model", save_format = "tf" )
     if verbose: print ( f"Trained generator correctly exported to {filename}" )
 
-  def generate (self, X) -> tf.Tensor:   # docs to add
+  def generate (self, X) -> np.ndarray:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
     
     Parameters
     ----------
-    X : `tf.Tensor`
+    X : `np.ndarray` or `tf.Tensor`
       ...
 
     Returns
     -------
-    Y_gen : `tf.Tensor`
+    Y : `np.ndarray`
       ...
     """
+    ## Data-type control
+    if isinstance (X, np.ndarray):
+      X = tf.convert_to_tensor ( X, dtype = TF_FLOAT )
+    elif isinstance (X, tf.Tensor):
+      X = tf.cast (X, dtype = TF_FLOAT)
+    else:
+      TypeError ("error")  # TODO insert error message
+
     ## Sample random points in the latent space
     batch_size = tf.shape(X)[0]
     latent_dim = self.model.latent_dim
-    latent_tensor = tf.random.normal ( shape = (batch_size, latent_dim) )
+    latent_tensor = tf.random.normal ( shape = (batch_size, latent_dim), dtype = TF_FLOAT )
 
     ## Map the latent space into the generated space
     input_tensor = tf.concat ( [X, latent_tensor], axis = 1 )
-    Y_gen = self.model.generator (input_tensor)
-    return Y_gen
+    Y = self.model.generator (input_tensor) 
+    Y = Y.numpy() . astype (NP_FLOAT)   # casting to numpy array
+    return Y
 
   @property
   def discriminator (self) -> tf.keras.Sequential:
@@ -117,3 +130,10 @@ class GanTrainer (TensorTrainer):
   def generator (self) -> tf.keras.Sequential:
     """The generator after the training procedure."""
     return self.model.generator
+
+
+
+if __name__ == "__main__":   # TODO complete __main__
+  trainer = GanTrainer ( "test", export_dir = "./models", report_dir = "./reports" )
+  trainer . feed_from_root_files ( "../data/Zmumu.root", ["px1", "py1", "pz1"], "E1" )
+  print ( trainer.datachunk.describe() )
