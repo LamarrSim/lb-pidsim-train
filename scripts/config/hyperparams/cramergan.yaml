@@ -5,47 +5,183 @@ Rich:
   #  Muon
   # ------
   Muon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 10000000
+      chunk_size : 100000
       X_preprocessing : quantile
       Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Pion
   # ------
   Pion:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_PiPTuple.root
-      - PIDCalib16_U_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_PiPTuple.root
-      - PIDCalib16_D_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Kaon
   # ------
   Kaon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_KPTuple.root
-      - PIDCalib16_U_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_KPTuple.root
-      - PIDCalib16_D_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Proton
   # --------
   Proton:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_Lam0LL_PTuple.root
-      - PIDCalib16_U_Lam0LL_PbarTuple.root
-      - PIDCalib16_U_Lam0LL_HPT_PTuple.root
-      - PIDCalib16_U_Lam0LL_HPT_PbarTuple.root
-      - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
-      - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_Lam0LL_PTuple.root
-      - PIDCalib16_D_Lam0LL_PbarTuple.root
-      - PIDCalib16_D_Lam0LL_HPT_PTuple.root
-      - PIDCalib16_D_Lam0LL_HPT_PbarTuple.root
-      - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
-      - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
 
 # +------------+
 # |    MUON    |
@@ -54,39 +190,183 @@ Muon:
   #  Muon
   # ------
   Muon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_Jpsi_MuMTuple.root 
-      - PIDCalib16_U_Jpsi_MuPTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_Jpsi_MuMTuple.root
-      - PIDCalib16_D_Jpsi_MuPTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Pion
   # ------
   Pion:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_PiPTuple.root
-      - PIDCalib16_U_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_PiPTuple.root
-      - PIDCalib16_D_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Kaon
   # ------
   Kaon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_KPTuple.root
-      - PIDCalib16_U_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_KPTuple.root
-      - PIDCalib16_D_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Proton
   # --------
   Proton:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_Lam0LL_P_isMuonTuple.root
-      - PIDCalib16_U_Lam0LL_Pbar_isMuonTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_Lam0LL_P_isMuonTuple.root
-      - PIDCalib16_D_Lam0LL_Pbar_isMuonTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
 
 # +------------------+
 # |    GLOBAL PID    |
@@ -95,47 +375,183 @@ GlobalPID:
   #  Muon
   # ------
   Muon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_Jpsi_MuMTuple.root 
-      - PIDCalib16_U_Jpsi_MuPTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_Jpsi_MuMTuple.root
-      - PIDCalib16_D_Jpsi_MuPTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Pion
   # ------
   Pion:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_PiPTuple.root
-      - PIDCalib16_U_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_PiPTuple.root
-      - PIDCalib16_D_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Kaon
   # ------
   Kaon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_KPTuple.root
-      - PIDCalib16_U_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_KPTuple.root
-      - PIDCalib16_D_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Proton
   # --------
   Proton:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_Lam0LL_PTuple.root
-      - PIDCalib16_U_Lam0LL_PbarTuple.root
-      - PIDCalib16_U_Lam0LL_HPT_PTuple.root
-      - PIDCalib16_U_Lam0LL_HPT_PbarTuple.root
-      - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
-      - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_Lam0LL_PTuple.root
-      - PIDCalib16_D_Lam0LL_PbarTuple.root
-      - PIDCalib16_D_Lam0LL_HPT_PTuple.root
-      - PIDCalib16_D_Lam0LL_HPT_PbarTuple.root
-      - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
-      - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
 
 # +----------------------+
 # |    GLOBAL MUON ID    |
@@ -144,85 +560,180 @@ GlobalMuonId:
   #  Muon
   # ------
   Muon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_Jpsi_MuMTuple.root 
-      - PIDCalib16_U_Jpsi_MuPTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_Jpsi_MuMTuple.root
-      - PIDCalib16_D_Jpsi_MuPTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Pion
   # ------
   Pion:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_PiPTuple.root
-      - PIDCalib16_U_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_PiPTuple.root
-      - PIDCalib16_D_DSt_PiMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Kaon
   # ------
   Kaon:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_DSt_KPTuple.root
-      - PIDCalib16_U_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_DSt_KPTuple.root
-      - PIDCalib16_D_DSt_KMTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
   #  Proton
   # --------
   Proton:
+    # <-- 2016 Mag Up -->
     2016MagUp:
-      - PIDCalib16_U_Lam0LL_P_isMuonTuple.root
-      - PIDCalib16_U_Lam0LL_Pbar_isMuonTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
     2016MagDown:
-      - PIDCalib16_D_Lam0LL_P_isMuonTuple.root
-      - PIDCalib16_D_Lam0LL_Pbar_isMuonTuple.root
-
-# +---------------+
-# |    IS MUON    |
-# +---------------+
-isMuon:
-  #  Muon
-  # ------
-  Muon:
-    2016MagUp:
-      - PIDCalib16_U_Jpsi_MuMTuple.root 
-      - PIDCalib16_U_Jpsi_MuPTuple.root
-    2016MagDown:
-      - PIDCalib16_D_Jpsi_MuMTuple.root
-      - PIDCalib16_D_Jpsi_MuPTuple.root
-  #  Pion
-  # ------
-  Pion:
-    2016MagUp:
-      - PIDCalib16_U_DSt_PiPTuple.root
-      - PIDCalib16_U_DSt_PiMTuple.root
-    2016MagDown:
-      - PIDCalib16_D_DSt_PiPTuple.root
-      - PIDCalib16_D_DSt_PiMTuple.root
-  #  Kaon
-  # ------
-  Kaon:
-    2016MagUp:
-      - PIDCalib16_U_DSt_KPTuple.root
-      - PIDCalib16_U_DSt_KMTuple.root
-    2016MagDown:
-      - PIDCalib16_D_DSt_KPTuple.root
-      - PIDCalib16_D_DSt_KMTuple.root
-  #  Proton
-  # --------
-  Proton:
-    2016MagUp:
-      - PIDCalib16_U_Lam0LL_PTuple.root
-      - PIDCalib16_U_Lam0LL_PbarTuple.root
-      - PIDCalib16_U_Lam0LL_HPT_PTuple.root
-      - PIDCalib16_U_Lam0LL_HPT_PbarTuple.root
-      - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
-      - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
-    2016MagDown:
-      - PIDCalib16_D_Lam0LL_PTuple.root
-      - PIDCalib16_D_Lam0LL_PbarTuple.root
-      - PIDCalib16_D_Lam0LL_HPT_PTuple.root
-      - PIDCalib16_D_Lam0LL_HPT_PbarTuple.root
-      - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
-      - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
+      chunk_size : 100000
+      X_preprocessing : quantile
+      Y_preprocessing : quantile
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 1.0
+      batch_size : 500
+      num_epochs : 10
+      validation_split : 0.2

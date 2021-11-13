@@ -1,13 +1,15 @@
-import numpy as np
-import pandas as pd
+import yaml
 import tensorflow as tf
+
+from lb_pidsim_train.utils      import argparser
+from lb_pidsim_train.trainers   import GanTrainer
+from lb_pidsim_train.algorithms import CramerGAN
+from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
 # +---------------------------+
 # |    Configuration files    |
 # +---------------------------+
-
-import yaml
 
 with open ("config/config.yaml") as file:
   config = yaml.full_load (file)
@@ -27,9 +29,6 @@ with open ("config/hyperparams/cramergan.yaml") as file:
 # +----------------------------+
 # |    Trainer construction    | 
 # +----------------------------+
-
-from lb_pidsim_train.utils import argparser
-from lb_pidsim_train.trainers import GanTrainer
 
 parser = argparser ("Model training")
 args = parser . parse_args()
@@ -51,7 +50,6 @@ file_list = datasets[args.model][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 
 hp = hyperparams[args.model][args.particle][args.sample]
-print (hp)
 # TODO add OptunAPI update
 
 trainer . feed_from_root_files ( root_files = file_list , 
@@ -67,99 +65,65 @@ trainer . feed_from_root_files ( root_files = file_list ,
 # |    Data preprocessing    |
 # +--------------------------+
 
+X_vars_to_preprocess = variables[args.model]["X_vars_to_preprocess"][args.sample]
+Y_vars_to_preprocess = variables[args.model]["Y_vars_to_preprocess"][args.sample]
+
 trainer . prepare_dataset ( X_preprocessing = hp["X_preprocessing"] , 
                             Y_preprocessing = hp["Y_preprocessing"] , 
-                            X_vars_to_preprocess = variables[args.model]["X_vars_to_preprocess"][args.sample] ,
-                            Y_vars_to_preprocess = variables[args.model]["Y_vars_to_preprocess"][args.sample] ,
+                            X_vars_to_preprocess = X_vars_to_preprocess ,
+                            Y_vars_to_preprocess = Y_vars_to_preprocess ,
                             verbose = 1)
 
+# +--------------------------+
+# |    Model construction    |
+# +--------------------------+
 
+d_num_layers  = hp["d_num_layers"]
+d_num_nodes   = hp["d_num_nodes"]
+d_alpha_leaky = hp["d_alpha_leaky"]
 
+discriminator = list()
+for layer in range (d_num_layers):
+  discriminator . append ( Dense (d_num_nodes) )
+  discriminator . append ( LeakyReLU (alpha = d_alpha_leaky) )
 
+g_num_layers  = hp["g_num_layers"]
+g_num_nodes   = hp["g_num_nodes"]
+g_alpha_leaky = hp["g_alpha_leaky"]
 
+generator = list()
+for layer in range (g_num_layers):
+  generator . append ( Dense (g_num_nodes) )
+  generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
 
+model = CramerGAN ( X_shape = len(trainer.X_vars) , 
+                    Y_shape = len(trainer.Y_vars) , 
+                    discriminator = discriminator , 
+                    generator = generator , 
+                    latent_dim = hp["latent_dim"] , 
+                    critic_dim = hp["critic_dim"] )
 
+# +---------------------------+
+# |    Model configuration    |
+# +---------------------------+
 
+d_opt = tf.optimizers.RMSprop ( learning_rate = hp["d_lr"] )
+g_opt = tf.optimizers.RMSprop ( learning_rate = hp["g_lr"] )
 
+model . compile ( d_optimizer = d_opt , 
+                  g_optimizer = g_opt , 
+                  d_updt_per_batch = hp["d_updt_per_batch"] , 
+                  g_updt_per_batch = hp["g_updt_per_batch"]  ,
+                  grad_penalty = hp["grad_penalty"] )
 
-files_list = datasets [args.sample] [args.model] [args.particle]
-data_files = [ datasets['data_dir'] + file_name for file_name in files_list ]
+model . summary()
 
-selection = selections [args.model] [args.sample]
-vars_dict = variables  [args.model] [args.sample]
+# +--------------------+
+# |    Run training    |
+# +--------------------+
 
-with open ('config/hyperparams/db/{}.yaml' . format (model_name)) as file:
-  hp = yaml.full_load (file)
-
-
-###################################
-##  Define generator architecture
-###################################
-
-from core.utils import getBaseLayer
-from tensorflow.keras.layers import Dropout
-
-gen_layers = list()
-
-num_gen_layers = int ( hp['num_gen_layers'] )
-num_gen_nodes  = int ( hp['num_gen_nodes' ] )
-gen_activation = str ( hp['gen_activation'] )
-gen_dropout  = float ( hp['gen_dropout'] )
-
-for layer in range (num_gen_layers):
-  gen_layers += getBaseLayer ( num_gen_nodes, gen_activation )
-  gen_layers += [ Dropout (gen_dropout) ]
-
-
-#######################################
-##  Define discriminator architecture
-#######################################
-
-disc_layers = list()
-
-num_disc_layers = int ( hp['num_disc_layers'] )
-num_disc_nodes  = int ( hp['num_disc_nodes' ] )
-disc_activation = str ( hp['disc_activation'] )
-disc_dropout  = float ( hp['disc_dropout'] )
-
-for layer in range (num_disc_layers):
-  disc_layers += getBaseLayer ( num_disc_nodes, disc_activation )
-  disc_layers += [ Dropout (disc_dropout) ]
-
-
-##############################
-##  Setup training procedure
-##############################
-
-from core import PidGanTrainer as Trainer
-
-trainer = Trainer ( 
-                    name        = model_name               ,
-                    data_files  = data_files               ,
-                    selection   = selection                ,
-                    X_vars      = vars_dict['X_vars']      ,
-                    Y_vars      = vars_dict['Y_vars']      ,
-                    w_var       = vars_dict['w_vars']      , 
-                    chunk_size  = int ( hp['chunk_size'] ) ,
-                    export_dir  = args.exp_dir             ,
-                    export_name = model_name               , 
-                    report_dir  = args.rep_dir             ,
-                  )
-
-trainer . build (
-                  all_hparams          = hp                          ,
-                  preprocessing        = str ( hp['preprocessing'] ) ,
-                  gan_algorithm        = str ( hp['gan_algorithm'] ) ,
-                  generator_layers     = gen_layers                  ,
-                  discriminator_layers = disc_layers                 ,
-                )
-
-trainer . learn (
-                  batch_size    = int   ( hp['batch_size']    ) ,
-                  num_epochs    = int   ( hp['num_epochs']    ) ,
-                  num_checks    = int   ( hp['num_checks']    ) ,
-                  disc_updates  = int   ( hp['disc_updates' ] ) ,
-                  learning_rate = float ( hp['learning_rate'] ) ,
-                  scheduling_lr = bool  ( hp['scheduling_lr'] ) ,
-                  optimizer     = str   ( hp['optimizer']     ) ,
-                )
+trainer . train_model ( model = model ,
+                        batch_size = hp["batch_size"] ,
+                        num_epochs = hp["num_epochs"] ,
+                        validation_split = hp["validation_split"] ,
+                        verbose = 1 )
