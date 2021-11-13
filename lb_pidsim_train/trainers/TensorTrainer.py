@@ -3,6 +3,7 @@
 import os
 import tensorflow as tf
 
+from datetime import datetime
 from html_reports import Report
 from lb_pidsim_train.trainers import BaseTrainer
 
@@ -182,12 +183,20 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     callbacks = None
 
     ## Training procedure
+    start = datetime.now()
     history = model . fit ( train_ds , 
                             epochs = num_epochs , 
                             steps_per_epoch = steps_per_epoch , 
                             validation_data = val_ds ,
                             callbacks = callbacks ,
                             verbose = verbose )
+    stop = datetime.now()
+    if (verbose > 0): 
+      timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
+      timestamp = timestamp . split (":")   # [HH, MM, SS]
+      timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
+      print (f"Model training completed in {timestamp}.")
+
     self._model = model
 
     if plots_on_report:
@@ -196,7 +205,10 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     if save_model:
       self._save_model ( f"{self._name}_ep{num_epochs:04d}", model, verbose = (verbose > 0) )
     
-    report . write_report ( filename = f"{self._report_dir}/{self._report_name}.html" )
+    filename = f"{self._report_dir}/{self._report_name}"
+    report . write_report ( filename = f"{filename}.html" )
+    if (verbose > 1):
+      print (f"Training report correctly exported to {filename}")
 
   @staticmethod
   def _create_dataset ( data, batch_size = 100 ) -> tf.data.Dataset:   # TODO complete docstring
