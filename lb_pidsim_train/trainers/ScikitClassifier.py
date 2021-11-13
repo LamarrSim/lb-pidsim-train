@@ -2,7 +2,6 @@
 
 import os
 import pickle
-from re import T
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -12,7 +11,6 @@ from warnings import warn
 from datetime import datetime
 from html_reports import Report
 from sklearn.utils import shuffle
-from tensorflow.python.types.core import Value
 from lb_pidsim_train.trainers import BaseTrainer
 from lb_pidsim_train.utils import warn_message as wm
 from lb_pidsim_train.metrics import KL_divergence, JS_divergence, KS_test
@@ -87,8 +85,8 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       preprocessing are printed.
     """
     super(ScikitClassifier, self) . prepare_dataset ( X_preprocessing = None ,
-                                                   Y_preprocessing = None ,
-                                                   verbose = verbose )
+                                                      Y_preprocessing = None ,
+                                                      verbose = verbose )
 
     ## Preprocessed input array
     file_X = f"{self._model_dir}/transform_X.pkl"
@@ -97,7 +95,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       self._scaler_X = pickle.load ( open (file_X, "rb") )
       if (verbose > 0):
         print (f"Transformer correctly loaded from {file_X}.")
-      self._X_scaled = self._scaler_X . transform ( self._X )
+      self._X_scaled = self._scaler_X . transform ( self.X )
       stop = time()
       if (verbose > 1):
         print (f"Preprocessing time for X: {stop-start:.3f} s")
@@ -111,7 +109,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       self._scaler_Y = pickle.load ( open (file_Y, "rb") )
       if (verbose > 0):
         print (f"Transformer correctly loaded from {file_Y}.")
-      self._Y_scaled = self._scaler_Y . transform ( self._Y )
+      self._Y_scaled = self._scaler_Y . transform ( self.Y )
       stop = time()
       if (verbose > 1):
         print (f"Preprocessing time for Y: {stop-start:.3f} s")
@@ -180,15 +178,15 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                         "val_pred_labels" : model.predict (val_feats) ,
                         "val_pred_probas" : model.predict_proba (val_feats) } )
 
-    self._scores[0] = self._compute_score ( result = result , 
-                                            validation = False , 
-                                            strategy = performance_metric ,
-                                            bins = 100 )
+    self.scores[0] = self._compute_score ( result = result , 
+                                           validation = False , 
+                                           strategy = performance_metric ,
+                                           bins = 100 )
     if self._validation_split != 0.0:
-      self._scores[1] = self._compute_score ( result = result , 
-                                              validation = True , 
-                                              strategy = performance_metric ,
-                                              bins = 100 )
+      self.scores[1] = self._compute_score ( result = result , 
+                                             validation = True , 
+                                             strategy = performance_metric ,
+                                             bins = 100 )
 
     if plots_on_report:
       self._proba_plots (result, report, bins = 100, strategy = performance_metric)
@@ -207,7 +205,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     """short description"""
     ## Size from latent space
     batch_size = int ( data[0].shape[0] / 2 )
-    latent_dim = int ( self._generator.input_shape[1] - self._X.shape[1] )
+    latent_dim = int ( self._generator.input_shape[1] - self.X.shape[1] )
 
     ## Latent space --> generated space
     X_gen = tf.convert_to_tensor ( data[0][:batch_size], dtype = TF_FLOAT )
