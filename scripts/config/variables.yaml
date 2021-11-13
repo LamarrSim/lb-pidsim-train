@@ -1,0 +1,275 @@
+# +------------+
+# |    RICH    |
+# +------------+
+Rich:
+
+  X_vars:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+
+  X_vars_to_preprocess:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+
+  Y_vars:
+    2016MagUp:
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+    2016MagDown:
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+
+  Y_vars_to_preprocess:
+    2016MagUp:
+    2016MagDown:
+
+  w_vars:
+    2016MagUp: probe_sWeight
+    2016MagDown: probe_sWeight
+
+# +------------+
+# |    MUON    |
+# +------------+
+Muon:
+
+  X_vars:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+
+  X_vars_to_preprocess:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+
+  Y_vars:
+    2016MagUp:
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016MagDown:
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  Y_vars_to_preprocess:
+    2016MagUp:
+    2016MagDown:
+
+  w_vars:
+    2016MagUp: probe_sWeight
+    2016MagDown: probe_sWeight
+
+# +------------------+
+# |    GLOBAL PID    |
+# +------------------+
+GlobalPID:
+
+  X_vars:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_isMuon
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_isMuon
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  X_vars_to_preprocess:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  Y_vars:
+    2016MagUp:
+      - probe_Brunel_PIDe
+      - probe_Brunel_PIDK
+      - probe_Brunel_PIDp
+      - probe_Brunel_MC15TuneV1_ProbNNe
+      - probe_Brunel_MC15TuneV1_ProbNNpi
+      - probe_Brunel_MC15TuneV1_ProbNNk
+      - probe_Brunel_MC15TuneV1_ProbNNp
+    2016MagDown:
+      - probe_Brunel_PIDe
+      - probe_Brunel_PIDK
+      - probe_Brunel_PIDp
+      - probe_Brunel_MC15TuneV1_ProbNNe
+      - probe_Brunel_MC15TuneV1_ProbNNpi
+      - probe_Brunel_MC15TuneV1_ProbNNk
+      - probe_Brunel_MC15TuneV1_ProbNNp
+    
+  Y_vars_to_preprocess:
+    2016MagUp:
+    2016MagDown:
+
+  w_vars:
+    2016MagUp: probe_sWeight
+    2016MagDown: probe_sWeight
+
+# +----------------------+
+# |    GLOBAL MUON ID    |
+# +----------------------+
+GlobalMuonId:
+
+  X_vars:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  X_vars_to_preprocess:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  Y_vars:
+    2016MagUp:
+      - probe_Brunel_PIDmu
+      - probe_Brunel_MC15TuneV1_ProbNNmu
+    2016MagDown:
+      - probe_Brunel_PIDmu
+      - probe_Brunel_MC15TuneV1_ProbNNmu
+
+  Y_vars_to_preprocess:
+    2016MagUp:
+    2016MagDown:
+
+  w_vars:
+    2016MagUp: probe_sWeight
+    2016MagDown: probe_sWeight
+
+# +---------------+
+# |    IS MUON    |
+# +---------------+
+isMuon:
+
+  X_vars:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+
+  X_vars_to_preprocess:
+    2016MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+    2016MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+
+  Y_vars:
+    2016MagUp: probe_Brunel_isMuon
+    2016MagDown: probe_Brunel_isMuon
+
+  Y_vars_to_preprocess:
+    2016MagUp:
+    2016MagDown:
+
+  w_vars:
+    2016MagUp: probe_sWeight
+    2016MagDown: probe_sWeight
+      

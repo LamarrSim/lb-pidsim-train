@@ -1,0 +1,229 @@
+# +------------+
+# |    RICH    |
+# +------------+
+Rich:
+  #  Muon
+  # ------
+  Muon:
+    2016MagUp:
+      - PIDCalib16_U_Jpsi_MuMTuple.root 
+      - PIDCalib16_U_Jpsi_MuPTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Jpsi_MuMTuple.root
+      - PIDCalib16_D_Jpsi_MuPTuple.root
+  #  Pion
+  # ------
+  Pion:
+    2016MagUp:
+      - PIDCalib16_U_DSt_PiPTuple.root
+      - PIDCalib16_U_DSt_PiMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_PiPTuple.root
+      - PIDCalib16_D_DSt_PiMTuple.root
+  #  Kaon
+  # ------
+  Kaon:
+    2016MagUp:
+      - PIDCalib16_U_DSt_KPTuple.root
+      - PIDCalib16_U_DSt_KMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_KPTuple.root
+      - PIDCalib16_D_DSt_KMTuple.root
+  #  Proton
+  # --------
+  Proton:
+    2016MagUp:
+      - PIDCalib16_U_Lam0LL_PTuple.root
+      - PIDCalib16_U_Lam0LL_PbarTuple.root
+      - PIDCalib16_U_Lam0LL_HPT_PTuple.root
+      - PIDCalib16_U_Lam0LL_HPT_PbarTuple.root
+      - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
+      - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Lam0LL_PTuple.root
+      - PIDCalib16_D_Lam0LL_PbarTuple.root
+      - PIDCalib16_D_Lam0LL_HPT_PTuple.root
+      - PIDCalib16_D_Lam0LL_HPT_PbarTuple.root
+      - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
+      - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
+
+# +------------+
+# |    MUON    |
+# +------------+
+Muon:
+  #  Muon
+  # ------
+  Muon:
+    2016MagUp:
+      - PIDCalib16_U_Jpsi_MuMTuple.root 
+      - PIDCalib16_U_Jpsi_MuPTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Jpsi_MuMTuple.root
+      - PIDCalib16_D_Jpsi_MuPTuple.root
+  #  Pion
+  # ------
+  Pion:
+    2016MagUp:
+      - PIDCalib16_U_DSt_PiPTuple.root
+      - PIDCalib16_U_DSt_PiMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_PiPTuple.root
+      - PIDCalib16_D_DSt_PiMTuple.root
+  #  Kaon
+  # ------
+  Kaon:
+    2016MagUp:
+      - PIDCalib16_U_DSt_KPTuple.root
+      - PIDCalib16_U_DSt_KMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_KPTuple.root
+      - PIDCalib16_D_DSt_KMTuple.root
+  #  Proton
+  # --------
+  Proton:
+    2016MagUp:
+      - PIDCalib16_U_Lam0LL_P_isMuonTuple.root
+      - PIDCalib16_U_Lam0LL_Pbar_isMuonTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Lam0LL_P_isMuonTuple.root
+      - PIDCalib16_D_Lam0LL_Pbar_isMuonTuple.root
+
+# +------------------+
+# |    GLOBAL PID    |
+# +------------------+
+GlobalPID:
+  #  Muon
+  # ------
+  Muon:
+    2016MagUp:
+      - PIDCalib16_U_Jpsi_MuMTuple.root 
+      - PIDCalib16_U_Jpsi_MuPTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Jpsi_MuMTuple.root
+      - PIDCalib16_D_Jpsi_MuPTuple.root
+  #  Pion
+  # ------
+  Pion:
+    2016MagUp:
+      - PIDCalib16_U_DSt_PiPTuple.root
+      - PIDCalib16_U_DSt_PiMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_PiPTuple.root
+      - PIDCalib16_D_DSt_PiMTuple.root
+  #  Kaon
+  # ------
+  Kaon:
+    2016MagUp:
+      - PIDCalib16_U_DSt_KPTuple.root
+      - PIDCalib16_U_DSt_KMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_KPTuple.root
+      - PIDCalib16_D_DSt_KMTuple.root
+  #  Proton
+  # --------
+  Proton:
+    2016MagUp:
+      - PIDCalib16_U_Lam0LL_PTuple.root
+      - PIDCalib16_U_Lam0LL_PbarTuple.root
+      - PIDCalib16_U_Lam0LL_HPT_PTuple.root
+      - PIDCalib16_U_Lam0LL_HPT_PbarTuple.root
+      - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
+      - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Lam0LL_PTuple.root
+      - PIDCalib16_D_Lam0LL_PbarTuple.root
+      - PIDCalib16_D_Lam0LL_HPT_PTuple.root
+      - PIDCalib16_D_Lam0LL_HPT_PbarTuple.root
+      - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
+      - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
+
+# +----------------------+
+# |    GLOBAL MUON ID    |
+# +----------------------+
+GlobalMuonId:
+  #  Muon
+  # ------
+  Muon:
+    2016MagUp:
+      - PIDCalib16_U_Jpsi_MuMTuple.root 
+      - PIDCalib16_U_Jpsi_MuPTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Jpsi_MuMTuple.root
+      - PIDCalib16_D_Jpsi_MuPTuple.root
+  #  Pion
+  # ------
+  Pion:
+    2016MagUp:
+      - PIDCalib16_U_DSt_PiPTuple.root
+      - PIDCalib16_U_DSt_PiMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_PiPTuple.root
+      - PIDCalib16_D_DSt_PiMTuple.root
+  #  Kaon
+  # ------
+  Kaon:
+    2016MagUp:
+      - PIDCalib16_U_DSt_KPTuple.root
+      - PIDCalib16_U_DSt_KMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_KPTuple.root
+      - PIDCalib16_D_DSt_KMTuple.root
+  #  Proton
+  # --------
+  Proton:
+    2016MagUp:
+      - PIDCalib16_U_Lam0LL_P_isMuonTuple.root
+      - PIDCalib16_U_Lam0LL_Pbar_isMuonTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Lam0LL_P_isMuonTuple.root
+      - PIDCalib16_D_Lam0LL_Pbar_isMuonTuple.root
+
+# +---------------+
+# |    IS MUON    |
+# +---------------+
+isMuon:
+  #  Muon
+  # ------
+  Muon:
+    2016MagUp:
+      - PIDCalib16_U_Jpsi_MuMTuple.root 
+      - PIDCalib16_U_Jpsi_MuPTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Jpsi_MuMTuple.root
+      - PIDCalib16_D_Jpsi_MuPTuple.root
+  #  Pion
+  # ------
+  Pion:
+    2016MagUp:
+      - PIDCalib16_U_DSt_PiPTuple.root
+      - PIDCalib16_U_DSt_PiMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_PiPTuple.root
+      - PIDCalib16_D_DSt_PiMTuple.root
+  #  Kaon
+  # ------
+  Kaon:
+    2016MagUp:
+      - PIDCalib16_U_DSt_KPTuple.root
+      - PIDCalib16_U_DSt_KMTuple.root
+    2016MagDown:
+      - PIDCalib16_D_DSt_KPTuple.root
+      - PIDCalib16_D_DSt_KMTuple.root
+  #  Proton
+  # --------
+  Proton:
+    2016MagUp:
+      - PIDCalib16_U_Lam0LL_PTuple.root
+      - PIDCalib16_U_Lam0LL_PbarTuple.root
+      - PIDCalib16_U_Lam0LL_HPT_PTuple.root
+      - PIDCalib16_U_Lam0LL_HPT_PbarTuple.root
+      - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
+      - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
+    2016MagDown:
+      - PIDCalib16_D_Lam0LL_PTuple.root
+      - PIDCalib16_D_Lam0LL_PbarTuple.root
+      - PIDCalib16_D_Lam0LL_HPT_PTuple.root
+      - PIDCalib16_D_Lam0LL_HPT_PbarTuple.root
+      - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
+      - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
+      
