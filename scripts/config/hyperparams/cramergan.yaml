@@ -251,7 +251,7 @@ GlobalPID:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000
+      chunk_size : 5000000   # 150 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -277,7 +277,7 @@ GlobalPID:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000
+      chunk_size : 5000000   # 150 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -303,7 +303,7 @@ GlobalPID:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000
+      chunk_size : 5000000   # 105 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
