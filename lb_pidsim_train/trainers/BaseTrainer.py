@@ -260,7 +260,8 @@ class BaseTrainer:   # TODO class description
                                         cut = selections    ,
                                         chunk_size = chunk_size )
     stop = time()
-    if (verbose > 0): print ( f"Data-chunk correctly loaded in {stop-start:.3f} s" )
+    if (verbose > 0): print ( f"Data-chunk of {len(self.datachunk)} rows"
+                              f" correctly loaded in {stop-start:.3f} s" )
 
   def prepare_dataset ( self ,
                         X_preprocessing = None ,
