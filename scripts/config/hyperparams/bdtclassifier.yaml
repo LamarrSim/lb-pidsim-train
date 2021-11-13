@@ -1,0 +1,261 @@
+# +------------+
+# |    RICH    |
+# +------------+
+Rich:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 5000000   # 60 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 5000000   # 150 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 5000000   # 150 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 5000000   # 105 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+
+# +------------+
+# |    MUON    |
+# +------------+
+Muon:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 23 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 2 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 2 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 5 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+
+# +------------------+
+# |    GLOBAL PID    |
+# +------------------+
+GlobalPID:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 5000000   # 60 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+
+# +----------------------+
+# |    GLOBAL MUON ID    |
+# +----------------------+
+GlobalMuonId:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 23 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 2 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 2 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 1000000   # 5 mln
+      loss : deviance
+      learning_rate : 0.1
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_leaf_nodes : 1000
+      max_depth : 10
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016MagDown:
