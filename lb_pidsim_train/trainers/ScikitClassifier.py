@@ -40,7 +40,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     self._model_name = model_name   # TODO add default value
     self._generator  = tf.keras.models.load_model (f"{model_dir}/{model_name}/saved_model")
 
-    self._name = f"{name}_{model_name}"
+    self._name = f"{name}"
 
     if export_dir is None:
       export_dir = "./models"
@@ -166,7 +166,8 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
       print (f"Classifier training completed in {timestamp}.")
 
-    self._model = model
+    self._model  = model
+    self._scores = [None, None]
 
     result = { "weights"     : train_w ,
                "true_labels" : train_labels ,
@@ -179,10 +180,15 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                         "val_pred_labels" : model.predict (val_feats) ,
                         "val_pred_probas" : model.predict_proba (val_feats) } )
 
-    self._score = self._compute_score ( result = result , 
-                                        validation = (self._validation_split != 0.0) , 
-                                        strategy = performance_metric ,
-                                        bins = 100 )
+    self._scores[0] = self._compute_score ( result = result , 
+                                            validation = False , 
+                                            strategy = performance_metric ,
+                                            bins = 100 )
+    if self._validation_split != 0.0:
+      self._scores[1] = self._compute_score ( result = result , 
+                                              validation = True , 
+                                              strategy = performance_metric ,
+                                              bins = 100 )
 
     if plots_on_report:
       self._proba_plots (result, report, bins = 100, strategy = performance_metric)
@@ -343,9 +349,9 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     return self._model
 
   @property
-  def score (self) -> float:
-    """Quality score of the trained model under study."""
-    return self._score
+  def scores (self) -> list:
+    """Model quality scores on training and validation sets."""
+    return self._scores
 
 
 

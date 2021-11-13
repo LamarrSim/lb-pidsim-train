@@ -59,7 +59,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  selections = selections[args.model][args.sample] , 
                                  tree_names = None, 
                                  chunk_size = hp["chunk_size"], 
-                                 verbose = 1)
+                                 verbose = 1 )
 
 # +--------------------------+
 # |    Data preprocessing    |
@@ -72,7 +72,7 @@ trainer . prepare_dataset ( X_preprocessing = hp["X_preprocessing"] ,
                             Y_preprocessing = hp["Y_preprocessing"] , 
                             X_vars_to_preprocess = X_vars_to_preprocess ,
                             Y_vars_to_preprocess = Y_vars_to_preprocess ,
-                            verbose = 1)
+                            verbose = 1 )
 
 # +--------------------------+
 # |    Model construction    |
