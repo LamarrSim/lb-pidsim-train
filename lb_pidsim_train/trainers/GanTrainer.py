@@ -32,15 +32,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     html_reports.Report : ...
       ...
     """
-    plt.figure (figsize = (8,5), dpi = 100)
-    plt.title  ("Learning curves", fontsize = 14)   # TODO plot loss variance
-    plt.xlabel ("Training epochs", fontsize = 12)
-    plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
-    plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
-    plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
-    plt.legend (title = "Training players:", loc = "upper right", fontsize = 10)
-    report.add_figure(); plt.clf(); plt.close()
-
+    ## Metric curves plots
     plt.figure (figsize = (8,5), dpi = 100)
     plt.title  ("Metric curves", fontsize = 14)
     plt.xlabel ("Training epochs", fontsize = 12)
@@ -49,16 +41,64 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if self._validation_split != 0.0:
       plt.plot (history.history["val_mse"], linewidth = 1.5, color = "orangered", label = "validation set")
     plt.legend (loc = "upper right", fontsize = 10)
-    report.add_figure(); plt.clf(); plt.close()
 
+    report.add_figure(); plt.clf(); plt.close()
+    report.add_markdown ("<br/>")
+
+    ## Learning curves plots
+    plt.figure (figsize = (8,5), dpi = 100)
+    plt.title  ("Learning curves", fontsize = 14)   # TODO plot loss variance
+    plt.xlabel ("Training epochs", fontsize = 12)
+    plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
+    plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
+    plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
+    plt.legend (title = "Training players:", loc = "upper right", fontsize = 10)
+
+    report.add_figure(); plt.clf(); plt.close()
+    report.add_markdown ("<br/>")
+
+    ## Learning rate scheduling plots
     plt.figure (figsize = (8,5), dpi = 100)
     plt.title  ("Learning rate scheduling", fontsize = 14)
     plt.xlabel ("Training epochs", fontsize = 12)
     plt.ylabel ("Learning rate", fontsize = 12)
     plt.plot (history.history["d_lr"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_lr"], linewidth = 1.5, color = "coral", label = "generator")
-    plt.legend (title = "Training players:", loc = "center right", fontsize = 10)
+    plt.legend (title = "Training players:", loc = "upper right", fontsize = 10)
+
     report.add_figure(); plt.clf(); plt.close()
+    report.add_markdown ("<br/>")
+
+    ## Validation plots
+    rows = 4; cols = 4
+    fig, ax = plt.subplots (rows, cols, figsize = (14,12), dpi = 200)
+    plt.subplots_adjust (wspace = 0.35, hspace = 0.25)
+
+    titles = self.Y_vars
+    Y_ref  = self.Y
+    Y_gen  = self._scaler_Y . inverse_transform ( self.generate (self.X_scaled) )
+    
+    for i in range(rows):
+      for j in range(cols):
+        ax[i,j] . tick_params (labelsize = 6)
+        if i == j:
+          ax[i,j] . set_xlabel (titles[i], fontsize = 8)
+          _, b, _ = ax[i,j] . hist (Y_ref[:,i], bins = 100, color = "dodgerblue", label = "Original")
+          ax[i,j] . hist (Y_gen[:,i], bins = b, histtype = "step", color = "deeppink", label = "Generated")
+          ax[i,j] . legend (loc = "upper left", fontsize = 6)
+        elif i > j:
+          ax[i,j] . set_xlabel (titles[j], fontsize = 8)
+          ax[i,j] . set_ylabel (titles[i], fontsize = 8)
+          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.05, color = "dodgerblue")
+          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.05, color = "deeppink")
+        elif i < j:
+          ax[i,j] . set_xlabel (titles[j], fontsize = 8)
+          ax[i,j] . set_ylabel (titles[i], fontsize = 8)
+          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.05, color = "deeppink")
+          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.05, color = "dodgerblue")
+
+    report.add_figure(); plt.clf(); plt.close()
+    report.add_markdown ("<br/>")
 
   def _save_model ( self, name, model, verbose = False ) -> None:   # TODO fix docstring
     """Save the trained generator.

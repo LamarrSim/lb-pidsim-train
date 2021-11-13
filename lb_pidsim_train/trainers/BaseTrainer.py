@@ -150,14 +150,14 @@ class BaseTrainer (DataHandler):   # TODO class description
             X_cols_to_preprocess . append (idx)   # column index
       else:
         X_cols_to_preprocess = None
-      scaler_X = preprocessor ( self.X[:subsample_size], strategy = X_preprocessing, 
-                                cols_to_transform = X_cols_to_preprocess )
-      self._X_scaled  = scaler_X . transform (self.X)   # transform the input-set
+      self._scaler_X = preprocessor ( self.X[:subsample_size], strategy = X_preprocessing, 
+                                      cols_to_transform = X_cols_to_preprocess )
+      self._X_scaled = self._scaler_X . transform (self.X)   # transform the input-set
       stop = time()
       if (verbose > 1): 
         print ( f"Preprocessing time for X: {stop-start:.3f} s" )
       if save_transformer: 
-        self._save_transformer ( "transform_X", scaler_X, verbose = (verbose > 0) )
+        self._save_transformer ( "transform_X", self._scaler_X, verbose = (verbose > 0) )
     else:
       self._X_scaled = self.X
 
@@ -171,14 +171,14 @@ class BaseTrainer (DataHandler):   # TODO class description
             Y_cols_to_preprocess . append (idx)   # column index
       else:
         Y_cols_to_preprocess = None
-      scaler_Y = preprocessor ( self.Y[:subsample_size], strategy = Y_preprocessing, 
-                                cols_to_transform = Y_cols_to_preprocess )
-      self._Y_scaled  = scaler_Y . transform (self.Y)   # transform the output-set
+      self._scaler_Y = preprocessor ( self.Y[:subsample_size], strategy = Y_preprocessing, 
+                                      cols_to_transform = Y_cols_to_preprocess )
+      self._Y_scaled = self._scaler_Y . transform (self.Y)   # transform the output-set
       stop = time()
       if (verbose > 1): 
         print ( f"Preprocessing time for Y: {stop-start:.3f} s" )
       if save_transformer:
-        self._save_transformer ( "transform_Y", scaler_Y, verbose = (verbose > 0) )
+        self._save_transformer ( "transform_Y", self._scaler_Y, verbose = (verbose > 0) )
     else:
       self._Y_scaled = self.Y
 
