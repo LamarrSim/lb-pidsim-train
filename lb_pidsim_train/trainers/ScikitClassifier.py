@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from time import time
 from warnings import warn
+from datetime import datetime
 from html_reports import Report
 from sklearn.utils import shuffle
 from tensorflow.python.types.core import Value
@@ -24,7 +25,7 @@ TF_FLOAT = tf.float32
 """Default data-type for tensors."""
 
 
-class BdtClassifier (BaseTrainer):   # TODO class description
+class ScikitClassifier (BaseTrainer):   # TODO class description
   def __init__ ( self , 
                  name ,
                  model_dir  ,
@@ -85,7 +86,7 @@ class BdtClassifier (BaseTrainer):   # TODO class description
       transformers loading is printed, `2`= also times for shuffling and 
       preprocessing are printed.
     """
-    super(BdtClassifier, self) . prepare_dataset ( X_preprocessing = None ,
+    super(ScikitClassifier, self) . prepare_dataset ( X_preprocessing = None ,
                                                    Y_preprocessing = None ,
                                                    verbose = verbose )
 
@@ -156,10 +157,14 @@ class BdtClassifier (BaseTrainer):   # TODO class description
                                                                inverse_transform = inverse_transform )
 
     ## Training procedure
-    start = time()
+    start = datetime.now()
     model . fit (train_feats, train_labels, sample_weight = train_w)
-    stop  = time()
-    if (verbose > 1): print (f"Classifier training completed in {(stop-start):.0f} s.")
+    stop  = datetime.now()
+    if (verbose > 0): 
+      timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
+      timestamp = timestamp . split (":")   # [HH, MM, SS]
+      timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
+      print (f"Classifier training completed in {timestamp}.")
 
     self._model = model
 
@@ -174,11 +179,10 @@ class BdtClassifier (BaseTrainer):   # TODO class description
                         "val_pred_labels" : model.predict (val_feats) ,
                         "val_pred_probas" : model.predict_proba (val_feats) } )
 
-    ## Score computation
-    score = self._compute_score ( result = result , 
-                                  validation = (self._validation_split != 0.0) , 
-                                  strategy = performance_metric ,
-                                  bins = 100 )
+    self._score = self._compute_score ( result = result , 
+                                        validation = (self._validation_split != 0.0) , 
+                                        strategy = performance_metric ,
+                                        bins = 100 )
 
     if plots_on_report:
       self._proba_plots (result, report, bins = 100, strategy = performance_metric)
@@ -186,7 +190,10 @@ class BdtClassifier (BaseTrainer):   # TODO class description
     if save_model:
       self._save_model ( f"{self._name}", model, verbose = (verbose > 0) )
 
-    report . write_report ( filename = f"{self._report_dir}/{self._report_name}.html" )
+    filename = f"{self._report_dir}/{self._report_name}"
+    report . write_report ( filename = f"{filename}.html" )
+    if (verbose > 1):
+      print (f"Training report correctly exported to {filename}")
 
   def _rearrange_dataset ( self , 
                            data , 
@@ -293,20 +300,20 @@ class BdtClassifier (BaseTrainer):   # TODO class description
 
     if self._validation_split != 0.0:
       h_0 = plt.hist (val_p_ref, bins = bins, range = (0, 1), weights = val_w_ref,
-                      color = "royalblue", alpha = 0.5, label = "reference validation set")
+                      color = "royalblue", alpha = 0.5, label = "Reference validation set")
       h_1 = plt.hist (val_p_gen, bins = bins, range = (0, 1), weights = val_w_gen,
-                      color = "deeppink", alpha = 0.5, label = "generated validation set")
+                      color = "deeppink", alpha = 0.5, label = "Generated validation set")
       h_2 = plt.hist (train_p_gen, bins = bins, range = (0, 1), weights = train_w_gen,
-                      color = "deeppink", histtype = "step", label = "generated training set")
+                      color = "deeppink", histtype = "step", label = "Generated training set")
     else:
       h_0 = plt.hist (train_p_ref, bins = bins, range = (0, 1), weights = train_w_ref,
-                      color = "royalblue", alpha = 0.5, label = "reference training set")
+                      color = "royalblue", alpha = 0.5, label = "Reference training set")
       h_1 = plt.hist (train_p_gen, bins = bins, range = (0, 1), weights = train_w_gen,
-                      color = "deeppink", alpha = 0.5, label = "generated training set")
+                      color = "deeppink", alpha = 0.5, label = "Generated training set")
     
     plt.legend (loc = "upper left", fontsize = 10)
     h_max = max ( max(h_0[0]), max(h_1[0]), max(h_2[0]) )
-    plt.text (0.05, 0.75 * h_max, f"{metric_name}: {score:.3f}", fontsize = 12)
+    plt.text (0.05, 0.75 * h_max, f"{metric_name}: {score:.3f}", fontsize = 12)   # TODO add box for text
     report.add_figure(); plt.clf(); plt.close()
 
   def _save_model ( self, name, model, verbose = False ) -> None:   # TODO complete docstring
@@ -334,6 +341,11 @@ class BdtClassifier (BaseTrainer):   # TODO class description
   def model (self):
     """The classifier after the training procedure."""
     return self._model
+
+  @property
+  def score (self) -> float:
+    """Quality score of the trained model under study."""
+    return self._score
 
 
 
