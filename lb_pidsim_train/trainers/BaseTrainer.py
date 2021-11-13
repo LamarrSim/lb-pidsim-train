@@ -2,24 +2,17 @@
 
 import os
 import pickle
-import uproot
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
 from time import time
 from warnings import warn
 from datetime import datetime
-from sklearn.utils import shuffle
-from lb_pidsim_train.utils import warn_message as wm
-from lb_pidsim_train.utils import data_from_trees, nan_filter, preprocessor
+from lb_pidsim_train.trainers import DataHandler
+from lb_pidsim_train.utils    import preprocessor
+from lb_pidsim_train.utils    import warn_message as wm
 
 
-NP_FLOAT = np.float32
-"""Default data-type for arrays."""
-
-
-class BaseTrainer:   # TODO class description
+class BaseTrainer (DataHandler):   # TODO class description
   """Base class for training models.
   
   Parameters
@@ -91,178 +84,6 @@ class BaseTrainer:   # TODO class description
       if verbose: warn (message)
     self._report_name = report_name
 
-#  TODO implement more feed functions
-#  def feed_with_dataframes ( self ,
-#                             dataframes , 
-#                             X_vars , 
-#                             Y_vars ,
-#                             w_var  = None ,
-#                             selections = None ) -> None:
-#    """Feed the training procedure with dataframes.
-#    
-#    Parameters
-#    ----------
-#    dataframes : `pd.DataFrame` or `list` of `pd.DataFrame`
-#      List of dataframes used for the training procedure.
-#
-#    X_vars : `str` or `list` of `str`
-#      Column names of the input variables within the dataframes.
-#
-#    Y_vars : `str` or `list` of `str`
-#      Column names of the output variables within the dataframes.
-#    
-#    w_var : `str` or `list` of `str`, optional
-#      Column name of the weight variable, if available, within the 
-#      dataframes (`None`, by default).
-#
-#    selections : `str` or `list` of `str`, optional
-#      Boolean expressions to filter the dataframes (`None`, by default).
-#    """
-#    ## List data-type promotion
-#    if isinstance (dataframes, pd.DataFrame):
-#      dataframes = [dataframes]
-#    if isinstance (X_vars, str):
-#      X_vars = [X_vars]
-#    if isinstance (Y_vars, str):
-#      Y_vars = [Y_vars]
-#    if isinstance (w_var, str):
-#      w_var = [w_var]
-#    if isinstance (selections, str):
-#      selections = [selections]
-#
-#    self._X_vars = X_vars
-#    self._Y_vars = Y_vars
-#    self._w_var  = w_var
-#
-#    ## List of column names
-#    if w_var is not None:
-#      cols = X_vars + Y_vars + w_var
-#    else:
-#      cols = X_vars + Y_vars 
-#  
-#    ## Dataframes combination
-#    data = pd.concat (dataframes, ignore_index = True)
-#    data = data[cols]
-#
-#    ## Data selection
-#    if selections:
-#      queries = "&".join ("(%s)" % s for s in selections)
-#      data.query (queries, inplace = True)
-#
-#    self._datachunk = data
-#    self._more_data_avail = False
-
-  def feed_from_root_files ( self ,
-                             root_files  , 
-                             X_vars = None , 
-                             Y_vars = None ,
-                             w_var  = None ,
-                             selections = None ,
-                             tree_names = None ,
-                             chunk_size = None ,
-                             verbose = 0 ) -> None:
-    """Feed the training procedure with ROOT files.
-    
-    Parameters
-    ----------
-    root_files : `str` or `list` of `str`
-      List of ROOT files used for the training procedure.
-
-    X_vars : `str` or `list` of `str`, optional
-      Branch names of the input variables within the ROOT trees
-      (`None`, by default).
-
-    Y_vars : `str` or `list` of `str`, optional
-      Branch names of the output variables within the ROOT trees
-      (`None`, by default).
-    
-    w_var : `str` or `list` of `str`, optional
-      Branch name of the weight variable, if available, within the 
-      ROOT trees (`None`, by default).
-
-    selections : `str` or `list` of `str`, optional
-      Boolean expressions to filter the ROOT trees (`None`, by default).
-
-    tree_names : `str` or `list` of `str`, optional
-      If more than one ROOT tree is defined for each file, the ones to 
-      be loaded have to be defined specifying their names as the keys 
-      (`None`, by default).
-
-    chunk_size : `int` or `list` of `int`, optional
-      Total number of instance rows loaded to disk for the training 
-      procedure (`None`, by default).
-
-    verbose : {0, 1}, optional
-      Verbosity mode. `0` = silent (default), `1` = time for data-chunk 
-      loading is printed. 
-
-    See Also
-    --------
-    lb_pidsim_train.utils.data_from_trees :
-      Stratified data shuffling from list of `uproot.TTree`.
-    """
-    ## List data-type promotion
-    if isinstance (root_files, str):
-      root_files = [root_files]
-    if isinstance (X_vars, str):
-      X_vars = [X_vars]
-    if isinstance (Y_vars, str):
-      Y_vars = [Y_vars]
-    if isinstance (w_var, str):
-      w_var = [w_var]
-    if isinstance (selections, str):
-      selections = [selections]
-    if isinstance (tree_names, str):
-      tree_names = [tree_names]
-
-    self._X_vars = X_vars
-    self._Y_vars = Y_vars
-    self._w_var  = w_var
-
-    ## List of branch names
-    branches = list()
-    if X_vars is not None:
-      branches += X_vars
-      if Y_vars is not None:
-        branches += Y_vars
-      if w_var is not None:
-        branches += w_var
-    else:
-      branches = None
-
-    ## Length match
-    if tree_names is None:
-      tree_names = [ None for i in range ( len(root_files) ) ]
-
-    ## Check files and tree names match
-    if len(root_files) != len(tree_names):
-      raise ValueError ("The number of ROOT files should match with the tree names passed.")
-
-    ## ROOT trees extraction
-    trees = list()
-    for fname, tname in zip (root_files, tree_names):
-      file = uproot.open (fname)
-      if tname is not None:
-        key = tname
-      else:
-        key = file.keys()
-        key = key[0] . split (";") [0]   # take the tree name
-      t = file [key]
-      trees . append (t)
-
-    ## Data selection
-    if selections:
-      selections = "&".join ("(%s)" % s for s in selections)
-
-    start = time()
-    self._datachunk = data_from_trees ( trees = trees , 
-                                        branches = branches ,
-                                        cut = selections    ,
-                                        chunk_size = chunk_size )
-    stop = time()
-    if (verbose > 0): print ( f"Data-chunk of {len(self.datachunk)} rows"
-                              f" correctly loaded in {stop-start:.3f} s" )
-
   def prepare_dataset ( self ,
                         X_preprocessing = None ,
                         Y_preprocessing = None ,
@@ -311,16 +132,7 @@ class BaseTrainer:   # TODO class description
     lb_pidsim_train.utils.preprocessor :
       Scikit-Learn transformer for data preprocessing.
     """
-    X, Y, w = self._unpack_data()
-    start = time()
-    X, Y, w = shuffle (X, Y, w)
-    stop = time()
-    if (verbose > 1): print ( f"Shuffle-time: {stop-start:.3f} s" )
-
-    ## Shuffled arrays
-    self._X = X
-    self._Y = Y
-    self._w = w
+    super (BaseTrainer, self) . prepare_dataset (verbose = verbose)
 
     ## Data-type control
     try:
@@ -338,16 +150,16 @@ class BaseTrainer:   # TODO class description
             X_cols_to_preprocess . append (idx)   # column index
       else:
         X_cols_to_preprocess = None
-      scaler_X = preprocessor ( X[:subsample_size], strategy = X_preprocessing, 
+      scaler_X = preprocessor ( self.X[:subsample_size], strategy = X_preprocessing, 
                                 cols_to_transform = X_cols_to_preprocess )
-      self._X_scaled  = scaler_X . transform (X)   # transform the input-set
+      self._X_scaled  = scaler_X . transform (self.X)   # transform the input-set
       stop = time()
       if (verbose > 1): 
         print ( f"Preprocessing time for X: {stop-start:.3f} s" )
       if save_transformer: 
         self._save_transformer ( "transform_X", scaler_X, verbose = (verbose > 0) )
     else:
-      self._X_scaled = X
+      self._X_scaled = self.X
 
     ## Preprocessed output array
     if Y_preprocessing is not None:
@@ -359,47 +171,16 @@ class BaseTrainer:   # TODO class description
             Y_cols_to_preprocess . append (idx)   # column index
       else:
         Y_cols_to_preprocess = None
-      scaler_Y = preprocessor ( Y[:subsample_size], strategy = Y_preprocessing, 
+      scaler_Y = preprocessor ( self.Y[:subsample_size], strategy = Y_preprocessing, 
                                 cols_to_transform = Y_cols_to_preprocess )
-      self._Y_scaled  = scaler_Y . transform (Y)   # transform the output-set
+      self._Y_scaled  = scaler_Y . transform (self.Y)   # transform the output-set
       stop = time()
       if (verbose > 1): 
         print ( f"Preprocessing time for Y: {stop-start:.3f} s" )
       if save_transformer:
         self._save_transformer ( "transform_Y", scaler_Y, verbose = (verbose > 0) )
     else:
-      self._Y_scaled = Y
-
-  def _unpack_data (self) -> tuple:
-    """Unpack the data-chunk into input, output and weights 
-    (array of ones, if not available).
-
-    See Also
-    --------
-    lb_pidsim_train.utils.nan_filter : 
-      Clean arrays from NaN elements.
-    """
-    ## Input array
-    if self._X_vars is not None:
-      X = nan_filter ( self._datachunk[self._X_vars] . to_numpy() )
-    else:
-      X = nan_filter ( self._datachunk . to_numpy() )
-
-    ## Output array
-    if self._Y_vars is not None:
-      Y = nan_filter ( self._datachunk[self._Y_vars] . to_numpy() )
-    else:
-      raise ValueError ("No variables have been passed to create an output-set.")
-
-    ## Weight array
-    if self._w_var is not None:
-      w = self._datachunk[self._w_var] . to_numpy()
-    else:
-      w = np.ones ( X.shape[0], dtype = NP_FLOAT )
-
-    X . astype ( NP_FLOAT )
-    Y . astype ( NP_FLOAT )
-    return X, Y, w
+      self._Y_scaled = self.Y
 
   def _save_transformer (self, name, transformer, verbose = False) -> None:
     """Save the preprocessing transformer.
@@ -427,34 +208,9 @@ class BaseTrainer:   # TODO class description
     pickle . dump ( transformer, open (filename, "wb") )
     if verbose: print ( f"Transformer correctly exported to {filename}" )
 
-  def train_model (self) -> None:
+  def train_model (self) -> None:   # TODO add docstring
     """short description"""
-    raise NotImplementedError ("error")   # docs to add
-
-  @property
-  def X_vars (self) -> list:
-    """Names of the input variables (`None`, if not available)."""
-    return self._X_vars
-
-  @property
-  def Y_vars (self) -> list:
-    """Names of the output variables (`None`, if not available)."""
-    return self._Y_vars
-
-  @property
-  def w_var (self) -> list:
-    """Name of the weight variable (`None`, if not available)."""
-    return self._w_var
-
-  @property
-  def datachunk (self) -> pd.DataFrame:
-    """Dataset used for the training procedure."""
-    return self._datachunk
-
-  @property
-  def X (self) -> np.ndarray:
-    """Array containing a shuffled version of the input-set."""
-    return self._X
+    raise NotImplementedError ("error")   # TODO add error message
 
   @property
   def X_scaled (self) -> np.ndarray:
@@ -462,20 +218,9 @@ class BaseTrainer:   # TODO class description
     return self._X_scaled
 
   @property
-  def Y (self) -> np.ndarray:
-    """Array containing a shuffled version of the output-set."""
-    return self._Y
-
-  @property
   def Y_scaled (self) -> np.ndarray:
     """Array containing a preprocessed version of the output-set."""
     return self._Y_scaled
-
-  @property
-  def w (self) -> np.ndarray:
-    """Array containing a shuffled version of the weights 
-    (array of ones, if not available)."""
-    return self._w
 
     
 
