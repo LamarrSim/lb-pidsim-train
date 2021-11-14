@@ -23,7 +23,7 @@ Rich:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -49,7 +49,7 @@ Rich:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -75,7 +75,7 @@ Rich:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -101,7 +101,7 @@ Rich:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -116,7 +116,7 @@ Muon:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 23 mln
+      chunk_size : 10000000   # 23 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -132,7 +132,7 @@ Muon:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -142,7 +142,7 @@ Muon:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -158,7 +158,7 @@ Muon:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 256
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -168,7 +168,7 @@ Muon:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -184,7 +184,7 @@ Muon:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 256
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -194,7 +194,7 @@ Muon:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 5 mln
+      chunk_size :   # 5 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -210,7 +210,7 @@ Muon:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -241,7 +241,7 @@ GlobalPID:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -267,7 +267,7 @@ GlobalPID:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -293,7 +293,7 @@ GlobalPID:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -319,7 +319,7 @@ GlobalPID:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 500
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -334,7 +334,7 @@ GlobalMuonId:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 23 mln
+      chunk_size : 10000000   # 23 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -350,7 +350,7 @@ GlobalMuonId:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -360,7 +360,7 @@ GlobalMuonId:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -376,7 +376,7 @@ GlobalMuonId:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 256
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -386,7 +386,7 @@ GlobalMuonId:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -402,7 +402,7 @@ GlobalMuonId:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 256
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
@@ -412,7 +412,7 @@ GlobalMuonId:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 5 mln
+      chunk_size :   # 5 mln
       X_preprocessing : quantile
       Y_preprocessing : quantile
       d_num_layers  : 5
@@ -428,7 +428,7 @@ GlobalMuonId:
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
-      batch_size : 100
+      batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
