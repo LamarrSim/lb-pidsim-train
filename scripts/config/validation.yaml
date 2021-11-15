@@ -1,0 +1,163 @@
+# +------------+
+# |    RICH    |
+# +------------+
+Rich:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 60 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 150 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 150 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 105 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+
+# +------------+
+# |    MUON    |
+# +------------+
+Muon:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 10000000   # 23 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size :   # 2 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size :   # 2 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size :   # 5 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+
+# +------------------+
+# |    GLOBAL PID    |
+# +------------------+
+GlobalPID:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 60 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 150 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 150 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 8000000   # 105 mln
+      num_jobs : 4
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+
+# +----------------------+
+# |    GLOBAL MUON ID    |
+# +----------------------+
+GlobalMuonId:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 10000000   # 23 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size :   # 2 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size :   # 2 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size :   # 5 mln
+      num_jobs : 2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
