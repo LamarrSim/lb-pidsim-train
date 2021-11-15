@@ -192,16 +192,15 @@ class DataHandler:   # TODO add class description
 
     Parameters
     ----------
-    verbose : {0, 1, 2}, optional
-      Verbosity mode. `0` = silent (default), `1` = control messages after 
-      transformers saving is printed, `2`= also times for shuffling and 
-      preprocessing are printed. 
+    verbose : `bool`, optional
+      Verbosity mode. `False` = silent (default), 
+      `True`= shuffling time is printed. 
     """
     X, Y, w = self._unpack_data()
     start = time()
     X, Y, w = shuffle (X, Y, w)
     stop = time()
-    if (verbose > 1): print ( f"Shuffle-time: {stop-start:.3f} s" )
+    if verbose: print ( f"Shuffle-time: {stop-start:.3f} s" )
 
     self._X = X
     self._Y = Y
