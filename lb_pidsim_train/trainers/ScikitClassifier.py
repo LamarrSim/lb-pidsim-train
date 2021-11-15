@@ -253,15 +253,15 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
   def _class_probas (self, result, validation = False) -> tuple:   # TODO add docstring
     """short description"""
     if not validation:
-      p_gen = result["pred_probas"][:,0][result["true_labels"] == 1]
-      p_ref = result["pred_probas"][:,0][result["true_labels"] == 0]
+      p_gen = result["pred_probas"][:,1][result["true_labels"] == 1]
+      p_ref = result["pred_probas"][:,1][result["true_labels"] == 0]
       w_gen = result["weights"][result["true_labels"] == 1]
       w_ref = result["weights"][result["true_labels"] == 0]
     else:
       if self._validation_split == 0.0:
         raise ValueError ("error.")   # TODO add error message
-      p_gen = result["val_pred_probas"][:,0][result["val_true_labels"] == 1]
-      p_ref = result["val_pred_probas"][:,0][result["val_true_labels"] == 0]
+      p_gen = result["val_pred_probas"][:,1][result["val_true_labels"] == 1]
+      p_ref = result["val_pred_probas"][:,1][result["val_true_labels"] == 0]
       w_gen = result["val_weights"][result["val_true_labels"] == 1]
       w_ref = result["val_weights"][result["val_true_labels"] == 0]
     return p_gen, p_ref, w_gen, w_ref
