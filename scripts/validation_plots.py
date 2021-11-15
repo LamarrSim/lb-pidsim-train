@@ -21,9 +21,6 @@ NP_FLOAT = np.float32
 TF_FLOAT = tf.float32
 """Default data-type for tensors."""
 
-NUM_JOBS = 4
-"""Number of running jobs intended to fill histograms."""
-
 
 # +---------------------------+
 # |    Configuration files    |
@@ -110,15 +107,17 @@ Y_gen = scaler_Y . inverse_transform ( Y_gen )
 # |    Prepare datasets    |
 # +------------------------+
 
-row_to_drop = len(Y_gen) % NUM_JOBS
+num_jobs = validation[args.model][args.particle][args.sample]["num_jobs"]
 
-X = np.vsplit ( data_handler.X[:-row_to_drop,:] , NUM_JOBS )
-Y_gen = np.vsplit ( Y_gen[:-row_to_drop,:] , NUM_JOBS )
-Y_ref = np.vsplit ( data_handler.Y[:-row_to_drop,:] , NUM_JOBS )
-w = np.vsplit ( data_handler.w[:-row_to_drop] , NUM_JOBS )
+row_to_drop = len(Y_gen) % num_jobs
+
+X = np.vsplit ( data_handler.X[:-row_to_drop,:] , num_jobs )
+Y_gen = np.vsplit ( Y_gen[:-row_to_drop,:] , num_jobs )
+Y_ref = np.vsplit ( data_handler.Y[:-row_to_drop,:] , num_jobs )
+w = np.vsplit ( data_handler.w[:-row_to_drop] , num_jobs )
 
 datasets = list()
-for i in range (NUM_JOBS):
+for i in range (num_jobs):
   datasets . append ( [ X[i], Y_gen[i], Y_ref[i], w[i] ] )
 
 # +-----------------------+
@@ -177,7 +176,7 @@ def fill_histos (data):
 # |    Multiprocessing filling    |
 # +-------------------------------+
 
-scheduler = mp.Pool (processes = NUM_JOBS)
+scheduler = mp.Pool (processes = num_jobs)
 
 hgen = None
 href = None
@@ -264,9 +263,9 @@ def plot_histos (bin_id):
       plt.plot (values, entries_gen, color = "deeppink", linewidth = 1.5)
 
       custom_legend = [
-          Patch (fc = "lightskyblue", ec = "dodgerblue", lw = 1.5, label = "Training data"),
-          Patch (fc = "white", ec = "deeppink", lw = 1.5, label = "Generated data")
-        ]
+        Patch (fc = "lightskyblue", ec = "dodgerblue", lw = 1.5, label = "Training data"),
+        Patch (fc = "white", ec = "deeppink", lw = 1.5, label = "Generated data")
+      ]
       plt.legend (handles = custom_legend, loc = "upper left", fontsize = 10)
       plt.annotate (f"{cut_set[0]}\n{cut_set[1]}\n{cut_set[2]}", 
                     ha = "center", va = "center", size = 10, 
