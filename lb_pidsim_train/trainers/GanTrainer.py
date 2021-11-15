@@ -70,7 +70,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     report.add_markdown ("<br/>")
 
     ## Validation plots
-    rows = 4; cols = 4
+    rows = cols = len(self.Y_vars)
     fig, ax = plt.subplots (rows, cols, figsize = (14,12), dpi = 200)
     plt.subplots_adjust (wspace = 0.35, hspace = 0.25)
 
@@ -89,13 +89,13 @@ class GanTrainer (TensorTrainer):   # TODO class description
         elif i > j:
           ax[i,j] . set_xlabel (titles[j], fontsize = 8)
           ax[i,j] . set_ylabel (titles[i], fontsize = 8)
-          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.05, color = "dodgerblue")
-          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.05, color = "deeppink")
+          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")
+          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.01, color = "deeppink")
         elif i < j:
           ax[i,j] . set_xlabel (titles[j], fontsize = 8)
           ax[i,j] . set_ylabel (titles[i], fontsize = 8)
-          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.05, color = "deeppink")
-          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.05, color = "dodgerblue")
+          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.01, color = "deeppink")
+          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")
 
     report.add_figure(); plt.clf(); plt.close()
     report.add_markdown ("<br/>")
@@ -131,7 +131,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if not os.path.exists (dirname):
       os.makedirs (dirname)
     filename = f"{dirname}/{name}"
-    model.generator . save ( f"{filename}/saved_model", save_format = "tf" )
+    model.generator . save ( f"{filename}", save_format = "tf" )
     if verbose: print ( f"Trained generator correctly exported to {filename}" )
 
   def generate (self, X) -> np.ndarray:   # TODO complete docstring

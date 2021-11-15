@@ -89,7 +89,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                                                       verbose = verbose )
 
     ## Preprocessed input array
-    file_X = f"{self._model_dir}/transform_X.pkl"
+    file_X = f"{self._model_dir}/{self._model_name}/transform_X.pkl"
     if os.path.exists (file_X):
       start = time()
       self._scaler_X = pickle.load ( open (file_X, "rb") )
@@ -103,7 +103,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       self._scaler_X = None
 
     ## Preprocessed output array
-    file_Y = f"{self._model_dir}/transform_Y.pkl"
+    file_Y = f"{self._model_dir}/{self._model_name}/transform_Y.pkl"
     if os.path.exists (file_Y):
       start = time()
       self._scaler_Y = pickle.load ( open (file_Y, "rb") )

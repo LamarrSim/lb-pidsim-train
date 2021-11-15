@@ -203,7 +203,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       self._training_plots (report, history)
 
     if save_model:
-      self._save_model ( f"{self._name}_ep{num_epochs:04d}", model, verbose = (verbose > 0) )
+      self._save_model ( "saved_model", model, verbose = (verbose > 0) )
     
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
