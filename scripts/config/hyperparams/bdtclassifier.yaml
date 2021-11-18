@@ -12,8 +12,8 @@ Rich:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 7
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -29,8 +29,8 @@ Rich:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 7
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -46,8 +46,8 @@ Rich:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 7
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -63,8 +63,8 @@ Rich:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 7
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -85,8 +85,8 @@ Muon:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 5
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -102,8 +102,8 @@ Muon:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 5
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -119,8 +119,8 @@ Muon:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 5
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -136,8 +136,8 @@ Muon:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 5
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -158,8 +158,8 @@ GlobalPID:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -175,8 +175,8 @@ GlobalPID:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -192,8 +192,8 @@ GlobalPID:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -209,8 +209,8 @@ GlobalPID:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -231,8 +231,8 @@ GlobalMuonId:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -248,8 +248,8 @@ GlobalMuonId:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -265,8 +265,8 @@ GlobalMuonId:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -282,8 +282,8 @@ GlobalMuonId:
       learning_rate : 0.1
       n_estimators  : 500
       criterion : friedman_mse
-      max_leaf_nodes : 1000
       max_depth : 10
+      max_features : 4
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
