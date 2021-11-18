@@ -32,7 +32,7 @@ def nan_filter (x, when_nan = 0.) -> np.ndarray:
   [1. 0. 0. 0. 0.]
   """
   ## Input array --> Numpy array
-  x = np.array (x)
+  x = np.array (x) . astype (np.float64)
 
   ## Data-type control
   try:

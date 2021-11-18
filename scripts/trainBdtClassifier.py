@@ -35,7 +35,7 @@ parser . add_argument ( "-a", "--algo", required = True )   # TODO add choices
 args = parser . parse_args()
 
 model_name = f"{args.algo}_{args.model}_{args.particle}_{args.sample}_{args.version}"
-class_name = f"clf_{model_name}"
+class_name = f"bdt_{model_name}"
 
 trainer = ScikitClassifier ( name = class_name ,
                              model_dir   = config["model_dir"] ,
@@ -60,8 +60,8 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  Y_vars = variables[args.model]["Y_vars"][args.sample] , 
                                  w_var  = variables[args.model]["w_vars"][args.sample] , 
                                  selections = selections[args.model][args.sample] , 
-                                 tree_names = None, 
-                                 chunk_size = hp["chunk_size"], 
+                                 tree_names = None , 
+                                 chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
 # +--------------------------+
@@ -78,8 +78,8 @@ model = GradientBoostingClassifier ( loss = hp["loss"] ,
                                      learning_rate = hp["learning_rate"] ,
                                      n_estimators = hp["n_estimators"] ,
                                      criterion = hp["criterion"] ,
-                                     max_leaf_nodes = hp["max_leaf_nodes"] ,
                                      max_depth = hp["max_depth"] ,
+                                     max_features = hp["max_features"] ,
                                      random_state = 42 )
 
 # +--------------------+
