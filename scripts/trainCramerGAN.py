@@ -6,6 +6,7 @@ import tensorflow as tf
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import CramerGAN
+from lb_pidsim_train.callbacks  import GanExpScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
@@ -59,8 +60,8 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  Y_vars = variables[args.model]["Y_vars"][args.sample] , 
                                  w_var  = variables[args.model]["w_vars"][args.sample] , 
                                  selections = selections[args.model][args.sample] , 
-                                 tree_names = None, 
-                                 chunk_size = hp["chunk_size"], 
+                                 tree_names = None , 
+                                 chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
 # +--------------------------+
@@ -115,10 +116,16 @@ g_opt = tf.optimizers.RMSprop ( learning_rate = hp["g_lr"] )
 model . compile ( d_optimizer = d_opt , 
                   g_optimizer = g_opt , 
                   d_updt_per_batch = hp["d_updt_per_batch"] , 
-                  g_updt_per_batch = hp["g_updt_per_batch"]  ,
+                  g_updt_per_batch = hp["g_updt_per_batch"] ,
                   grad_penalty = hp["grad_penalty"] )
 
 model . summary()
+
+# +--------------------------------+
+# |    Learning rate scheduling    |
+# +--------------------------------+
+
+lr_scheduler = GanExpScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
 
 # +--------------------+
 # |    Run training    |
@@ -128,4 +135,5 @@ trainer . train_model ( model = model ,
                         batch_size = hp["batch_size"] ,
                         num_epochs = hp["num_epochs"] ,
                         validation_split = hp["validation_split"] ,
+                        scheduler = lr_scheduler ,
                         verbose = 1 )

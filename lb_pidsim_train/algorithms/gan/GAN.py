@@ -134,6 +134,9 @@ class GAN (tf.keras.Model):
     self._d_optimizer = d_optimizer
     self._g_optimizer = g_optimizer
 
+    self._d_lr0 = d_optimizer.learning_rate
+    self._g_lr0 = g_optimizer.learning_rate
+
     ## Data-type control
     try:
       d_updt_per_batch = int ( d_updt_per_batch )
@@ -386,6 +389,26 @@ class GAN (tf.keras.Model):
   def latent_dim (self) -> int:
     """The dimension of the latent space."""
     return self._latent_dim
+
+  @property
+  def d_optimizer (self) -> tf.keras.optimizers.Optimizer:
+    """The discriminator optimizer."""
+    return self._d_optimizer
+
+  @property
+  def g_optimizer (self) -> tf.keras.optimizers.Optimizer:
+    """The generator optimizer.."""
+    return self._g_optimizer
+
+  @property
+  def d_lr0 (self) -> float:
+    """Initial value for discriminator learning rate."""
+    return self._d_lr0
+
+  @property
+  def g_lr0 (self) -> float:
+    """Initial value for generator learning rate."""
+    return self._g_lr0
 
   @property
   def metrics (self) -> list:

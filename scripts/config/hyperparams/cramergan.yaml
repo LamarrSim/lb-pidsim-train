@@ -18,11 +18,13 @@ Rich:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -44,11 +46,13 @@ Rich:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -70,11 +74,13 @@ Rich:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -96,11 +102,13 @@ Rich:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -127,11 +135,13 @@ Muon:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -153,11 +163,13 @@ Muon:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 256
       num_epochs : 100
       validation_split : 0.2
@@ -179,11 +191,13 @@ Muon:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 256
       num_epochs : 100
       validation_split : 0.2
@@ -205,11 +219,13 @@ Muon:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -236,11 +252,13 @@ GlobalPID:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -262,11 +280,13 @@ GlobalPID:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -288,11 +308,13 @@ GlobalPID:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -314,11 +336,13 @@ GlobalPID:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -345,11 +369,13 @@ GlobalMuonId:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -371,11 +397,13 @@ GlobalMuonId:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 256
       num_epochs : 100
       validation_split : 0.2
@@ -397,11 +425,13 @@ GlobalMuonId:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 256
       num_epochs : 100
       validation_split : 0.2
@@ -423,11 +453,13 @@ GlobalMuonId:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.00001
-      g_lr : 0.00001
+      d_lr : 0.00005
+      g_lr : 0.00005
       d_updt_per_batch : 10
       g_updt_per_batch : 1
       grad_penalty : 1.0
+      lr_sched_factor : 0.9
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2

@@ -6,6 +6,7 @@ import tensorflow as tf
 from datetime import datetime
 from html_reports import Report
 from lb_pidsim_train.trainers import BaseTrainer
+from tensorflow.keras.callbacks import LearningRateScheduler
 
 
 TF_FLOAT = tf.float32
@@ -99,6 +100,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                     batch_size = 1 ,
                     num_epochs = 1 ,
                     validation_split = 0.0 ,
+                    scheduler = None ,
                     plots_on_report = True ,
                     save_model = True ,
                     verbose = 0 ) -> None:   # TODO complete docstring
@@ -117,6 +119,9 @@ class TensorTrainer (BaseTrainer):   # TODO class description
 
     validation_split : `float`, optional
       ... (`0.0`, by default).
+
+    scheduler : function, optional
+      ... (`None`, by default).
 
     save_model : `bool`, optional
       Boolean flag to save and export the trained model (`True`, by default).
@@ -180,7 +185,10 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       val_ds = None
 
     ## Callbacks settings
-    callbacks = None
+    if scheduler:
+      callbacks = [scheduler]
+    else:
+      callbacks = None
 
     ## Training procedure
     start = datetime.now()
