@@ -1,8 +1,8 @@
 #from __future__ import annotations
 
-from lb_pidsim_train.callbacks.schedulers import GanScheduler
+from lb_pidsim_train.callbacks.schedulers import GanBaseScheduler
 
-class GanExpScheduler (GanScheduler):   # TODO add docstring
+class GanExpScheduler (GanBaseScheduler):   # TODO add docstring
   """class description"""
   def __init__(self, factor = 0.1, step = 1):   # TODO add data-type check
     super(GanExpScheduler, self) . __init__()
