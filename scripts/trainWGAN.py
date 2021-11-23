@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
-from lb_pidsim_train.algorithms import CramerGAN
+from lb_pidsim_train.algorithms import WGAN_GP
 from lb_pidsim_train.callbacks  import GanExpScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
@@ -26,7 +26,7 @@ with open ("config/variables.yaml") as file:
 with open ("config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-with open ("config/hyperparams/cramergan.yaml") as file:
+with open ("config/hyperparams/wgan.yaml") as file:
   hyperparams = yaml.full_load (file)
 
 # +----------------------------+
@@ -36,7 +36,7 @@ with open ("config/hyperparams/cramergan.yaml") as file:
 parser = argparser ("Model training")
 args = parser . parse_args()
 
-model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
+model_name = f"WGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -103,12 +103,11 @@ for layer in range (g_num_layers):
   generator . append ( Dense (g_num_nodes) )
   generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
 
-model = CramerGAN ( X_shape = len(trainer.X_vars) , 
-                    Y_shape = len(trainer.Y_vars) , 
-                    discriminator = discriminator , 
-                    generator = generator , 
-                    latent_dim = hp["latent_dim"] , 
-                    critic_dim = hp["critic_dim"] )
+model = WGAN_GP ( X_shape = len(trainer.X_vars) , 
+                  Y_shape = len(trainer.Y_vars) , 
+                  discriminator = discriminator , 
+                  generator = generator , 
+                  latent_dim = hp["latent_dim"] )
 
 # +---------------------------+
 # |    Model configuration    |
