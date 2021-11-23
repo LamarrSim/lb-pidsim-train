@@ -5,10 +5,10 @@ from tensorflow.keras.callbacks import Callback
 
 K = tf.keras.backend
 
-class GanScheduler (Callback):   # TODO add docstring
+class GanBaseScheduler (Callback):   # TODO add docstring
   """class description"""
   def __init__(self):   # TODO add data-type check
-    super(GanScheduler, self) . __init__()
+    super(GanBaseScheduler, self) . __init__()
 
   def on_epoch_begin (self, epoch, logs = None):
     if epoch != 0:

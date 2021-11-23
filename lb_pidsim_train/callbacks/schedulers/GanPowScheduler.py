@@ -10,4 +10,4 @@ class GanPowScheduler (GanBaseScheduler):   # TODO add docstring
     self._step = step
 
   def _compute_scale_factor (self, epoch):
-    return 1.0 / (1.0 + self._decay * epoch / self._step)
+    return 1.0 / (1.0 + self._decay / self._step)
