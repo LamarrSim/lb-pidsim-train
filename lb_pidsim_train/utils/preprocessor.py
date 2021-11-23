@@ -2,12 +2,12 @@
 
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, QuantileTransformer, FunctionTransformer
-from lb_pidsim_train.utils import CustomColumnTransformer
+from lb_pidsim_train.utils import PidsimColTransformer
 
 
 def preprocessor ( data ,
                    strategy = "quantile" , 
-                   cols_to_transform = None ) -> CustomColumnTransformer:
+                   cols_to_transform = None ) -> PidsimColTransformer:
   """Scikit-Learn transformer for data preprocessing.
   
   Parameters
@@ -28,7 +28,7 @@ def preprocessor ( data ,
 
   Returns
   -------
-  scaler : `lb_pidsim_train.utils.CustomColumnTransformer`
+  scaler : `lb_pidsim_train.utils.PidsimColTransformer`
     Scikit-Learn transformer fitted and ready to use (calling the 
     `transform` method).
 
@@ -102,10 +102,10 @@ def preprocessor ( data ,
     cols_to_transform = list ( all_cols )
     cols_to_ignore = []
 
-  scaler = CustomColumnTransformer ( [
-                                       ( "num", num_scaler, cols_to_transform ) ,
-                                       ( "cls", FunctionTransformer(), cols_to_ignore )
-                                     ] )
+  scaler = PidsimColTransformer ( [
+                                    ( "num", num_scaler, cols_to_transform ) ,
+                                    ( "cls", FunctionTransformer(), cols_to_ignore )
+                                  ] )
   
   scaler . fit ( data )
   return scaler

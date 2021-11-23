@@ -13,6 +13,7 @@ from html_reports import Report
 from sklearn.utils import shuffle
 from lb_pidsim_train.trainers import BaseTrainer
 from lb_pidsim_train.utils import warn_message as wm
+from lb_pidsim_train.utils import PidsimColTransformer
 from lb_pidsim_train.metrics import KL_divergence, JS_divergence, KS_test
 
 
@@ -92,7 +93,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     file_X = f"{self._model_dir}/{self._model_name}/transform_X.pkl"
     if os.path.exists (file_X):
       start = time()
-      self._scaler_X = pickle.load ( open (file_X, "rb") )
+      self._scaler_X = PidsimColTransformer ( pickle.load (open (file_X, "rb")) )
       if (verbose > 0):
         print (f"Transformer correctly loaded from {file_X}.")
       self._X_scaled = self._scaler_X . transform ( self.X )
@@ -106,7 +107,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     file_Y = f"{self._model_dir}/{self._model_name}/transform_Y.pkl"
     if os.path.exists (file_Y):
       start = time()
-      self._scaler_Y = pickle.load ( open (file_Y, "rb") )
+      self._scaler_Y = PidsimColTransformer ( pickle.load (open (file_Y, "rb")) )
       if (verbose > 0):
         print (f"Transformer correctly loaded from {file_Y}.")
       self._Y_scaled = self._scaler_Y . transform ( self.Y )
@@ -299,7 +300,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     h_0 = h_1 = h_2 = 0.0
     plt.figure (figsize = (8,5), dpi = 100)
     plt.title  ("Class probability distributions", fontsize = 14)
-    plt.xlabel ("Predicted GEN probability", fontsize = 12)
+    plt.xlabel ("Predicted probability for GEN-class", fontsize = 12)
     plt.ylabel ("Normalized entries", fontsize = 12)
 
     if self._validation_split != 0.0:

@@ -157,7 +157,9 @@ class BaseTrainer (DataHandler):   # TODO class description
       if (verbose > 1): 
         print ( f"Preprocessing time for X: {stop-start:.3f} s" )
       if save_transformer: 
-        self._save_transformer ( "transform_X", self._scaler_X, verbose = (verbose > 0) )
+        self._save_transformer ( "transform_X" , 
+                                 self._scaler_X.sklearn_transformer ,   # saved as Scikit-Learn class
+                                 verbose = (verbose > 0) )
     else:
       self._X_scaled = self.X
 
@@ -178,7 +180,9 @@ class BaseTrainer (DataHandler):   # TODO class description
       if (verbose > 1): 
         print ( f"Preprocessing time for Y: {stop-start:.3f} s" )
       if save_transformer:
-        self._save_transformer ( "transform_Y", self._scaler_Y, verbose = (verbose > 0) )
+        self._save_transformer ( "transform_Y" , 
+                                 self._scaler_Y.sklearn_transformer ,   # saved as Scikit-Learn class 
+                                 verbose = (verbose > 0) )
     else:
       self._Y_scaled = self.Y
 
