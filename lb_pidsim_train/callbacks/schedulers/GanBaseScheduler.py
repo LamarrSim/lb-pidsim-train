@@ -11,21 +11,16 @@ class GanBaseScheduler (Callback):   # TODO add docstring
     super(GanBaseScheduler, self) . __init__()
 
   def on_epoch_begin (self, epoch, logs = None):
-    if epoch != 0:
-      scale_factor = self._compute_scale_factor (epoch = epoch)
-    else:
-      scale_factor = 1.0
-
     ## Discriminator lr-scheduling
     d_lr0 = K.get_value ( self.model.d_lr0 )
-    K.set_value ( self.model.d_optimizer.learning_rate, d_lr0 * scale_factor )
+    K.set_value ( self.model.d_optimizer.learning_rate, self._scheduled_lr (d_lr0, epoch) )
 
     ## Generator lr-scheduling
     g_lr0 = K.get_value ( self.model.g_lr0 )
-    K.set_value ( self.model.g_optimizer.learning_rate, g_lr0 * scale_factor )
+    K.set_value ( self.model.g_optimizer.learning_rate, self._scheduled_lr (g_lr0, epoch) )
 
-  def _compute_scale_factor (self, epoch):
-    return 1.0
+  def _scheduled_lr (self, lr0, epoch):
+    return lr0
 
   def on_epoch_end (self, epoch, logs = None):
     logs = logs or {}

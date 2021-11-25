@@ -9,5 +9,5 @@ class GanExpScheduler (GanBaseScheduler):   # TODO add docstring
     self._factor = factor
     self._step = step
 
-  def _compute_scale_factor (self, epoch):
-    return self._factor ** (1 / self._step)
+  def _compute_scale_factor (self, lr0, epoch):
+    return lr0 * self._factor ** (epoch / self._step)
