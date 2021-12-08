@@ -1,0 +1,64 @@
+# +--------------+
+# |    ISMUON    |
+# +--------------+
+isMuon:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 500000   # 60 mln
+      X_preprocessing : quantile
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_depth : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 500000   # 150 mln
+      X_preprocessing : quantile
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_depth : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 500000   # 150 mln
+      X_preprocessing : quantile
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_depth : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016MagUp:
+      chunk_size : 500000   # 105 mln
+      X_preprocessing : quantile
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : friedman_mse
+      max_depth : 10
+      validation_split : 0.2
+    # <-- 2016 Mag Down -->
+    2016MagDown:
