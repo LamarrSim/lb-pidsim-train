@@ -9,11 +9,11 @@ Rich:
     2016MagUp:
       chunk_size : 5000000   # 60 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 7
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -26,11 +26,11 @@ Rich:
     2016MagUp:
       chunk_size : 5000000   # 150 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 7
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -43,11 +43,11 @@ Rich:
     2016MagUp:
       chunk_size : 5000000   # 150 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 7
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -60,11 +60,11 @@ Rich:
     2016MagUp:
       chunk_size : 5000000   # 105 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 7
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -82,11 +82,11 @@ Muon:
     2016MagUp:
       chunk_size : 1000000   # 23 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 5
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -99,11 +99,11 @@ Muon:
     2016MagUp:
       chunk_size : 1000000   # 2 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 5
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -116,11 +116,11 @@ Muon:
     2016MagUp:
       chunk_size : 1000000   # 2 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 5
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -133,11 +133,11 @@ Muon:
     2016MagUp:
       chunk_size : 1000000   # 5 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 5
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -155,11 +155,11 @@ GlobalPID:
     2016MagUp:
       chunk_size : 5000000   # 60 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -172,11 +172,11 @@ GlobalPID:
     2016MagUp:
       chunk_size : 5000000   # 150 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -189,11 +189,11 @@ GlobalPID:
     2016MagUp:
       chunk_size : 5000000   # 150 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -206,11 +206,11 @@ GlobalPID:
     2016MagUp:
       chunk_size : 5000000   # 105 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -228,11 +228,11 @@ GlobalMuonId:
     2016MagUp:
       chunk_size : 1000000   # 23 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -245,11 +245,11 @@ GlobalMuonId:
     2016MagUp:
       chunk_size : 1000000   # 2 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -262,11 +262,11 @@ GlobalMuonId:
     2016MagUp:
       chunk_size : 1000000   # 2 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test
@@ -279,11 +279,11 @@ GlobalMuonId:
     2016MagUp:
       chunk_size : 1000000   # 5 mln
       loss : deviance
-      learning_rate : 0.1
+      learning_rate : 0.05
       n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      max_features : 4
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
       validation_split : 0.2
       inverse_transform : True
       performance_metric : ks_test

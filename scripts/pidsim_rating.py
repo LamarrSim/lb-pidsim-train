@@ -23,14 +23,14 @@ with open ("config/variables.yaml") as file:
 with open ("config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-with open ("config/hyperparams/bdtclassifier.yaml") as file:
+with open ("config/hyperparams/gbdt_ref.yaml") as file:
   hyperparams = yaml.full_load (file)
 
 # +----------------------------+
 # |    Trainer construction    | 
 # +----------------------------+
 
-parser = argparser ("Model assessing")
+parser = argparser ("Model rating")
 parser . add_argument ( "-a", "--algo", required = True )   # TODO add choices
 args = parser . parse_args()
 
@@ -79,8 +79,7 @@ model = GradientBoostingClassifier ( loss = hp["loss"] ,
                                      n_estimators = hp["n_estimators"] ,
                                      criterion = hp["criterion"] ,
                                      max_depth = hp["max_depth"] ,
-                                     max_features = hp["max_features"] ,
-                                     random_state = 42 )
+                                     max_features = hp["max_features"] )
 
 # +--------------------+
 # |    Run training    |
