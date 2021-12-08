@@ -135,7 +135,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     tf.keras.Model.fit :
       Train the model for a fixed number of epochs (iterations on a dataset).
     """
-    report = Report()
+    report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
     try:

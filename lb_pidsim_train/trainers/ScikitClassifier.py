@@ -124,8 +124,8 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                     performance_metric = "ks_test" ,
                     plots_on_report = True ,
                     save_model = True ,
-                    verbose = 0 ) -> None:   # TODO work in progress
-    report = Report()
+                    verbose = 0 ) -> None:   # TODO add docstring
+    report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
     try:
