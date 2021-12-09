@@ -11,7 +11,7 @@ g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
 """Metric instance to track the generator loss score."""
 
 
-class WGAN_GP (GAN):
+class WGAN_GP (GAN):   # TODO add class description
   """Keras model class to build and train WGAN-GP system.
   
   Parameters
@@ -70,7 +70,7 @@ class WGAN_GP (GAN):
                 g_optimizer ,
                 d_updt_per_batch = 1 , 
                 g_updt_per_batch = 1 ,
-                grad_penalty = 10 ) -> None:
+                grad_penalty = 10 ) -> None:   # TODO complete docstring
     """Configure the models for WGAN-GP training.
     
     Parameters
@@ -100,75 +100,73 @@ class WGAN_GP (GAN):
 
     self._grad_penalty = grad_penalty
 
-  def _compute_d_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
+  def _compute_d_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the discriminator loss.
     
     Parameters
     ----------
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
 
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
-
-    weights : `tf.Tensor`, optional
-      ... (`None`, by default).
 
     Returns
     -------
     g_loss : `tf.Tensor`
       ...
     """
+    ## Extract input tensors and weights
+    XY_gen, w_gen = gen_sample
+    XY_ref, w_ref = ref_sample
+
     ## Standard WGAN loss
-    D_gen = self._discriminator ( gen_sample )
-    D_ref = self._discriminator ( ref_sample )
-    d_loss = D_gen - D_ref
-    if weights is not None:
-      d_loss = weights * d_loss
+    D_gen = self._discriminator ( XY_gen )
+    D_ref = self._discriminator ( XY_ref )
+    d_loss = w_gen * D_gen - w_ref * D_ref
     
     ## Gradient penalty
     alpha = tf.random.uniform (
-                                shape  = (tf.shape(ref_sample)[0], 1) ,
-                                minval = 0. ,
-                                maxval = 1. ,
+                                shape  = (tf.shape(XY_ref)[0], 1) ,
+                                minval = 0.0 ,
+                                maxval = 1.0 ,
                               )
-    differences  = gen_sample - ref_sample
-    interpolates = ref_sample + alpha * differences
+    differences  = XY_gen - XY_ref
+    interpolates = XY_ref + alpha * differences
     D_int = self._discriminator ( interpolates )
     grad = tf.gradients ( D_int , interpolates )
     grad = tf.concat  ( grad , axis = 1 )
     grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
     slopes  = tf.norm ( grad , axis = 1 )
-    gp_term = tf.square ( tf.maximum ( tf.abs (slopes) - 1., 0. ) )
+    gp_term = tf.square ( tf.maximum ( tf.abs (slopes) - 1.0, 0.0 ) )
     gp_term = self._grad_penalty * tf.reduce_mean (gp_term)
     d_loss += gp_term
     return d_loss
 
-  def _compute_g_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
+  def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the generator loss.
     
     Parameters
     ----------
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
 
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
-
-    weights : `tf.Tensor`, optional
-      ... (`None`, by default).
 
     Returns
     -------
     g_loss : `tf.Tensor`
       ...
     """
+    ## Extract input tensors and weights
+    XY_gen, w_gen = gen_sample
+    XY_ref, w_ref = ref_sample
+
     ## Standard WGAN loss
-    D_gen = self._discriminator ( gen_sample )
-    D_ref = self._discriminator ( ref_sample )
-    g_loss = D_ref - D_gen
-    if weights is not None:
-      g_loss = weights * g_loss
+    D_gen = self._discriminator ( XY_gen )
+    D_ref = self._discriminator ( XY_ref )
+    g_loss = w_gen * D_gen - w_ref * D_ref
     return tf.reduce_mean (g_loss)
     
   @property

@@ -24,7 +24,7 @@ class Critic:
     return critic_func
 
 
-class CramerGAN (GAN):
+class CramerGAN (GAN):   # TODO add class description
   """Keras model class to build and train CramerGAN system.
   
   Parameters
@@ -110,7 +110,7 @@ class CramerGAN (GAN):
                 g_optimizer , 
                 d_updt_per_batch = 1 ,
                 g_updt_per_batch = 1 ,
-                grad_penalty = 10 ) -> None:
+                grad_penalty = 10 ) -> None:   # TODO complete docstring
     """Configure the models for CramerGAN training.
     
     Parameters
@@ -144,87 +144,86 @@ class CramerGAN (GAN):
 
     self._grad_penalty = grad_penalty
   
-  def _compute_d_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
+  def _compute_d_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the discriminator loss.
     
     Parameters
     ----------
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
 
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
-
-    weights : `tf.Tensor`, optional
-      ... (`None`, by default).
 
     Returns
     -------
     d_loss : `tf.Tensor`
       ...
     """
-    ## Data-batch splitting
-    batch_size = tf.shape(gen_sample)[0] / 2
-    batch_size = tf.cast (batch_size, tf.int32)
+    ## Extract input tensors and weights
+    XY_gen, w_gen = gen_sample
+    XY_ref, w_ref = ref_sample
 
-    gen_sample_1 , gen_sample_2 = gen_sample[:batch_size] , gen_sample[batch_size:batch_size*2]
-    ref_sample = ref_sample[:batch_size]
+    ## Data-batch splitting
+    batch_size = tf.cast ( tf.shape(XY_gen)[0] / 2, tf.int32 )
+    XY_gen_1, XY_gen_2 = XY_gen[:batch_size], XY_gen[batch_size:batch_size*2]
+    XY_ref_1, XY_ref_2 = XY_ref[:batch_size], XY_ref[batch_size:batch_size*2]
+    w_gen_1, w_gen_2 = w_gen[:batch_size], w_gen[batch_size:batch_size*2]
+    w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
 
     ## Discriminator loss computation
-    d_loss = self._critic (gen_sample_1, gen_sample_2) - self._critic (ref_sample, gen_sample_2)
-    if weights is not None:
-      weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
-      d_loss = weights_1 * weights_2 * d_loss
+    d_loss = w_gen_1 * w_gen_2 * self._critic ( XY_gen_1, XY_gen_2 ) - \
+             w_ref_1 * w_gen_2 * self._critic ( XY_ref_1, XY_gen_2 )
     d_loss = tf.reduce_mean (d_loss)
 
+    ## Gradient penalty
     alpha = tf.random.uniform (
-                                shape  = (tf.shape(ref_sample)[0], 1) , 
-                                minval = 0. , 
-                                maxval = 1. ,
+                                shape  = (tf.shape(XY_ref_1)[0], 1) , 
+                                minval = 0.0 , 
+                                maxval = 1.0 ,
                               )
-    differences  = gen_sample_1 - ref_sample
-    interpolates = ref_sample + alpha * differences
-    critic_int = self._critic ( interpolates , gen_sample_2 )
+    differences  = XY_gen_1 - XY_ref_1
+    interpolates = XY_ref_1 + alpha * differences
+    critic_int = self._critic ( interpolates , XY_gen_2 )
     grad = tf.gradients ( critic_int , interpolates )
     grad = tf.concat  ( grad , axis = 1 )
     grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
     slopes  = tf.norm ( grad , axis = 1 )
-    gp_term = tf.square ( tf.maximum ( tf.abs (slopes) - 1., 0. ) )
+    gp_term = tf.square ( tf.maximum ( tf.abs (slopes) - 1.0, 0.0 ) )
     gp_term = self._grad_penalty * tf.reduce_mean (gp_term)   # gradient penalty
     d_loss += gp_term
     return d_loss
 
-  def _compute_g_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
+  def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the generator loss.
     
     Parameters
     ----------
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
 
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
-
-    weights : `tf.Tensor`, optional
-      ... (`None`, by default).
 
     Returns
     -------
     g_loss : `tf.Tensor`
       ...
     """
-    ## Data-batch splitting
-    batch_size = tf.shape(gen_sample)[0] / 2
-    batch_size = tf.cast (batch_size, tf.int32)
+    ## Extract input tensors and weights
+    XY_gen, w_gen = gen_sample
+    XY_ref, w_ref = ref_sample
 
-    gen_sample_1 , gen_sample_2 = gen_sample[:batch_size] , gen_sample[batch_size:batch_size*2]
-    ref_sample = ref_sample[:batch_size]
+    ## Data-batch splitting
+    batch_size = tf.cast ( tf.shape(XY_gen)[0] / 2, tf.int32 )
+    XY_gen_1, XY_gen_2 = XY_gen[:batch_size], XY_gen[batch_size:batch_size*2]
+    XY_ref_1, XY_ref_2 = XY_ref[:batch_size], XY_ref[batch_size:batch_size*2]
+    w_gen_1, w_gen_2 = w_gen[:batch_size], w_gen[batch_size:batch_size*2]
+    w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
 
     ## Generator loss computation
-    g_loss = self._critic (ref_sample, gen_sample_2) - self._critic (gen_sample_1, gen_sample_2)
-    if weights is not None:
-      weights_1 , weights_2 = weights[:batch_size] , weights[batch_size:batch_size*2]
-      g_loss = weights_1 * weights_2 * g_loss
+    g_loss = w_ref_1 * w_gen_2 * self._critic ( XY_ref_1, XY_gen_2 ) - \
+             w_gen_1 * w_gen_2 * self._critic ( XY_gen_1, XY_gen_2 )
     return tf.reduce_mean (g_loss)
 
   @property

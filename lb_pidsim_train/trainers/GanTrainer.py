@@ -16,6 +16,24 @@ TF_FLOAT = tf.float32
 
 
 class GanTrainer (TensorTrainer):   # TODO class description
+  def train_model ( self , 
+                    model , 
+                    batch_size = 1 , 
+                    num_epochs = 1 , 
+                    validation_split = 0 , 
+                    scheduler = None , 
+                    plots_on_report = True , 
+                    save_model = True , 
+                    verbose = 0 ) -> None:
+    super(GanTrainer, self) . train_model ( model = model , 
+                                            batch_size = 2 * batch_size , 
+                                            num_epochs = num_epochs , 
+                                            validation_split = validation_split , 
+                                            scheduler = scheduler , 
+                                            plots_on_report = plots_on_report , 
+                                            save_model = save_model , 
+                                            verbose = verbose )
+
   def _training_plots (self, report, history) -> None:   # TODO complete docstring
     """short description
     

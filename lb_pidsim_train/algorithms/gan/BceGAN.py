@@ -11,7 +11,7 @@ g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
 """Metric instance to track the generator loss score."""
 
 
-class BceGAN (GAN):
+class BceGAN (GAN):   # TODO add class description
   """Keras model class to build and train BceGAN system.
   
   Parameters
@@ -69,7 +69,7 @@ class BceGAN (GAN):
                 d_optimizer , 
                 g_optimizer ,
                 d_updt_per_batch = 1 , 
-                g_updt_per_batch = 1 ) -> None:
+                g_updt_per_batch = 1 ) -> None:   # TODO complete docstring
     """Configure the models for BceGAN training.
     
     Parameters
@@ -91,40 +91,39 @@ class BceGAN (GAN):
                                     d_updt_per_batch = d_updt_per_batch , 
                                     g_updt_per_batch = g_updt_per_batch )
 
-  def _compute_g_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
+  def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the generator loss.
     
     Parameters
     ----------
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
 
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
-
-    weights : `tf.Tensor`, optional
-      ... (`None`, by default).
 
     Returns
     -------
     g_loss : `tf.Tensor`
       ...
     """
+    ## Extract input tensors and weights
+    XY_gen, w_gen = gen_sample
+    XY_ref, w_ref = ref_sample
+
     ## Noise injection to stabilize BceGAN training
-    rnd_gen = tf.random.normal ( tf.shape(gen_sample), mean = 0., stddev = 0.1 )
-    rnd_ref = tf.random.normal ( tf.shape(ref_sample), mean = 0., stddev = 0.1 )
-    D_gen = self._discriminator ( gen_sample + rnd_gen )
-    D_ref = self._discriminator ( ref_sample + rnd_ref )
+    rnd_gen = tf.random.normal ( tf.shape(XY_gen), mean = 0., stddev = 0.1 )
+    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.1 )
+    D_gen = self._discriminator ( XY_gen + rnd_gen )
+    D_ref = self._discriminator ( XY_ref + rnd_ref )
 
     ## Loss computation
     true_gen = 0.9
     true_ref = 0.1
-    g_loss = true_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1. ) ) + \
-             (1 - true_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1. ) ) + \
-             true_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
-             (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
-    if weights is not None:
-      g_loss = weights * g_loss
+    g_loss = w_gen * true_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1. ) ) + \
+             w_gen * (1 - true_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1. ) ) + \
+             w_ref * true_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
+             w_ref * (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
     return tf.reduce_mean (g_loss)
 
   @property

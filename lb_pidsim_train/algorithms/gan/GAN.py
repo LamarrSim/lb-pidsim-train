@@ -17,7 +17,7 @@ mse_tracker = tf.keras.metrics.MeanSquaredError ( name = "mse" )
 """Metric instance to track the mean square error."""
 
 
-class GAN (tf.keras.Model):
+class GAN (tf.keras.Model):   # TODO add class description
   """Keras model class to build and train GAN system.
   
   Parameters
@@ -108,7 +108,7 @@ class GAN (tf.keras.Model):
                 d_optimizer ,
                 g_optimizer , 
                 d_updt_per_batch = 1 ,
-                g_updt_per_batch = 1 ) -> None:
+                g_updt_per_batch = 1 ) -> None:   # TODO complete docstring
     """Configure the models for GAN training.
     
     Parameters
@@ -184,9 +184,9 @@ class GAN (tf.keras.Model):
       self._train_g_step (X, Y, w)
 
     ## Loss computation
-    ref_sample, gen_sample = self._arrange_samples (X, Y)
-    d_loss = self._compute_d_loss (gen_sample, ref_sample, weights = w)
-    g_loss = self._compute_g_loss (gen_sample, ref_sample, weights = w)
+    ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+    d_loss = self._compute_d_loss (gen_sample, ref_sample)
+    g_loss = self._compute_g_loss (gen_sample, ref_sample)
 
     ## Update metrics state
     d_loss_tracker . update_state (d_loss)
@@ -206,9 +206,9 @@ class GAN (tf.keras.Model):
     X, Y, w = self._unpack_data (data)
 
     ## Loss computation
-    ref_sample, gen_sample = self._arrange_samples (X, Y)
-    d_loss = self._compute_d_loss (gen_sample, ref_sample, weights = w)
-    g_loss = self._compute_g_loss (gen_sample, ref_sample, weights = w)
+    ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+    d_loss = self._compute_d_loss (gen_sample, ref_sample)
+    g_loss = self._compute_g_loss (gen_sample, ref_sample)
 
     ## Update metrics state
     d_loss_tracker . update_state (d_loss)
@@ -223,7 +223,7 @@ class GAN (tf.keras.Model):
              "d_lr"   : self._d_optimizer.lr    ,
              "g_lr"   : self._g_optimizer.lr    }
 
-  def _arrange_samples (self, X, Y) -> tuple:
+  def _arrange_samples (self, X, Y, w = None) -> tuple:   # TODO complete docstring
     """Arrange the reference and generated samples.
     
     Parameters
@@ -233,29 +233,43 @@ class GAN (tf.keras.Model):
 
     Y : `tf.Tensor`
       ...
+
+    w : `tf.Tensor`, optional
+      ... (`None`, by default).
     
     Returns
     -------
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
 
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
     """
-    ## Sample random points in the latent space
-    batch_size = tf.shape(X)[0]
-    latent_vectors = tf.random.normal ( shape = (batch_size, self._latent_dim) )
+    ## Data-batch splitting
+    batch_size = tf.cast ( tf.shape(X)[0] / 2, tf.int32 )
+    X_ref, X_gen = X[:batch_size], X[batch_size:batch_size*2]
+    Y_ref, Y_gen = Y[:batch_size], Y[batch_size:batch_size*2]
+    if w is not None:
+      w_ref, w_gen = w[:batch_size], w[batch_size:batch_size*2]
+    else:
+      w_ref = tf.ones ( tf.shape(X_ref)[0] )
+      w_gen = tf.ones ( tf.shape(X_gen)[0] )
 
     ## Map the latent space into the generated space
-    input_vectors = tf.concat ( [X, latent_vectors], axis = 1 )
-    generated = self._generator (input_vectors)
+    latent_vectors = tf.random.normal ( shape = (batch_size, self._latent_dim) )
+    input_vectors = tf.concat ( [X_gen, latent_vectors], axis = 1 )
+    Y_gen = self._generator (input_vectors)
 
-    ## Reference and generated sample
-    ref_sample = tf.concat ( [X, Y], axis = 1 )
-    gen_sample = tf.concat ( [X, generated], axis = 1 )
+    ## Tensors combination
+    XY_ref = tf.concat ( [X_ref, Y_ref], axis = 1 )
+    XY_gen = tf.concat ( [X_gen, Y_gen], axis = 1 )
+
+    ## Reference and generated samples
+    ref_sample = ( XY_ref, w_ref )
+    gen_sample = ( XY_gen, w_gen )
     return ref_sample, gen_sample
 
-  def _train_d_step (self, X, Y, w = None) -> None:
+  def _train_d_step (self, X, Y, w = None) -> None:   # TODO complete docstring
     """Training step for the discriminator.
     
     Parameters
@@ -270,33 +284,30 @@ class GAN (tf.keras.Model):
       ... (`None`, by default).
     """
     with tf.GradientTape() as tape:
-      ref_sample, gen_sample = self._arrange_samples (X, Y)
-      d_loss = self._compute_d_loss ( gen_sample, ref_sample, weights = w )
+      ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+      d_loss = self._compute_d_loss ( gen_sample, ref_sample )
     grads = tape.gradient ( d_loss, self._discriminator.trainable_weights )
     self._d_optimizer.apply_gradients ( zip (grads, self._discriminator.trainable_weights) )
 
-  def _compute_d_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
+  def _compute_d_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the discriminator loss.
     
     Parameters
     ----------
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
 
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
-
-    weights : `tf.Tensor`, optional
-      ... (`None`, by default).
 
     Returns
     -------
     d_loss : `tf.Tensor`
       ...
     """
-    return - self._compute_g_loss (gen_sample, ref_sample, weights)
+    return - self._compute_g_loss (gen_sample, ref_sample)
 
-  def _train_g_step (self, X, Y, w = None) -> None:
+  def _train_g_step (self, X, Y, w = None) -> None:   # TODO complete docstring
     """Training step for the generator.
     
     Parameters
@@ -311,43 +322,43 @@ class GAN (tf.keras.Model):
       ... (`None`, by default).
     """
     with tf.GradientTape() as tape:
-      ref_sample, gen_sample = self._arrange_samples (X, Y)
-      g_loss = self._compute_g_loss ( gen_sample, ref_sample, weights = w )
+      ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+      g_loss = self._compute_g_loss ( gen_sample, ref_sample )
     grads = tape.gradient ( g_loss, self._generator.trainable_weights )
     self._g_optimizer.apply_gradients ( zip (grads, self._generator.trainable_weights) )
 
-  def _compute_g_loss (self, gen_sample, ref_sample, weights = None) -> tf.Tensor:
+  def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the generator loss.
     
     Parameters
     ----------
-    gen_sample : `tf.Tensor`
+    gen_sample : `tuple` of `tf.Tensor`
       ...
 
-    ref_sample : `tf.Tensor`
+    ref_sample : `tuple` of `tf.Tensor`
       ...
-
-    weights : `tf.Tensor`, optional
-      ... (`None`, by default).
 
     Returns
     -------
     g_loss : `tf.Tensor`
       ...
     """
+    ## Extract input tensors and weights
+    XY_gen, w_gen = gen_sample
+    XY_ref, w_ref = ref_sample
+
     ## Noise injection to stabilize GAN training
-    rnd_gen = tf.random.normal ( tf.shape(gen_sample), mean = 0., stddev = 0.1 )
-    rnd_ref = tf.random.normal ( tf.shape(ref_sample), mean = 0., stddev = 0.1 )
-    D_gen = self._discriminator ( gen_sample + rnd_gen )
-    D_ref = self._discriminator ( ref_sample + rnd_ref )
+    rnd_gen = tf.random.normal ( tf.shape(XY_gen), mean = 0., stddev = 0.1 )
+    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.1 )
+    D_gen = self._discriminator ( XY_gen + rnd_gen )
+    D_ref = self._discriminator ( XY_ref + rnd_ref )
 
     ## Loss computation
-    g_loss = tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) * tf.clip_by_value (1 - D_gen, 1e-12, 1.) )
-    if weights is not None:
-      g_loss = weights * g_loss
+    g_loss = w_ref * tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) ) + \
+             w_gen * tf.math.log ( tf.clip_by_value (1 - D_gen, 1e-12, 1.) )
     return tf.reduce_mean (g_loss)
 
-  def generate (self, X) -> tf.Tensor:
+  def generate (self, X) -> tf.Tensor:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
     
     Parameters
