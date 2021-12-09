@@ -67,9 +67,9 @@ class ScikitTrainer (BaseTrainer):
     self._model = model
     self._scores = [None, None]
 
-    self._scores[0] = roc_auc_score ( train_labels, model.predict_proba(train_feats)[:,1] )
-    if validation_split != 0.0:
-      self._scores[1] = roc_auc_score ( val_labels, model.predict_proba(val_feats)[:,1] )
+    #self._scores[0] = roc_auc_score ( train_labels, model.predict_proba(train_feats)[:,1] )
+    #if validation_split != 0.0:
+    #  self._scores[1] = roc_auc_score ( val_labels, model.predict_proba(val_feats)[:,1] )
 
     if plots_on_report:
       if validation_split != 0.0:
@@ -122,10 +122,16 @@ class ScikitTrainer (BaseTrainer):
   def _eff_hist1d ( self , 
                     report , 
                     bins = 100 , 
-                    validation = False , 
-                    show_whole_sample = True ) -> None:   # TODO add docstring
+                    validation = False ) -> None:   # TODO add docstring
     """"""
     model_name = self._name . split("_") [1]
+
+    if not validation:
+      self._scores[0] = list()
+    else:
+      self._scores[1] = list()
+
+    ## 
     p_limits = [0, 4, 8, 12, 100]
 
     for i in range (len(p_limits) - 1):
@@ -136,6 +142,7 @@ class ScikitTrainer (BaseTrainer):
       ax.set_title  (f"{model_name} for $p$ in ({p_limits[i]}, {p_limits[i+1]}) GeV/$c$")
       ax.set_xlabel ("Pseudorapidity", fontsize = 12)
       ax.set_ylabel ("Entries", fontsize = 12)
+      ax.set_yscale ("log")
   
       ## Data
       X_true, Y_true, w_true = self._data_to_plot ( data_from_model = False, validation = validation )
@@ -145,11 +152,9 @@ class ScikitTrainer (BaseTrainer):
       custom_labels = list()
   
       ## TurboCalib
-      if show_whole_sample:
-        ax.set_yscale ("log")
-        ax.hist ( X_true[:,1], bins = binning[0], color = "red", histtype = "step", zorder = 2 )
-        custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "red") )
-        custom_labels . append ( "TurboCalib" )
+      hist_all, _, _ = ax.hist ( X_true[:,1], bins = binning[0], color = "red", histtype = "step", zorder = 2 )
+      custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "red") )
+      custom_labels . append ( "TurboCalib" )
   
       ## Efficiency parameterization
       p_pred = X_pred[:,0][Y_pred == 1] / 1e3   # momentum
@@ -158,8 +163,8 @@ class ScikitTrainer (BaseTrainer):
   
       entries2d, eta_edges, _ = np.histogram2d ( e_pred, p_pred, bins = binning, weights = w_pred )
       entries = np.sum ( entries2d, axis = 1 )
-      eta_centers = ( eta_edges[1:] + eta_edges[:-1] ) / 2
-      ax.errorbar ( eta_centers, entries, yerr = 0.0, color = "royalblue", drawstyle = "steps-mid", zorder = 1 )
+      hist_pred = ( eta_edges[1:] + eta_edges[:-1] ) / 2
+      ax.errorbar ( hist_pred, entries, yerr = 0.0, color = "royalblue", drawstyle = "steps-mid", zorder = 1 )
       custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "royalblue") )
       custom_labels . append ( f"{model_name} model" )
   
@@ -169,9 +174,9 @@ class ScikitTrainer (BaseTrainer):
       w_true = np.where (w_true[Y_true == 1] > 0, w_true[Y_true == 1], 0.0)   # set negative-weights to zero
   
       entries2d, eta_edges, _ = np.histogram2d ( e_true, p_true, bins = binning, weights = w_true )
-      entries = np.sum ( entries2d, axis = 1 )
+      hist_true = np.sum ( entries2d, axis = 1 )
       eta_centers = ( eta_edges[1:] + eta_edges[:-1] ) / 2
-      ax.errorbar ( eta_centers, entries, yerr = entries**0.5, fmt = '.', color = "black", 
+      ax.errorbar ( eta_centers, hist_true, yerr = hist_true**0.5, fmt = '.', color = "black", 
                     barsabove = True, capsize = 2, label = f"{model_name} passed", zorder = 0 )
       handles, labels = ax.get_legend_handles_labels()
       custom_handles . append ( handles[-1] )
@@ -179,7 +184,17 @@ class ScikitTrainer (BaseTrainer):
   
       ax.legend (handles = custom_handles, labels = custom_labels, loc = "upper right", fontsize = 10)
       report.add_figure(); plt.clf(); plt.close()
-#    report.add_markdown ("<br/>")
+#      report.add_markdown ("<br/>")
+    
+      eff_true = hist_true[np.nonzero(hist_all)] / hist_all[np.nonzero(hist_all)]
+      eff_pred = hist_pred[np.nonzero(hist_all)] / hist_all[np.nonzero(hist_all)]
+      eff_true = eff_true[np.nonzero(eff_true)]
+      eff_pred = eff_pred[np.nonzero(eff_true)]
+
+      if not validation:
+        self._scores[0] . append ( np.sum ( (eff_pred - eff_true)**2 / eff_true ) )   # chi2 on train-set
+      else:
+        self._scores[1] . append ( np.sum ( (eff_pred - eff_true)**2 / eff_true ) )   # chi2 on val-set
 
   def _data_to_plot ( self , 
                       data_from_model = False ,
