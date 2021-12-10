@@ -134,8 +134,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     self._d_optimizer = d_optimizer
     self._g_optimizer = g_optimizer
 
-    self._d_lr0 = d_optimizer.learning_rate
-    self._g_lr0 = g_optimizer.learning_rate
+    self._d_lr0 = float ( d_optimizer.learning_rate )
+    self._g_lr0 = float ( g_optimizer.learning_rate )
 
     ## Data-type control
     try:
