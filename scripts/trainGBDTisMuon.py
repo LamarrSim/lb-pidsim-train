@@ -83,7 +83,8 @@ model = GradientBoostingClassifier ( loss = hp["loss"] ,
                                      learning_rate = hp["learning_rate"] ,
                                      n_estimators = hp["n_estimators"] ,
                                      criterion = hp["criterion"] ,
-                                     max_depth = hp["max_depth"]  )
+                                     min_samples_leaf = hp["min_samples_leaf"] ,
+                                     max_depth = hp["max_depth"] )
 
 # +--------------------+
 # |    Run training    |
