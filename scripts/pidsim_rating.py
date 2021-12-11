@@ -35,7 +35,7 @@ parser . add_argument ( "-a", "--algo", required = True )   # TODO add choices
 args = parser . parse_args()
 
 model_name = f"{args.algo}_{args.model}_{args.particle}_{args.sample}_{args.version}"
-class_name = f"bdt_{model_name}"
+class_name = f"rtg_{model_name}"
 
 trainer = ScikitClassifier ( name = class_name ,
                              model_dir   = config["model_dir"] ,
