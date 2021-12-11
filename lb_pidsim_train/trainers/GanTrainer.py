@@ -50,6 +50,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
     html_reports.Report : ...
       ...
     """
+    n_epochs = len (history.history["mse"])
+
     ## Metric curves plots
     plt.figure (figsize = (8,5), dpi = 100)
     plt.title  ("Metric curves", fontsize = 14)
@@ -59,6 +61,11 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if self._validation_split != 0.0:
       plt.plot (history.history["val_mse"], linewidth = 1.5, color = "orangered", label = "validation set")
     plt.legend (loc = "upper right", fontsize = 10)
+    y_bottom = min ( min(history.history["mse"][int(n_epochs/10):]), min(history.history["val_mse"][int(n_epochs/10):]) )
+    y_top    = max ( max(history.history["mse"][int(n_epochs/10):]), max(history.history["val_mse"][int(n_epochs/10):]) )
+    y_bottom -= 0.1 * y_bottom
+    y_top    += 0.1 * y_top
+    plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
     report.add_markdown ("<br/>")
@@ -71,6 +78,11 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
     plt.legend (title = "Training players:", loc = "upper right", fontsize = 10)
+    y_bottom = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
+    y_top    = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
+    y_bottom += 0.1 * y_bottom
+    y_top    += 0.1 * y_top
+    plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
     report.add_markdown ("<br/>")
