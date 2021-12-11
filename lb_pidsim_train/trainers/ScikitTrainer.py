@@ -91,30 +91,29 @@ class ScikitTrainer (BaseTrainer):
 
   def _eff_hist2d ( self, report, bins = 100, validation = False ) -> None:   # TODO add docstring
     """"""
-    rng = [ [0, 100] , [1, 6] ]   # momentum-pseudorapidity ranges
+    X, Y, w, probas = self._data_to_plot ( validation = validation )
 
+    binning = [ np.linspace ( 0 , 100 , bins+1 ) ,   # momentum binning
+                np.linspace ( 1 , 6   , bins+1 ) ]   # pseudorapidity binning
+
+    ## Efficiency correction
     plt.figure (figsize = (8,5), dpi = 100)
     plt.title  ("isMuon (Brunel reconstruction)", fontsize = 14)
     plt.xlabel ("Momentum [GeV/$c$]", fontsize = 12)
     plt.ylabel ("Pseudorapidity", fontsize = 12)
-    X, Y, w = self._data_to_plot ( data_from_model = False, validation = validation )
-    p = X[:,0][Y == 1] / 1e3   # momentum
-    e = X[:,1][Y == 1]   # pseudorapidity
-    w = np.where (w[Y == 1] > 0, w[Y == 1], 0.0)   # set negative-weights to zero
-    plt.hist2d ( p, e, bins = bins, range = rng, weights = w, density = False, cmap = plt.get_cmap ("inferno") )
+    hist2d = np.histogram2d ( X[:,0][Y == 1]/1e3, X[:,1][Y == 1], weights = w[Y == 1], bins = binning )
+    plt.pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("inferno"), vmin = 0 )
 
     report.add_figure(); plt.clf(); plt.close()
 
+    ## Efficiency parameterization
     plt.figure (figsize = (8,5), dpi = 100)
     algo_name = self._name . split("_") [0]
     plt.title  (f"isMuon ({algo_name} model)", fontsize = 14)
     plt.xlabel ("Momentum [GeV/$c$]", fontsize = 12)
     plt.ylabel ("Pseudorapidity", fontsize = 12)
-    X, Y, w = self._data_to_plot ( data_from_model = True, validation = validation )
-    p = X[:,0][Y == 1] / 1e3   # momentum
-    e = X[:,1][Y == 1]   # pseudorapidity
-    w = w[Y == 1]   # predict_proba from Scikit-Learn model
-    plt.hist2d ( p, e, bins = bins, range = rng, weights = w, density = False, cmap = plt.get_cmap ("inferno") )
+    hist2d = np.histogram2d ( X[:,0]/1e3, X[:,1], weights = w * probas, bins = binning )
+    plt.pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("inferno"), vmin = 0 )
 
     report.add_figure(); plt.clf(); plt.close()
 #    report.add_markdown ("<br/>")
@@ -124,70 +123,65 @@ class ScikitTrainer (BaseTrainer):
                     bins = 100 , 
                     validation = False ) -> None:   # TODO add docstring
     """"""
-    model_name = self._name . split("_") [1]
+    X, Y, w, probas = self._data_to_plot ( validation = validation )
+    p_limits = [0, 4, 8, 12, 100]   ## Momentum limits
+    eta_bins = np.linspace (1, 6, bins+1) 
 
     if not validation:
       self._scores[0] = list()
     else:
       self._scores[1] = list()
 
-    ## 
-    p_limits = [0, 4, 8, 12, 100]
+    model_name = self._name . split("_") [1]
 
     for i in range (len(p_limits) - 1):
-      binning = [ np.linspace (1, 6, bins+1) ,                     # pseudorapidity binning
-                  np.linspace (p_limits[i], p_limits[i+1], bins+1) ]   # momentum binning
-  
       fig, ax = plt.subplots (figsize = (8,5), dpi = 100)
       ax.set_title  (f"{model_name} for $p$ in ({p_limits[i]}, {p_limits[i+1]}) GeV/$c$")
       ax.set_xlabel ("Pseudorapidity", fontsize = 12)
       ax.set_ylabel ("Entries", fontsize = 12)
       ax.set_yscale ("log")
   
-      ## Data
-      X_true, Y_true, w_true = self._data_to_plot ( data_from_model = False, validation = validation )
-      X_pred, Y_pred, w_pred = self._data_to_plot ( data_from_model = True, validation = validation )
-  
       custom_handles = list()
       custom_labels = list()
   
+      query = (X[:,0]/1e3 > p_limits[i]) & (X[:,0]/1e3 <= p_limits[i+1])   # NumPy query
+
       ## TurboCalib
-      hist_all, _, _ = ax.hist ( X_true[:,1], bins = binning[0], color = "red", histtype = "step", zorder = 2 )
+      h_all, bin_edges = np.histogram ( X[:,1][query], bins = eta_bins, weights = w[query] )
+      bin_centers = ( bin_edges[1:] + bin_edges[:-1] ) / 2
+      h_all = np.where ( h_all > 0, h_all, 0 )   # ensure positive entries
+      h_all = h_all . astype (np.int32)           # ensure integer entries
+      ax.errorbar ( bin_centers, h_all, yerr = 0.0, color = "red", drawstyle = "steps-mid", zorder = 2 )
       custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "red") )
-      custom_labels . append ( "TurboCalib" )
+      custom_labels  . append ( "TurboCalib" )
   
       ## Efficiency parameterization
-      p_pred = X_pred[:,0][Y_pred == 1] / 1e3   # momentum
-      e_pred = X_pred[:,1][Y_pred == 1]   # pseudorapidity
-      w_pred = w_pred[Y_pred == 1]   # predict_proba from Scikit-Learn model
-  
-      entries2d, eta_edges, _ = np.histogram2d ( e_pred, p_pred, bins = binning, weights = w_pred )
-      entries = np.sum ( entries2d, axis = 1 )
-      hist_pred = ( eta_edges[1:] + eta_edges[:-1] ) / 2
-      ax.errorbar ( hist_pred, entries, yerr = 0.0, color = "royalblue", drawstyle = "steps-mid", zorder = 1 )
+      h_pred, bin_edges = np.histogram ( X[:,1][query], bins = eta_bins, weights = w[query] * probas[query] )
+      bin_centers = ( bin_edges[1:] + bin_edges[:-1] ) / 2
+      h_pred = np.where ( h_pred > 0, h_pred, 0 )   # ensure positive entries
+      h_pred = h_pred . astype (np.int32)           # ensure integer entries
+      ax.errorbar ( bin_centers, h_pred, yerr = 0.0, color = "royalblue", drawstyle = "steps-mid", zorder = 1 )
       custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "royalblue") )
-      custom_labels . append ( f"{model_name} model" )
+      custom_labels  . append ( f"{model_name} model" )
   
       ## Efficiency correction
-      p_true = X_true[:,0][Y_true == 1] / 1e3   # momentum
-      e_true = X_true[:,1][Y_true == 1]   # pseudorapidity
-      w_true = np.where (w_true[Y_true == 1] > 0, w_true[Y_true == 1], 0.0)   # set negative-weights to zero
-  
-      entries2d, eta_edges, _ = np.histogram2d ( e_true, p_true, bins = binning, weights = w_true )
-      hist_true = np.sum ( entries2d, axis = 1 )
-      eta_centers = ( eta_edges[1:] + eta_edges[:-1] ) / 2
-      ax.errorbar ( eta_centers, hist_true, yerr = hist_true**0.5, fmt = '.', color = "black", 
+      h_true, bin_edges = np.histogram ( X[:,1][query][Y[query] == 1], bins = eta_bins,
+                                         weights = w[query][Y[query] == 1] )
+      bin_centers = ( bin_edges[1:] + bin_edges[:-1] ) / 2
+      h_true = np.where ( h_true > 0, h_true, 0 )   # ensure positive entries
+      h_true = h_true . astype (np.int32)           # ensure integer entries
+      ax.errorbar ( bin_centers, h_true, yerr = h_true**0.5, fmt = '.', color = "black", 
                     barsabove = True, capsize = 2, label = f"{model_name} passed", zorder = 0 )
       handles, labels = ax.get_legend_handles_labels()
       custom_handles . append ( handles[-1] )
-      custom_labels . append ( labels[-1] )
+      custom_labels  . append ( labels[-1] )
   
       ax.legend (handles = custom_handles, labels = custom_labels, loc = "upper right", fontsize = 10)
       report.add_figure(); plt.clf(); plt.close()
 #      report.add_markdown ("<br/>")
-    
-      eff_true = hist_true[np.nonzero(hist_all)] / hist_all[np.nonzero(hist_all)]
-      eff_pred = hist_pred[np.nonzero(hist_all)] / hist_all[np.nonzero(hist_all)]
+
+      eff_true = h_true[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
+      eff_pred = h_pred[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
       eff_true = eff_true[np.nonzero(eff_true)]
       eff_pred = eff_pred[np.nonzero(eff_true)]
 
@@ -196,16 +190,11 @@ class ScikitTrainer (BaseTrainer):
       else:
         self._scores[1] . append ( np.sum ( (eff_pred - eff_true)**2 / eff_true ) )   # chi2 on val-set
 
-  def _data_to_plot ( self , 
-                      data_from_model = False ,
-                      validation = False ) -> tuple:   # TODO complete docstring
+  def _data_to_plot (self, validation = False) -> tuple:   # TODO complete docstring
     """...
     
     Parameters
-    ----------
-    data_from_model : `bool`
-      ...
-      
+    ----------  
     validation : `bool`
       ...
       
@@ -219,30 +208,22 @@ class ScikitTrainer (BaseTrainer):
 
     w : `np.ndarray`
       ...
+
+    probas : `np.ndarray`
+      ...
     """
     sample_size = self._X . shape[0]
     trainset_size = int ( (1.0 - self._validation_split) * sample_size )
     if not validation:
-      ## Reference data on train-set
-      if not data_from_model:
-        X, Y, w = self._X[:trainset_size], self._Y[:trainset_size], self._w[:trainset_size]
-      ## Predicted data on train-set
-      else:
-        X = self._X[:trainset_size]
-        Y = self.model.predict ( self._X_scaled[:trainset_size] )
-        w = self.model.predict_proba ( self._X_scaled[:trainset_size] ) [:,1]
+      X, X_scaled = self._X[:trainset_size], self._X_scaled[:trainset_size]
+      Y, w = self._Y[:trainset_size], self._w[:trainset_size]
     else:
       if self._validation_split == 0.0:
         raise ValueError ("error.")   # TODO add error message
-      ## Reference data on test-set
-      if not data_from_model:
-        X, Y, w = self._X[trainset_size:], self._Y[trainset_size:], self._w[trainset_size:]
-      ## Predicted data on test-set
-      else:
-        X = self._X[trainset_size:]
-        Y = self.model.predict ( self._X_scaled[trainset_size:] )
-        w = self.model.predict_proba ( self._X_scaled[trainset_size:] ) [:,1]
-    return X, Y.flatten(), w.flatten()
+      X, X_scaled = self._X[trainset_size:], self._X_scaled[trainset_size:]
+      Y, w = self._Y[trainset_size:], self._w[trainset_size:]
+    probas = self.model.predict_proba ( X_scaled ) [:,1]
+    return X, Y.flatten(), w.flatten(), probas.flatten()
 
   def _save_model ( self, name, model, verbose = False ) -> None:   # TODO complete docstring
     """Save the trained model.
