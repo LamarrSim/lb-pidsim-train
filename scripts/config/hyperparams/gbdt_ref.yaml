@@ -7,7 +7,7 @@ Rich:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 60 mln
+      chunk_size : 2500000   # 60 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -24,7 +24,7 @@ Rich:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 150 mln
+      chunk_size : 2500000   # 150 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -41,7 +41,7 @@ Rich:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 150 mln
+      chunk_size : 2500000   # 150 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -58,7 +58,7 @@ Rich:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 105 mln
+      chunk_size : 2500000   # 105 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -153,7 +153,7 @@ GlobalPID:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 60 mln
+      chunk_size : 2500000   # 60 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -170,7 +170,7 @@ GlobalPID:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 150 mln
+      chunk_size : 2500000   # 150 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -187,7 +187,7 @@ GlobalPID:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 150 mln
+      chunk_size : 2500000   # 150 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -204,7 +204,7 @@ GlobalPID:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 5000000   # 105 mln
+      chunk_size : 2500000   # 105 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500

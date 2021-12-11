@@ -7,13 +7,14 @@ isMuon:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 500000   # 60 mln
+      chunk_size : 4000000   # 60 mln
       X_preprocessing : quantile
       loss : deviance
-      learning_rate : 0.05
-      n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
+      learning_rate : 0.08
+      n_estimators  : 5
+      criterion : squared_error
+      min_samples_leaf : 0.002
+      max_depth : 5
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -22,14 +23,15 @@ isMuon:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 500000   # 150 mln
+      chunk_size : 8000000   # 150 mln
       X_preprocessing : quantile
       loss : deviance
-      learning_rate : 0.05
-      n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
-      validation_split : 0.2
+      learning_rate : 0.14
+      n_estimators  : 2
+      criterion : squared_error
+      min_samples_leaf : 0.095
+      max_depth : 70
+      validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Kaon
@@ -37,13 +39,14 @@ isMuon:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 500000   # 150 mln
+      chunk_size : 8000000   # 150 mln
       X_preprocessing : quantile
       loss : deviance
-      learning_rate : 0.05
-      n_estimators  : 500
-      criterion : friedman_mse
-      max_depth : 10
+      learning_rate : 0.07
+      n_estimators  : 3
+      criterion : squared_error
+      min_samples_leaf : 0.081
+      max_depth : 23
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -52,13 +55,14 @@ isMuon:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 500000   # 105 mln
+      chunk_size : 16000000   # 105 mln
       X_preprocessing : quantile
       loss : deviance
-      learning_rate : 0.05
-      n_estimators  : 500
+      learning_rate : 0.06
+      n_estimators  : 1
       criterion : friedman_mse
-      max_depth : 10
+      min_samples_leaf : 0.007
+      max_depth : 2
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
