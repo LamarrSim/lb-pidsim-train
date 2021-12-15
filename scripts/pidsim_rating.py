@@ -11,19 +11,19 @@ from sklearn.ensemble         import GradientBoostingClassifier
 # |    Configuration files    |
 # +---------------------------+
 
-with open ("config/config.yaml") as file:
+with open ("training/config/config.yaml") as file:
   config = yaml.full_load (file)
 
-with open ("config/datasets.yaml") as file:
+with open ("training/config/datasets.yaml") as file:
   datasets = yaml.full_load (file)
 
-with open ("config/variables.yaml") as file:
+with open ("training/config/variables.yaml") as file:
   variables = yaml.full_load (file)
 
-with open ("config/selections.yaml") as file:
+with open ("training/config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-with open ("config/hyperparams/gbdt_ref.yaml") as file:
+with open ("training/config/hyperparams/gbdt_ref.yaml") as file:
   hyperparams = yaml.full_load (file)
 
 # +----------------------------+

@@ -67,10 +67,6 @@ class ScikitTrainer (BaseTrainer):
     self._model = model
     self._scores = [None, None]
 
-    #self._scores[0] = roc_auc_score ( train_labels, model.predict_proba(train_feats)[:,1] )
-    #if validation_split != 0.0:
-    #  self._scores[1] = roc_auc_score ( val_labels, model.predict_proba(val_feats)[:,1] )
-
     if plots_on_report:
       if validation_split != 0.0:
         report.add_markdown ("## Model performance on validation set")
@@ -116,7 +112,7 @@ class ScikitTrainer (BaseTrainer):
     plt.pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("inferno"), vmin = 0 )
 
     report.add_figure(); plt.clf(); plt.close()
-#    report.add_markdown ("<br/>")
+    # report.add_markdown ("<br/>")
 
   def _eff_hist1d ( self , 
                     report , 
@@ -178,7 +174,7 @@ class ScikitTrainer (BaseTrainer):
   
       ax.legend (handles = custom_handles, labels = custom_labels, loc = "upper right", fontsize = 10)
       report.add_figure(); plt.clf(); plt.close()
-#      report.add_markdown ("<br/>")
+      # report.add_markdown ("<br/>")
 
       eff_true = h_true[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
       eff_pred = h_pred[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]

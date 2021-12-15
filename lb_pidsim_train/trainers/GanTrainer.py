@@ -68,7 +68,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
-    report.add_markdown ("<br/>")
+    # report.add_markdown ("<br/>")
 
     ## Learning curves plots
     plt.figure (figsize = (8,5), dpi = 100)
@@ -85,7 +85,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
-    report.add_markdown ("<br/>")
+    # report.add_markdown ("<br/>")
 
     ## Learning rate scheduling plots
     plt.figure (figsize = (8,5), dpi = 100)
@@ -97,7 +97,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.legend (title = "Training players:", loc = "upper right", fontsize = 10)
 
     report.add_figure(); plt.clf(); plt.close()
-    report.add_markdown ("<br/>")
+    # report.add_markdown ("<br/>")
 
     ## Validation plots
     rows = cols = len(self.Y_vars)
@@ -128,7 +128,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
           ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")
 
     report.add_figure(); plt.clf(); plt.close()
-    report.add_markdown ("<br/>")
+    # report.add_markdown ("<br/>")
 
   def _save_model ( self, name, model, verbose = False ) -> None:   # TODO fix docstring
     """Save the trained generator.

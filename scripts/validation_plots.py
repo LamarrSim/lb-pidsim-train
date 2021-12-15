@@ -26,19 +26,19 @@ TF_FLOAT = tf.float32
 # |    Configuration files    |
 # +---------------------------+
 
-with open ("config/config.yaml") as file:
+with open ("training/config/config.yaml") as file:
   config = yaml.full_load (file)
 
-with open ("config/datasets.yaml") as file:
+with open ("training/config/datasets.yaml") as file:
   datasets = yaml.full_load (file)
 
-with open ("config/variables.yaml") as file:
+with open ("training/config/variables.yaml") as file:
   variables = yaml.full_load (file)
 
-with open ("config/selections.yaml") as file:
+with open ("training/config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-with open ("config/validation.yaml") as file:
+with open ("training/config/validation.yaml") as file:
   validation = yaml.full_load (file)
 
 # +---------------------------------+
