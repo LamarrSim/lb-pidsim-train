@@ -1,0 +1,7 @@
+# +----------------------+
+# |    DIRECTORY PATH    |
+# +----------------------+
+data_dir   : /pclhcb06/landerli/TurCal
+model_dir  : /home/mabarbet/PythonFastSim/trainings/pidsim/models
+class_dir  : /home/mabarbet/PythonFastSim/trainings/pidsim/models
+report_dir : /home/mabarbet/PythonFastSim/trainings/pidsim/reports

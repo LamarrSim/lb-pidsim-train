@@ -17,6 +17,7 @@ Rich:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -44,6 +45,7 @@ Rich:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00001
       g_lr : 0.00001
       d_updt_per_batch : 10
@@ -71,15 +73,16 @@ Rich:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00003
-      g_lr : 0.00003
-      d_updt_per_batch : 10
+      critic_dim : 256
+      d_lr : 0.00001
+      g_lr : 0.00001
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
       grad_penalty : 1.0
       lr_sched_factor : 0.900
       lr_sched_step : 4
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 200
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -98,6 +101,7 @@ Rich:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -130,6 +134,7 @@ Muon:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -157,6 +162,7 @@ Muon:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -184,6 +190,7 @@ Muon:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -211,6 +218,7 @@ Muon:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00001
       g_lr : 0.00001
       d_updt_per_batch : 10
@@ -243,6 +251,7 @@ GlobalPID:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -270,6 +279,7 @@ GlobalPID:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -297,6 +307,7 @@ GlobalPID:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -324,6 +335,7 @@ GlobalPID:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -356,6 +368,7 @@ GlobalMuonId:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -383,6 +396,7 @@ GlobalMuonId:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -410,6 +424,7 @@ GlobalMuonId:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10
@@ -437,6 +452,7 @@ GlobalMuonId:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
+      critic_dim : 256
       d_lr : 0.00002
       g_lr : 0.00002
       d_updt_per_batch : 10

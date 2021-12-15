@@ -1,7 +1,0 @@
-# +----------------------+
-# |    DIRECTORY PATH    |
-# +----------------------+
-data_dir   : ./data
-model_dir  : ./models
-class_dir  : ./models
-report_dir : ./reports
