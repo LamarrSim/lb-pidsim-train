@@ -166,7 +166,7 @@ class WGAN_GP (GAN):   # TODO add class description
     ## Standard WGAN loss
     D_gen = self._discriminator ( XY_gen )
     D_ref = self._discriminator ( XY_ref )
-    g_loss = w_gen * D_gen - w_ref * D_ref
+    g_loss = w_ref * D_ref - w_gen * D_gen
     return tf.reduce_mean (g_loss)
     
   @property

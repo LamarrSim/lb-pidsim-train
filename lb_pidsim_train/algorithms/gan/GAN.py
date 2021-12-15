@@ -247,8 +247,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     """
     ## Data-batch splitting
     batch_size = tf.cast ( tf.shape(X)[0] / 2, tf.int32 )
-    X_ref, X_gen = X[:batch_size], X[batch_size:batch_size*2]
-    Y_ref, Y_gen = Y[:batch_size], Y[batch_size:batch_size*2]
+    X_ref , X_gen = X[:batch_size], X[batch_size:batch_size*2]
+    Y_ref = Y[:batch_size]
     if w is not None:
       w_ref, w_gen = w[:batch_size], w[batch_size:batch_size*2]
     else:
