@@ -1,3 +1,4 @@
-from .GanBaseScheduler import GanBaseScheduler
-from .GanExpScheduler  import GanExpScheduler
-from .GanPowScheduler  import GanPowScheduler
+from .GanBaseLrScheduler   import GanBaseLrScheduler
+from .GanExpLrScheduler    import GanExpLrScheduler
+from .GanPowLrScheduler    import GanPowLrScheduler
+from .GanBaseUpdtScheduler import GanBaseUpdtScheduler
