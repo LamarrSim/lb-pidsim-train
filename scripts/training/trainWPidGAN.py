@@ -6,7 +6,7 @@ import tensorflow as tf
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import WGAN_GP
-from lb_pidsim_train.callbacks  import GanExpScheduler
+from lb_pidsim_train.callbacks  import GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
@@ -128,7 +128,7 @@ model . summary()
 # |    Learning rate scheduling    |
 # +--------------------------------+
 
-lr_scheduler = GanExpScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
+lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
 
 # +--------------------+
 # |    Run training    |

@@ -6,7 +6,7 @@ import tensorflow as tf
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import CramerGAN
-from lb_pidsim_train.callbacks  import GanExpScheduler
+from lb_pidsim_train.callbacks  import GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
@@ -26,7 +26,8 @@ with open ("config/variables.yaml") as file:
 with open ("config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-with open ("config/hyperparams/cramergan.yaml") as file:
+# with open ("config/hyperparams/cramergan.yaml") as file:
+with open ("config/hyperparams/base-cramergan.yaml") as file:   # base-model config file
   hyperparams = yaml.full_load (file)
 
 # +----------------------------+
@@ -36,7 +37,7 @@ with open ("config/hyperparams/cramergan.yaml") as file:
 parser = argparser ("Model training")
 args = parser . parse_args()
 
-model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
+model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}-base"   # base-model name
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -62,7 +63,7 @@ file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 trainer . feed_from_root_files ( root_files = file_list , 
                                  X_vars = variables[args.model]["X_vars"][args.sample] , 
                                  Y_vars = variables[args.model]["Y_vars"][args.sample] , 
-                                 w_var  = variables[args.model]["w_vars"][args.sample] , 
+                                 #w_var  = variables[args.model]["w_vars"][args.sample] , 
                                  selections = selections[args.model][args.sample] , 
                                  tree_names = None , 
                                  chunk_size = hp["chunk_size"] , 
@@ -129,7 +130,7 @@ model . summary()
 # |    Learning rate scheduling    |
 # +--------------------------------+
 
-lr_scheduler = GanExpScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
+lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
 
 # +--------------------+
 # |    Run training    |

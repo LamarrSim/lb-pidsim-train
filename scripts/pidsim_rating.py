@@ -23,7 +23,7 @@ with open ("training/config/variables.yaml") as file:
 with open ("training/config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-with open ("training/config/hyperparams/gbdt_ref.yaml") as file:
+with open ("training/config/hyperparams/rating-gbdt.yaml") as file:
   hyperparams = yaml.full_load (file)
 
 # +----------------------------+

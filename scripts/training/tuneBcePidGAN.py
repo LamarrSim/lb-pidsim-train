@@ -6,7 +6,7 @@ import tensorflow as tf
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import BceGAN
-from lb_pidsim_train.callbacks  import GanExpLrScheduler
+from lb_pidsim_train.callbacks  import GanExpLrScheduler, GanBaseUpdtScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
@@ -26,17 +26,17 @@ with open ("config/variables.yaml") as file:
 with open ("config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-with open ("config/hyperparams/bcegan.yaml") as file:
+with open ("config/hyperparams/tuned-bcegan.yaml") as file:
   hyperparams = yaml.full_load (file)
 
 # +----------------------------+
 # |    Trainer construction    | 
 # +----------------------------+
 
-parser = argparser ("Model training")
+parser = argparser ("Model fine-tuning")
 args = parser . parse_args()
 
-model_name = f"BceGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
+model_name = f"BceGAN_{args.model}_{args.particle}_{args.sample}_{args.version}-tuning"
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -68,18 +68,14 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
-# +--------------------------+
-# |    Data preprocessing    |
-# +--------------------------+
+# +---------------------+
+# |    Model loading    |
+# +---------------------+
 
-X_vars_to_preprocess = variables[args.model]["X_vars_to_preprocess"][args.sample]
-Y_vars_to_preprocess = variables[args.model]["Y_vars_to_preprocess"][args.sample]
+model_dir = config["model_dir"]
+file_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}-base"
 
-trainer . prepare_dataset ( X_preprocessing = hp["X_preprocessing"] , 
-                            Y_preprocessing = hp["Y_preprocessing"] , 
-                            X_vars_to_preprocess = X_vars_to_preprocess ,
-                            Y_vars_to_preprocess = Y_vars_to_preprocess ,
-                            verbose = 1 )
+trainer . load_model ( filepath = f"{model_dir}/{file_name}", verbose = 1 )
 
 # +--------------------------+
 # |    Model construction    |
@@ -94,19 +90,20 @@ for layer in range (d_num_layers):
   discriminator . append ( Dense (d_num_nodes) )
   discriminator . append ( LeakyReLU (alpha = d_alpha_leaky) )
 
-g_num_layers  = hp["g_num_layers"]
-g_num_nodes   = hp["g_num_nodes"]
-g_alpha_leaky = hp["g_alpha_leaky"]
+generator = trainer . extract_generator ( fine_tuned_layers = 2 )
 
-generator = list()
-for layer in range (g_num_layers):
-  generator . append ( Dense (g_num_nodes) )
-  generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
+add_g_num_layers  = hp["add_g_num_layers"]
+add_g_num_nodes   = hp["add_g_num_nodes"]
+add_g_alpha_leaky = hp["add_g_alpha_leaky"]
+
+for layer in range (add_g_num_layers):
+  generator . append ( Dense (add_g_num_nodes) )
+  generator . append ( LeakyReLU (alpha = add_g_alpha_leaky) )
 
 model = BceGAN ( X_shape = len(trainer.X_vars) , 
                  Y_shape = len(trainer.Y_vars) , 
                  discriminator = discriminator , 
-                 generator = generator , 
+                 generator  = generator , 
                  latent_dim = hp["latent_dim"] )
 
 # +---------------------------+
@@ -123,9 +120,9 @@ model . compile ( d_optimizer = d_opt ,
 
 model . summary()
 
-# +--------------------------------+
-# |    Learning rate scheduling    |
-# +--------------------------------+
+# +------------------------------+
+# |    Hyperparams scheduling    |
+# +------------------------------+
 
 lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
 
