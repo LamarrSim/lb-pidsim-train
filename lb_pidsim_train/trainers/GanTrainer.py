@@ -1,11 +1,15 @@
 #from __future__ import annotations
 
 import os
+import pickle
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+from time import time
+from sklearn.utils import shuffle
 from lb_pidsim_train.trainers import TensorTrainer
+from lb_pidsim_train.utils import PidsimColTransformer
 
 
 NP_FLOAT = np.float32
@@ -16,23 +20,107 @@ TF_FLOAT = tf.float32
 
 
 class GanTrainer (TensorTrainer):   # TODO class description
+  def load_model ( self , 
+                   filepath , 
+                   model_name = "saved_model" ,
+                   verbose = 0 ) -> None:   # TODO add docstring
+    """"""
+    if not self._datachunk_filled:
+      raise RuntimeError ("error")   # TODO implement error message
+    
+    if self._dataset_prepared:
+      raise RuntimeError ("error")   # TODO implement error message
+
+    ## Unpack data
+    X, Y, w = self._unpack_data()
+    start = time()
+    X, Y, w = shuffle (X, Y, w)
+    stop = time()
+    if verbose: print ( f"Shuffle-time: {stop-start:.3f} s" )
+
+    self._X = X
+    self._Y = Y
+    self._w = w
+
+    ## Preprocessed input array
+    file_X = f"{filepath}/transform_X.pkl"
+    if os.path.exists (file_X):
+      start = time()
+      self._scaler_X = PidsimColTransformer ( pickle.load (open (file_X, "rb")) )
+      if (verbose > 0):
+        print (f"Transformer correctly loaded from {file_X}.")
+      self._X_scaled = self._scaler_X . transform ( self.X )
+      stop = time()
+      if (verbose > 1):
+        print (f"Preprocessing time for X: {stop-start:.3f} s")
+    else:
+      self._scaler_X = None
+      self._X_scaled = self.X
+
+    ## Preprocessed output array
+    file_Y = f"{filepath}/transform_Y.pkl"
+    if os.path.exists (file_Y):
+      start = time()
+      self._scaler_Y = PidsimColTransformer ( pickle.load (open (file_Y, "rb")) )
+      if (verbose > 0):
+        print (f"Transformer correctly loaded from {file_Y}.")
+      self._Y_scaled = self._scaler_Y . transform ( self.Y )
+      stop = time()
+      if (verbose > 1):
+        print (f"Preprocessing time for Y: {stop-start:.3f} s")
+    else:
+      self._scaler_Y = None
+      self._Y_scaled = self.Y
+
+    ## Load the generator
+    self._generator = tf.keras.models.load_model (f"{filepath}/{model_name}")
+    self._model_loaded = True
+  
+  def extract_generator ( self, fine_tuned_layers = None ) -> list:   # TODO add docstring
+    """"""
+    if not self._model_loaded:
+      raise RuntimeError ("error")   # TODO implement error message
+
+    num_g_layers = len ( self._generator.layers[:-1] )
+
+    ## Data-type control
+    if fine_tuned_layers is not None:
+      try:
+        fine_tuned_layers = int ( fine_tuned_layers )
+      except:
+        raise TypeError (f"The number of layers to fine-tune should be an integer," 
+                         f" instead {type(fine_tuned_layers)} passed." )
+    else:
+      fine_tuned_layers = num_g_layers
+
+    g_layers = list()
+    for i, layer in enumerate ( self._generator.layers[:-1] ):
+      layer._name = f"loaded_{layer.name}"
+      if i < (num_g_layers - fine_tuned_layers): 
+        layer.trainable = False
+      else:
+        layer.trainable = True
+      g_layers . append (layer)
+
+    return g_layers
+
   def train_model ( self , 
                     model , 
                     batch_size = 1 , 
                     num_epochs = 1 , 
-                    validation_split = 0 , 
+                    validation_split = 0.0 , 
                     scheduler = None , 
                     plots_on_report = True , 
                     save_model = True , 
                     verbose = 0 ) -> None:
-    super(GanTrainer, self) . train_model ( model = model , 
-                                            batch_size = 2 * batch_size , 
-                                            num_epochs = num_epochs , 
-                                            validation_split = validation_split , 
-                                            scheduler = scheduler , 
-                                            plots_on_report = plots_on_report , 
-                                            save_model = save_model , 
-                                            verbose = verbose )
+    super().train_model ( model = model , 
+                          batch_size = 2 * batch_size , 
+                          num_epochs = num_epochs , 
+                          validation_split = validation_split , 
+                          scheduler = scheduler , 
+                          plots_on_report = plots_on_report , 
+                          save_model = save_model , 
+                          verbose = verbose )
 
   def _training_plots (self, report, history) -> None:   # TODO complete docstring
     """short description
@@ -113,8 +201,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
         ax[i,j] . tick_params (labelsize = 6)
         if i == j:
           ax[i,j] . set_xlabel (titles[i], fontsize = 8)
-          _, b, _ = ax[i,j] . hist (Y_ref[:,i], bins = 100, color = "dodgerblue", label = "Original")
-          ax[i,j] . hist (Y_gen[:,i], bins = b, histtype = "step", color = "deeppink", label = "Generated")
+          _, b, _ = ax[i,j] . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = "Original")
+          ax[i,j] . hist (Y_gen[:,i], bins = b, density = True, histtype = "step", color = "deeppink", label = "Generated")
           ax[i,j] . legend (loc = "upper left", fontsize = 6)
         elif i > j:
           ax[i,j] . set_xlabel (titles[j], fontsize = 8)
