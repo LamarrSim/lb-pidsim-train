@@ -15,6 +15,11 @@ NP_FLOAT = np.float32
 
 class DataHandler:   # TODO add class description
   """Handle the data-chunk for models training and assessing."""
+  def __init__ (self) -> None:
+    ## Switch off all flags
+    self._datachunk_filled = False
+    self._dataset_prepared = False
+
   def feed_from_root_files ( self ,
                              root_files  , 
                              X_vars = None , 
@@ -122,70 +127,10 @@ class DataHandler:   # TODO add class description
                                         branches = branches ,
                                         cut = selections    ,
                                         chunk_size = chunk_size )
+    self._datachunk_filled = True   # switch on datachunk-filled flag
     stop = time()
     if (verbose > 0): print ( f"Data-chunk of {len(self.datachunk)} rows"
                               f" correctly loaded in {stop-start:.3f} s" )
-
-#  TODO implement more feed functions
-#  def feed_with_dataframes ( self ,
-#                             dataframes , 
-#                             X_vars , 
-#                             Y_vars ,
-#                             w_var  = None ,
-#                             selections = None ) -> None:
-#    """Feed the training procedure with dataframes.
-#    
-#    Parameters
-#    ----------
-#    dataframes : `pd.DataFrame` or `list` of `pd.DataFrame`
-#      List of dataframes used for the training procedure.
-#
-#    X_vars : `str` or `list` of `str`
-#      Column names of the input variables within the dataframes.
-#
-#    Y_vars : `str` or `list` of `str`
-#      Column names of the output variables within the dataframes.
-#    
-#    w_var : `str` or `list` of `str`, optional
-#      Column name of the weight variable, if available, within the 
-#      dataframes (`None`, by default).
-#
-#    selections : `str` or `list` of `str`, optional
-#      Boolean expressions to filter the dataframes (`None`, by default).
-#    """
-#    ## List data-type promotion
-#    if isinstance (dataframes, pd.DataFrame):
-#      dataframes = [dataframes]
-#    if isinstance (X_vars, str):
-#      X_vars = [X_vars]
-#    if isinstance (Y_vars, str):
-#      Y_vars = [Y_vars]
-#    if isinstance (w_var, str):
-#      w_var = [w_var]
-#    if isinstance (selections, str):
-#      selections = [selections]
-#
-#    self._X_vars = X_vars
-#    self._Y_vars = Y_vars
-#    self._w_var  = w_var
-#
-#    ## List of column names
-#    if w_var is not None:
-#      cols = X_vars + Y_vars + w_var
-#    else:
-#      cols = X_vars + Y_vars 
-#  
-#    ## Dataframes combination
-#    data = pd.concat (dataframes, ignore_index = True)
-#    data = data[cols]
-#
-#    ## Data selection
-#    if selections:
-#      queries = "&".join ("(%s)" % s for s in selections)
-#      data.query (queries, inplace = True)
-#
-#    self._datachunk = data
-#    self._more_data_avail = False
 
   def prepare_dataset (self, verbose = 0) -> None:
     """Split the data-chunk into X, Y and w.
@@ -196,6 +141,9 @@ class DataHandler:   # TODO add class description
       Verbosity mode. `False` = silent (default), 
       `True`= shuffling time is printed. 
     """
+    if not self._datachunk_filled:
+      raise RuntimeError ("error")   # TODO implement error
+
     X, Y, w = self._unpack_data()
     start = time()
     X, Y, w = shuffle (X, Y, w)
@@ -205,6 +153,8 @@ class DataHandler:   # TODO add class description
     self._X = X
     self._Y = Y
     self._w = w
+
+    self._dataset_prepared = True   # switch on dataset prepared flag
 
   def _unpack_data (self) -> tuple:
     """Unpack the data-chunk into input, output and weights 

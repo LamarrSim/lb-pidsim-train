@@ -6,7 +6,6 @@ import tensorflow as tf
 from datetime import datetime
 from html_reports import Report
 from lb_pidsim_train.trainers import BaseTrainer
-from tensorflow.keras.callbacks import LearningRateScheduler
 
 
 TF_FLOAT = tf.float32
@@ -33,6 +32,21 @@ class TensorTrainer (BaseTrainer):   # TODO class description
   report_name : `str`, optional
     Report file name for the trained model.
   """
+  def __init__ ( self ,
+                 name ,
+                 export_dir  = None ,
+                 export_name = None ,
+                 report_dir  = None ,
+                 report_name = None ,
+                 verbose = False ) -> None:   # TODO new variable name for warnings
+    super().__init__ ( name = name ,
+                       export_dir  = export_dir  ,
+                       export_name = export_name ,
+                       report_dir  = report_dir  ,
+                       report_name = report_name ,
+                       verbose = verbose )
+    self._model_loaded = False   # switch off a new flag
+
   def feed_from_root_files ( self , 
                              root_files , 
                              X_vars = None , 
@@ -86,14 +100,36 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       Abstraction over a data pipeline that can pull data from several 
       sources, as well as efficiently apply various data transformations.
     """
-    super(TensorTrainer, self) . feed_from_root_files ( root_files = root_files , 
-                                                        X_vars = X_vars , 
-                                                        Y_vars = Y_vars , 
-                                                        w_var  = w_var  , 
-                                                        selections = selections , 
-                                                        tree_names = tree_names , 
-                                                        chunk_size = chunk_size ,
-                                                        verbose = verbose )
+    super().feed_from_root_files ( root_files = root_files , 
+                                   X_vars = X_vars , 
+                                   Y_vars = Y_vars , 
+                                   w_var  = w_var  , 
+                                   selections = selections , 
+                                   tree_names = tree_names , 
+                                   chunk_size = chunk_size ,
+                                   verbose = verbose )
+
+  def prepare_dataset ( self , 
+                        X_preprocessing = None , 
+                        Y_preprocessing = None , 
+                        X_vars_to_preprocess = None , 
+                        Y_vars_to_preprocess = None , 
+                        subsample_size = 100000 , 
+                        save_transformer = True , 
+                        verbose = 0 ) -> None:
+    if self._model_loaded:
+      raise RuntimeError ("error")   # TODO implement error message
+
+    super().prepare_dataset ( X_preprocessing = X_preprocessing , 
+                              Y_preprocessing = Y_preprocessing , 
+                              X_vars_to_preprocess = X_vars_to_preprocess , 
+                              Y_vars_to_preprocess = Y_vars_to_preprocess , 
+                              subsample_size = subsample_size , 
+                              save_transformer = save_transformer , 
+                              verbose = verbose )
+
+  def load_model (self) -> None:
+    raise NotImplementedError ("error")   # TODO implement error message
 
   def train_model ( self ,
                     model ,
@@ -135,6 +171,11 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     tf.keras.Model.fit :
       Train the model for a fixed number of epochs (iterations on a dataset).
     """
+    if not self._dataset_prepared and not self._model_loaded:
+      raise RuntimeError ("error")   # TODO implement error message
+    elif self._dataset_prepared and self._model_loaded:
+      raise RuntimeError ("error")   # TODO implement error message
+
     report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
@@ -166,6 +207,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     if (validation_split < 0.0) or (validation_split > 1.0):
       raise ValueError ("error")   # TODO insert error message
 
+    self._batch_size = batch_size
     self._validation_split = validation_split
 
     ## Sizes computation
@@ -198,6 +240,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                             validation_data = val_ds ,
                             callbacks = callbacks ,
                             verbose = verbose )
+    self._model_trained = True   # switch on model trained flag
     stop = datetime.now()
     if (verbose > 0): 
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
@@ -289,7 +332,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     if not os.path.exists (dirname):
       os.makedirs (dirname)
     filename = f"{dirname}/{name}"
-    model . save ( f"{filename}/saved_model", save_format = "tf" )
+    model . save ( f"{filename}", save_format = "tf" )
     if verbose: print ( f"Trained model correctly exported to {filename}" )
 
   @property

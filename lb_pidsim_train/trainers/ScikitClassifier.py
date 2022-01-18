@@ -34,6 +34,10 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                  report_dir  = None , 
                  report_name = None , 
                  verbose = False ) -> None:
+    ## Switch off all flags
+    self._datachunk_filled = False
+    self._dataset_prepared = False
+    self._model_trained = False
 
     self._model_dir  = model_dir    # TODO check existence
     self._model_name = model_name   # TODO add default value
@@ -85,9 +89,10 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       transformers loading is printed, `2`= also times for shuffling and 
       preprocessing are printed.
     """
-    super(ScikitClassifier, self) . prepare_dataset ( X_preprocessing = None ,
-                                                      Y_preprocessing = None ,
-                                                      verbose = verbose )
+    super().prepare_dataset ( X_preprocessing = None ,
+                              Y_preprocessing = None ,
+                              verbose = verbose )
+    self._dataset_prepared = False   # switch off dataset prepared flag
 
     ## Preprocessed input array
     file_X = f"{self._model_dir}/{self._model_name}/transform_X.pkl"
@@ -117,6 +122,8 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     else:
       self._scaler_Y = None
 
+    self._dataset_prepared = True   # switch on dataset prepared flag
+
   def train_model ( self ,
                     model ,
                     validation_split = 0.2 ,
@@ -125,6 +132,9 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                     plots_on_report = True ,
                     save_model = True ,
                     verbose = 0 ) -> None:   # TODO add docstring
+    if not self._dataset_prepared:
+      raise RuntimeError ("error")   # TODO implement error message
+
     report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
@@ -158,6 +168,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     ## Training procedure
     start = datetime.now()
     model . fit (train_feats, train_labels, sample_weight = train_w)
+    self._model_trained = True   # switch on model trained flag
     stop  = datetime.now()
     if (verbose > 0): 
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS

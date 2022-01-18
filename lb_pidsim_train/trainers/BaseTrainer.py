@@ -43,6 +43,9 @@ class BaseTrainer (DataHandler):   # TODO class description
                  report_dir  = None ,
                  report_name = None ,
                  verbose = False ) -> None:   # TODO new variable name for warnings
+    ## Switch off all flags
+    super().__init__()
+    self._model_trained = False
 
     timestamp = str (datetime.now()) . split (".") [0]
     timestamp = timestamp . replace (" ","_")
@@ -132,7 +135,8 @@ class BaseTrainer (DataHandler):   # TODO class description
     lb_pidsim_train.utils.preprocessor :
       Scikit-Learn transformer for data preprocessing.
     """
-    super (BaseTrainer, self) . prepare_dataset (verbose = verbose)
+    super().prepare_dataset (verbose = verbose)
+    self._dataset_prepared = False   # switch off dataset prepared flag
 
     ## Data-type control
     try:
@@ -161,6 +165,7 @@ class BaseTrainer (DataHandler):   # TODO class description
                                  self._scaler_X.sklearn_transformer ,   # saved as Scikit-Learn class
                                  verbose = (verbose > 0) )
     else:
+      self._scaler_X = None
       self._X_scaled = self.X
 
     ## Preprocessed output array
@@ -184,7 +189,10 @@ class BaseTrainer (DataHandler):   # TODO class description
                                  self._scaler_Y.sklearn_transformer ,   # saved as Scikit-Learn class 
                                  verbose = (verbose > 0) )
     else:
+      self._scaler_Y = None
       self._Y_scaled = self.Y
+
+    self._dataset_prepared = True # switch on dataset prepared flag
 
   def _save_transformer (self, name, transformer, verbose = False) -> None:
     """Save the preprocessing transformer.

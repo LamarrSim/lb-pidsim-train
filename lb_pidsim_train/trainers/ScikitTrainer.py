@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from html_reports import Report
 from matplotlib.patches import Patch
-from sklearn.metrics import roc_auc_score
+# from sklearn.metrics import roc_auc_score
 from lb_pidsim_train.trainers import BaseTrainer
 
 
@@ -17,6 +17,20 @@ NP_FLOAT = np.float32
 
 
 class ScikitTrainer (BaseTrainer):
+  def __init__ ( self ,
+                 name ,
+                 export_dir  = None ,
+                 export_name = None ,
+                 report_dir  = None ,
+                 report_name = None ,
+                 verbose = False ) -> None:   # TODO new variable name for warnings
+    super().__init__ ( name = name ,
+                       export_dir  = export_dir  ,
+                       export_name = export_name ,
+                       report_dir  = report_dir  ,
+                       report_name = report_name ,
+                       verbose = verbose )
+
   def train_model ( self , 
                     model ,
                     validation_split = 0.2 ,
@@ -24,6 +38,9 @@ class ScikitTrainer (BaseTrainer):
                     save_model = True ,
                     verbose = 0 ) -> None:   # TODO add docstring
     """"""
+    if not self._dataset_prepared:
+      raise RuntimeError ("error")   # TODO implement error message
+
     report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
@@ -57,6 +74,7 @@ class ScikitTrainer (BaseTrainer):
     ## Training procedure
     start = datetime.now()
     model . fit (train_feats, train_labels, sample_weight = train_w)
+    self._model_trained = True   # switch on model trained flag
     stop  = datetime.now()
     if (verbose > 0): 
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
