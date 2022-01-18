@@ -8,7 +8,7 @@ K = tf.keras.backend
 class GanBaseLrScheduler (Callback):   # TODO add docstring
   """class description"""
   def __init__ (self):   # TODO add data-type check
-    super(GanBaseLrScheduler, self) . __init__()
+    super().__init__()
 
   def on_epoch_begin (self, epoch, logs = None):
     ## Discriminator lr-scheduling
