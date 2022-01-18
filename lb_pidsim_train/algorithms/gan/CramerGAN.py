@@ -84,11 +84,11 @@ class CramerGAN (GAN):   # TODO add class description
                  generator     ,
                  latent_dim = 64 ,
                  critic_dim = 64 ) -> None:
-    super(CramerGAN, self) . __init__ ( X_shape = X_shape ,
-                                        Y_shape = Y_shape ,
-                                        discriminator = discriminator , 
-                                        generator     = generator     ,
-                                        latent_dim    = latent_dim    )
+    super().__init__ ( X_shape = X_shape ,
+                       Y_shape = Y_shape ,
+                       discriminator = discriminator , 
+                       generator     = generator     ,
+                       latent_dim    = latent_dim    )
     self._loss_name = "Energy distance"
 
     ## Data-type control
@@ -130,10 +130,10 @@ class CramerGAN (GAN):   # TODO add class description
     grad_penalty : `float`, optional
       ... (`0.001`, by default).
     """
-    super(CramerGAN, self) . compile ( d_optimizer = d_optimizer , 
-                                       g_optimizer = g_optimizer ,
-                                       d_updt_per_batch = d_updt_per_batch ,
-                                       g_updt_per_batch = g_updt_per_batch )
+    super().compile ( d_optimizer = d_optimizer , 
+                      g_optimizer = g_optimizer ,
+                      d_updt_per_batch = d_updt_per_batch ,
+                      g_updt_per_batch = g_updt_per_batch )
     self._critic = Critic ( lambda x : self._discriminator(x) )
 
     ## Data-type control
@@ -225,6 +225,23 @@ class CramerGAN (GAN):   # TODO add class description
     g_loss = w_ref_1 * w_gen_2 * self._critic ( XY_ref_1, XY_gen_2 ) - \
              w_gen_1 * w_gen_2 * self._critic ( XY_gen_1, XY_gen_2 )
     return tf.reduce_mean (g_loss)
+
+  def _compute_threshold (self, ref_sample) -> tf.Tensor:
+    """Return the threshold for loss values.
+    
+    Parameters
+    ----------
+    ref_sample : `tuple` of `tf.Tensor`
+      ...
+
+    Returns
+    -------
+    th_loss : `tf.Tensor`
+      ...
+    """
+    XY_ref, w_ref = ref_sample
+    th_loss = tf.zeros_like (w_ref)
+    return tf.reduce_mean (th_loss)
 
   @property
   def discriminator (self) -> tf.keras.Sequential:

@@ -70,7 +70,7 @@ class GAN (tf.keras.Model):   # TODO add class description
                  discriminator ,
                  generator     , 
                  latent_dim = 64 ) -> None:
-    super(GAN, self) . __init__()
+    super().__init__()
     self._loss_name = "Loss function"
 
     ## Feature space dimension
@@ -125,7 +125,7 @@ class GAN (tf.keras.Model):   # TODO add class description
     g_updt_per_batch : `int`, optional
       ... (`1`, by default).
     """
-    super(GAN, self) . compile()
+    super().compile()
 
     ## Build discriminator and generator models
     self._discriminator . build ( input_shape = (None, self._X_shape + self._Y_shape) )
@@ -187,10 +187,11 @@ class GAN (tf.keras.Model):   # TODO add class description
     ref_sample, gen_sample = self._arrange_samples (X, Y, w)
     d_loss = self._compute_d_loss (gen_sample, ref_sample)
     g_loss = self._compute_g_loss (gen_sample, ref_sample)
+    threshold = self._compute_threshold (ref_sample)
 
     ## Update metrics state
-    d_loss_tracker . update_state (d_loss)
-    g_loss_tracker . update_state (g_loss)
+    d_loss_tracker . update_state (d_loss + threshold)
+    g_loss_tracker . update_state (g_loss - threshold)
 
     Y_gen = self.generate (X)
     mse_tracker . update_state (Y, Y_gen, sample_weight = w)
@@ -209,10 +210,11 @@ class GAN (tf.keras.Model):   # TODO add class description
     ref_sample, gen_sample = self._arrange_samples (X, Y, w)
     d_loss = self._compute_d_loss (gen_sample, ref_sample)
     g_loss = self._compute_g_loss (gen_sample, ref_sample)
+    threshold = self._compute_threshold (ref_sample)
 
     ## Update metrics state
-    d_loss_tracker . update_state (d_loss)
-    g_loss_tracker . update_state (g_loss)
+    d_loss_tracker . update_state (d_loss + threshold)
+    g_loss_tracker . update_state (g_loss - threshold)
 
     Y_gen = self.generate (X)
     mse_tracker . update_state (Y, Y_gen, sample_weight = w)
@@ -348,8 +350,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     XY_ref, w_ref = ref_sample
 
     ## Noise injection to stabilize GAN training
-    rnd_gen = tf.random.normal ( tf.shape(XY_gen), mean = 0., stddev = 0.1 )
-    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.1 )
+    rnd_gen = tf.random.normal ( tf.shape(XY_gen), mean = 0., stddev = 0.05 )
+    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.05 )
     D_gen = self._discriminator ( XY_gen + rnd_gen )
     D_ref = self._discriminator ( XY_ref + rnd_ref )
 
@@ -357,6 +359,36 @@ class GAN (tf.keras.Model):   # TODO add class description
     g_loss = w_ref * tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) ) + \
              w_gen * tf.math.log ( tf.clip_by_value (1 - D_gen, 1e-12, 1.) )
     return tf.reduce_mean (g_loss)
+
+  def _compute_threshold (self, ref_sample) -> tf.Tensor:   # TODO complete docstring
+    """Return the threshold for loss values.
+    
+    Parameters
+    ----------
+    ref_sample : `tuple` of `tf.Tensor`
+      ...
+
+    Returns
+    -------
+    th_loss : `tf.Tensor`
+      ...
+    """
+    ## Extract input tensors and weights
+    XY_ref, w_ref = ref_sample
+
+    ## Noise injection to stabilize GAN training
+    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.05 )
+    D_ref = self._discriminator ( XY_ref + rnd_ref )
+
+    ## Split tensors and weights
+    batch_size = tf.cast ( tf.shape(XY_ref)[0] / 2, tf.int32 )
+    D_ref_1, D_ref_2 = D_ref[:batch_size], D_ref[batch_size:batch_size*2]
+    w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
+
+    ## Threshold loss computation
+    th_loss = w_ref_1 * tf.math.log ( tf.clip_by_value (D_ref_1, 1e-12, 1.) ) + \
+              w_ref_2 * tf.math.log ( tf.clip_by_value (1 - D_ref_2, 1e-12, 1.) )
+    return tf.reduce_mean (th_loss)
 
   def generate (self, X) -> tf.Tensor:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.

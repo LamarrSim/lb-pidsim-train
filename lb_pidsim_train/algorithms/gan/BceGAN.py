@@ -58,11 +58,11 @@ class BceGAN (GAN):   # TODO add class description
                  discriminator ,
                  generator     ,
                  latent_dim = 64 ) -> None:
-    super(BceGAN, self) . __init__ ( X_shape = X_shape ,
-                                     Y_shape = Y_shape ,
-                                     discriminator = discriminator , 
-                                     generator     = generator     ,
-                                     latent_dim    = latent_dim    )
+    super().__init__ ( X_shape = X_shape ,
+                       Y_shape = Y_shape ,
+                       discriminator = discriminator , 
+                       generator     = generator     ,
+                       latent_dim    = latent_dim    )
     self._loss_name = "Binary cross entropy"
 
   def compile ( self , 
@@ -86,10 +86,10 @@ class BceGAN (GAN):   # TODO add class description
     g_updt_per_batch : `int`, optional
       ... (`1`, by default).
     """
-    super(BceGAN, self) . compile ( d_optimizer = d_optimizer , 
-                                    g_optimizer = g_optimizer , 
-                                    d_updt_per_batch = d_updt_per_batch , 
-                                    g_updt_per_batch = g_updt_per_batch )
+    super().compile ( d_optimizer = d_optimizer , 
+                      g_optimizer = g_optimizer , 
+                      d_updt_per_batch = d_updt_per_batch , 
+                      g_updt_per_batch = g_updt_per_batch )
 
   def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the generator loss.
@@ -112,8 +112,8 @@ class BceGAN (GAN):   # TODO add class description
     XY_ref, w_ref = ref_sample
 
     ## Noise injection to stabilize BceGAN training
-    rnd_gen = tf.random.normal ( tf.shape(XY_gen), mean = 0., stddev = 0.1 )
-    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.1 )
+    rnd_gen = tf.random.normal ( tf.shape(XY_gen), mean = 0., stddev = 0.05 )
+    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.05 )
     D_gen = self._discriminator ( XY_gen + rnd_gen )
     D_ref = self._discriminator ( XY_ref + rnd_ref )
 
@@ -125,6 +125,40 @@ class BceGAN (GAN):   # TODO add class description
              w_ref * true_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
              w_ref * (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
     return tf.reduce_mean (g_loss)
+
+  def _compute_threshold (self, ref_sample) -> tf.Tensor:   # TODO complete docstring
+    """Return the threshold for loss values.
+    
+    Parameters
+    ----------
+    ref_sample : `tuple` of `tf.Tensor`
+      ...
+
+    Returns
+    -------
+    th_loss : `tf.Tensor`
+      ...
+    """
+    ## Extract input tensors and weights
+    XY_ref, w_ref = ref_sample
+
+    ## Noise injection to stabilize GAN training
+    rnd_ref = tf.random.normal ( tf.shape(XY_ref), mean = 0., stddev = 0.05 )
+    D_ref = self._discriminator ( XY_ref + rnd_ref )
+
+    ## Split tensors and weights
+    batch_size = tf.cast ( tf.shape(XY_ref)[0] / 2, tf.int32 )
+    D_ref_1, D_ref_2 = D_ref[:batch_size], D_ref[batch_size:batch_size*2]
+    w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
+
+    ## Threshold loss computation
+    true_gen = 0.9
+    true_ref = 0.1
+    th_loss = w_ref_1 * true_gen       * tf.math.log ( tf.clip_by_value ( D_ref_1     , 1e-12 , 1. ) ) + \
+              w_ref_1 * (1 - true_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_1 , 1e-12 , 1. ) ) + \
+              w_ref_2 * true_ref       * tf.math.log ( tf.clip_by_value ( D_ref_2     , 1e-12 , 1. ) ) + \
+              w_ref_2 * (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1. ) ) 
+    return tf.reduce_mean (th_loss)
 
   @property
   def discriminator (self) -> tf.keras.Sequential:

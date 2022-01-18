@@ -58,11 +58,11 @@ class WGAN_GP (GAN):   # TODO add class description
                  discriminator ,
                  generator     ,
                  latent_dim = 64 ) -> None:
-    super(WGAN_GP, self) . __init__ ( X_shape = X_shape ,
-                                      Y_shape = Y_shape ,
-                                      discriminator = discriminator , 
-                                      generator     = generator     ,
-                                      latent_dim    = latent_dim    )
+    super().__init__ ( X_shape = X_shape ,
+                       Y_shape = Y_shape ,
+                       discriminator = discriminator , 
+                       generator     = generator     ,
+                       latent_dim    = latent_dim    )
     self._loss_name = "Wasserstein distance"
 
   def compile ( self , 
@@ -87,10 +87,10 @@ class WGAN_GP (GAN):   # TODO add class description
     g_updt_per_batch : `int`, optional
       ... (`1`, by default).
     """
-    super(WGAN_GP, self) . compile ( d_optimizer = d_optimizer , 
-                                     g_optimizer = g_optimizer , 
-                                     d_updt_per_batch = d_updt_per_batch , 
-                                     g_updt_per_batch = g_updt_per_batch )
+    super().compile ( d_optimizer = d_optimizer , 
+                      g_optimizer = g_optimizer , 
+                      d_updt_per_batch = d_updt_per_batch , 
+                      g_updt_per_batch = g_updt_per_batch )
 
     ## Data-type control
     try:
@@ -168,7 +168,24 @@ class WGAN_GP (GAN):   # TODO add class description
     D_ref = self._discriminator ( XY_ref )
     g_loss = w_ref * D_ref - w_gen * D_gen
     return tf.reduce_mean (g_loss)
+
+  def _compute_threshold (self, ref_sample) -> tf.Tensor:
+    """Return the threshold for loss values.
     
+    Parameters
+    ----------
+    ref_sample : `tuple` of `tf.Tensor`
+      ...
+
+    Returns
+    -------
+    th_loss : `tf.Tensor`
+      ...
+    """
+    XY_ref, w_ref = ref_sample
+    th_loss = tf.zeros_like (w_ref)
+    return tf.reduce_mean (th_loss)
+
   @property
   def discriminator (self) -> tf.keras.Sequential:
     """The discriminator of the WGAN-GP system."""
