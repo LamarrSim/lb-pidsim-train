@@ -185,6 +185,7 @@ class DataHandler:   # TODO add class description
 
     X . astype ( NP_FLOAT )
     Y . astype ( NP_FLOAT )
+    w . astype ( NP_FLOAT )
     return X, Y, w
 
   @property

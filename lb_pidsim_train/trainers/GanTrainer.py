@@ -207,7 +207,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
         elif i > j:
           ax[i,j] . set_xlabel (titles[j], fontsize = 8)
           ax[i,j] . set_ylabel (titles[i], fontsize = 8)
-          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")
+          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")   # TODO fix sWeight bug
           ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.01, color = "deeppink")
         elif i < j:
           ax[i,j] . set_xlabel (titles[j], fontsize = 8)

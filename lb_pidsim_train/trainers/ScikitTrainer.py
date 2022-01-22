@@ -199,11 +199,6 @@ class ScikitTrainer (BaseTrainer):
       report.add_figure(); plt.clf(); plt.close()
       # report.add_markdown ("<br/>")
 
-      # eff_true = h_true[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
-      # eff_pred = h_pred[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
-      # eff_true = eff_true[np.nonzero(eff_true)]
-      # eff_pred = eff_pred[np.nonzero(eff_true)]
-
       score = self._compute_score ( h_pred, h_true, strategy = self._performance_metric )
 
       if not validation:
