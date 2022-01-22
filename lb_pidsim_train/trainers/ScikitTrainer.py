@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from html_reports import Report
 from matplotlib.patches import Patch
-# from sklearn.metrics import roc_auc_score
 from lb_pidsim_train.trainers import BaseTrainer
+from lb_pidsim_train.metrics import KL_div_from_counts, JS_div_from_counts, KS_test_from_counts, chi2_test_from_counts
 
 
 NP_FLOAT = np.float32
@@ -34,6 +34,7 @@ class ScikitTrainer (BaseTrainer):
   def train_model ( self , 
                     model ,
                     validation_split = 0.2 ,
+                    performance_metric = "chi2_test" ,
                     plots_on_report = True ,
                     save_model = True ,
                     verbose = 0 ) -> None:   # TODO add docstring
@@ -54,7 +55,11 @@ class ScikitTrainer (BaseTrainer):
     if (validation_split < 0.0) or (validation_split > 1.0):
       raise ValueError ("error")   # TODO add error message
 
+    if performance_metric not in ["kl_div", "js_div", "ks_test", "chi2_test"]:
+      raise ValueError ("error")   # TODO add error message
+
     self._validation_split = validation_split
+    self._performance_metric = performance_metric
 
     ## Sizes computation
     sample_size = self._X . shape[0]
@@ -96,7 +101,7 @@ class ScikitTrainer (BaseTrainer):
       self._eff_hist1d (report, bins = 50, validation = False)
 
     if save_model:
-      self._save_model ( f"{self._name}", model, verbose = (verbose > 0) )
+      self._save_model ( "saved_model", model, verbose = (verbose > 0) )
 
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
@@ -194,15 +199,17 @@ class ScikitTrainer (BaseTrainer):
       report.add_figure(); plt.clf(); plt.close()
       # report.add_markdown ("<br/>")
 
-      eff_true = h_true[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
-      eff_pred = h_pred[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
-      eff_true = eff_true[np.nonzero(eff_true)]
-      eff_pred = eff_pred[np.nonzero(eff_true)]
+      # eff_true = h_true[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
+      # eff_pred = h_pred[np.nonzero(h_all)] / h_all[np.nonzero(h_all)]
+      # eff_true = eff_true[np.nonzero(eff_true)]
+      # eff_pred = eff_pred[np.nonzero(eff_true)]
+
+      score = self._compute_score ( h_pred, h_true, strategy = self._performance_metric )
 
       if not validation:
-        self._scores[0] . append ( np.sum ( (eff_pred - eff_true)**2 / eff_true ) )   # chi2 on train-set
+        self._scores[0] . append ( score )
       else:
-        self._scores[1] . append ( np.sum ( (eff_pred - eff_true)**2 / eff_true ) )   # chi2 on val-set
+        self._scores[1] . append ( score )
 
   def _data_to_plot (self, validation = False) -> tuple:   # TODO complete docstring
     """...
@@ -238,6 +245,23 @@ class ScikitTrainer (BaseTrainer):
       Y, w = self._Y[trainset_size:], self._w[trainset_size:]
     probas = self.model.predict_proba ( X_scaled ) [:,1]
     return X, Y.flatten(), w.flatten(), probas.flatten()
+
+  def _compute_score ( self ,
+                       h_pred ,
+                       h_true ,
+                       strategy = "ks_test" ) -> float:   # TODO add docstring
+    """short description"""
+    if strategy == "chi2_test":
+      score = chi2_test_from_counts (h_pred, h_true)
+    elif strategy == "ks_test":
+      score = KS_test_from_counts (h_pred, h_true)
+    elif strategy == "kl_div":
+      score = KL_div_from_counts (h_pred, h_true)
+    elif strategy == "js_div":
+      score = JS_div_from_counts (h_pred, h_true)
+    else:
+      ValueError ("error.")   # TODO add error message
+    return score
 
   def _save_model ( self, name, model, verbose = False ) -> None:   # TODO complete docstring
     """Save the trained model.

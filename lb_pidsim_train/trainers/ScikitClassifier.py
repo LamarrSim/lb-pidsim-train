@@ -14,7 +14,7 @@ from sklearn.utils import shuffle
 from lb_pidsim_train.trainers import BaseTrainer
 from lb_pidsim_train.utils import warn_message as wm
 from lb_pidsim_train.utils import PidsimColTransformer
-from lb_pidsim_train.metrics import KL_divergence, JS_divergence, KS_test
+from lb_pidsim_train.metrics import KL_div, JS_div, KS_test, chi2_test
 
 
 NP_FLOAT = np.float32
@@ -148,6 +148,9 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     if (validation_split < 0.0) or (validation_split > 1.0):
       raise ValueError ("error")   # TODO add error message
 
+    if performance_metric not in ["kl_div", "js_div", "ks_test", "chi2_test"]:
+      raise ValueError ("error")   # TODO add error message
+
     self._validation_split = validation_split
 
     ## Sizes computation
@@ -204,7 +207,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       self._proba_plots (result, report, bins = 100, strategy = performance_metric)
 
     if save_model:
-      self._save_model ( f"{self._name}", model, verbose = (verbose > 0) )
+      self._save_model ( "saved_model", model, verbose = (verbose > 0) )
 
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
@@ -255,9 +258,11 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     if strategy == "ks_test":
       score = KS_test (p_gen, p_ref, bins, w_gen, w_ref) . max()
     elif strategy == "kl_div":
-      score = KL_divergence (p_gen, p_ref, bins, w_gen, w_ref) . max()
+      score = KL_div (p_gen, p_ref, bins, w_gen, w_ref) . max()
     elif strategy == "js_div":
-      score = JS_divergence (p_gen, p_ref, bins, w_gen, w_ref) . max()
+      score = JS_div (p_gen, p_ref, bins, w_gen, w_ref) . max()
+    elif strategy == "chi2_test":
+      score = chi2_test (p_gen, p_ref, bins, w_gen, w_ref) . max()
     else:
       ValueError ("error.")   # TODO add error message
     return score

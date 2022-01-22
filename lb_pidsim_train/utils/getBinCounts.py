@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def getBinPDFs ( x_gen , 
+def getBinCounts ( x_gen , 
                  x_ref , 
                  bins  = 100  ,
                  w_gen = None , 
