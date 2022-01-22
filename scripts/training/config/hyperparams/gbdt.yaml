@@ -7,15 +7,15 @@ isMuon:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 4000000   # 60 mln
+      chunk_size : 5000000   # 60 mln
       X_preprocessing : quantile
       loss : deviance
       learning_rate : 0.214126
       n_estimators  : 26
       criterion : friedman_mse
-      min_samples_leaf : 0.001470
+      min_samples_leaf : 1
       max_depth : 11
-      validation_split : 0.2
+      validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Pion
@@ -23,13 +23,13 @@ isMuon:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 8000000   # 150 mln
+      chunk_size : 15000000   # 150 mln
       X_preprocessing : quantile
       loss : deviance
       learning_rate : 0.165529
       n_estimators  : 14
       criterion : squared_error
-      min_samples_leaf : 0.001134
+      min_samples_leaf : 1
       max_depth : 9
       validation_split : 0.5
     # <-- 2016 Mag Down -->
@@ -39,15 +39,15 @@ isMuon:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 8000000   # 150 mln
+      chunk_size : 15000000   # 150 mln
       X_preprocessing : quantile
       loss : deviance
       learning_rate : 0.350986
       n_estimators  : 20
       criterion : friedman_mse
-      min_samples_leaf : 0.038432
+      min_samples_leaf : 1
       max_depth : 15
-      validation_split : 0.2
+      validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Proton
@@ -55,14 +55,14 @@ isMuon:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 16000000   # 105 mln
+      chunk_size : 50000000   # 105 mln
       X_preprocessing : quantile
       loss : deviance
-      learning_rate : 0.152977
-      n_estimators  : 11
+      learning_rate : 0.270504
+      n_estimators  : 9
       criterion : friedman_mse
-      min_samples_leaf : 0.051323
-      max_depth : 14
-      validation_split : 0.2
+      min_samples_leaf : 1
+      max_depth : 8
+      validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:
