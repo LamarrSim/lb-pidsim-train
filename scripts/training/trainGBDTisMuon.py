@@ -1,6 +1,7 @@
 #from __future__ import annotations
 
 import yaml
+import numpy as np
 
 from lb_pidsim_train.utils    import argparser
 from lb_pidsim_train.trainers import ScikitTrainer
@@ -74,6 +75,21 @@ X_vars_to_preprocess = variables["isMuon"]["X_vars_to_preprocess"][args.sample]
 trainer . prepare_dataset ( X_preprocessing = hp["X_preprocessing"] , 
                             X_vars_to_preprocess = X_vars_to_preprocess ,
                             verbose = 1 )
+
+# +------------------------+
+# |    Prescale weights    |
+# +------------------------+
+
+pT = trainer.X[:,0] / np.cosh ( trainer.X[:,1] ) / 1e3
+pT = np.c_ [pT]
+
+w_prescale = np.ones_like ( pT )
+if args.particle == "Proton":
+  w_prescale *= 0.003
+  w_prescale [ pT < 3 ] = 1.0
+  w_prescale [ (pT >= 3) & (pT < 6) ] = 0.03
+
+trainer._w *= w_prescale
 
 # +--------------------------+
 # |    Model construction    |

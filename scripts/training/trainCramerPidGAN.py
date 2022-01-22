@@ -26,8 +26,7 @@ with open ("config/variables.yaml") as file:
 with open ("config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
-# with open ("config/hyperparams/cramergan.yaml") as file:
-with open ("config/hyperparams/base-cramergan.yaml") as file:   # base-model config file
+with open ("config/hyperparams/base-cramergan.yaml") as file:
   hyperparams = yaml.full_load (file)
 
 # +----------------------------+
@@ -37,7 +36,7 @@ with open ("config/hyperparams/base-cramergan.yaml") as file:   # base-model con
 parser = argparser ("Model training")
 args = parser . parse_args()
 
-model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}-base"   # base-model name
+model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,

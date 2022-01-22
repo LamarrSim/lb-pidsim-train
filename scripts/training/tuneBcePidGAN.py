@@ -6,7 +6,7 @@ import tensorflow as tf
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import BceGAN
-from lb_pidsim_train.callbacks  import GanExpLrScheduler, GanBaseUpdtScheduler
+from lb_pidsim_train.callbacks  import GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
@@ -34,9 +34,10 @@ with open ("config/hyperparams/tuned-bcegan.yaml") as file:
 # +----------------------------+
 
 parser = argparser ("Model fine-tuning")
+parser . add_argument ( "-b", "--base_version", required = True )
 args = parser . parse_args()
 
-model_name = f"BceGAN_{args.model}_{args.particle}_{args.sample}_{args.version}-tuning"
+model_name = f"BceGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -73,7 +74,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
 # +---------------------+
 
 model_dir = config["model_dir"]
-file_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}-base"
+file_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.base_version}"
 
 trainer . load_model ( filepath = f"{model_dir}/{file_name}", verbose = 1 )
 
@@ -90,7 +91,7 @@ for layer in range (d_num_layers):
   discriminator . append ( Dense (d_num_nodes) )
   discriminator . append ( LeakyReLU (alpha = d_alpha_leaky) )
 
-generator = trainer . extract_generator ( fine_tuned_layers = 2 )
+generator = trainer . extract_generator ( fine_tuned_layers = hp["fine_tuned_layers"] )
 
 add_g_num_layers  = hp["add_g_num_layers"]
 add_g_num_nodes   = hp["add_g_num_nodes"]
