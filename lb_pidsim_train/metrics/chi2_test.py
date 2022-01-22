@@ -8,7 +8,7 @@ def chi2_test ( x_obs ,
                 x_exp , 
                 bins  = 100  , 
                 w_obs = None , 
-                w_exp = None ) -> np.ndarray:
+                w_exp = None ) -> np.ndarray:   # TODO add notes
   """Return the Pearson's chi-squared test of the two input datasets.
 
   Parameters
@@ -46,35 +46,11 @@ def chi2_test ( x_obs ,
 
   Notes
   -----
-  In probability theory and statistics, the **Jensen–Shannon divergence** is 
-  a method of measuring the similarity between two probability distributions. 
-  It is also known as **information radius** (IRad) [1]_ or **total divergence 
-  to the average** [2]_.
-
-  Consider the set :math:`M_{+}^{1}(A)` of probability distributions where 
-  :math:`A` is a set provided with some :math:`\sigma`-algebra of measurable 
-  subsets. In particular we can take :math:`A` to be a finite or countable 
-  set with all subsets being measurable. The Jensen–Shannon divergence 
-  :math:`D_{JS}: M_{+}^{1}(A) \times M_{+}^{1}(A) \to [0, \infty)` is 
-  a symmetrized and smoothed version of the Kullback–Leibler divergence 
-  :math:`D_{KL} (F \parallel G)`. It is defined by
-
-  .. math::
-
-    D_{JS} (F \parallel G) = \frac{1}{2} D_{KL} (F \parallel M) + \frac{1}{2} D_{KL} (G \parallel M),
-  
-  where :math:`M = \frac{1}{2} (F + G)`.
+  ...
 
   References
   ----------
-  .. [1] C.D. Manning and H. Schutze, "Foundations of Statistical Natural Language 
-     Processing", MIT Press, Cambridge, 1999.
-
-  .. [2] I. Dagan, L. Lee and F. Pereira, "Similarity-Based Methods For Word 
-     Sense Disambiguation", in Proceedings of the Thirty-Fifth Annual Meeting 
-     of the Association for Computational Linguistics and Eighth Conference of 
-     the European Chapter of the Association for Computational Linguistics, 
-     ACL-EACL 1997.
+  ...
 
   Examples
   --------
@@ -89,7 +65,7 @@ def chi2_test ( x_obs ,
   return chi2_test_from_counts (n_obs, n_exp)
 
 
-def chi2_test_from_counts (f, g):
+def chi2_test_from_counts (f, g):   # TODO add notes
   """Return the Pearson's chi-squared test of the two input datasets from bin counts.
 
   Parameters
@@ -112,35 +88,11 @@ def chi2_test_from_counts (f, g):
 
   Notes
   -----
-  In probability theory and statistics, the **Jensen–Shannon divergence** is 
-  a method of measuring the similarity between two probability distributions. 
-  It is also known as **information radius** (IRad) [1]_ or **total divergence 
-  to the average** [2]_.
-
-  Consider the set :math:`M_{+}^{1}(A)` of probability distributions where 
-  :math:`A` is a set provided with some :math:`\sigma`-algebra of measurable 
-  subsets. In particular we can take :math:`A` to be a finite or countable 
-  set with all subsets being measurable. The Jensen–Shannon divergence 
-  :math:`D_{JS}: M_{+}^{1}(A) \times M_{+}^{1}(A) \to [0, \infty)` is 
-  a symmetrized and smoothed version of the Kullback–Leibler divergence 
-  :math:`D_{KL} (F \parallel G)`. It is defined by
-
-  .. math::
-
-    D_{JS} (F \parallel G) = \frac{1}{2} D_{KL} (F \parallel M) + \frac{1}{2} D_{KL} (G \parallel M),
-  
-  where :math:`M = \frac{1}{2} (F + G)`.
+  ...
 
   References
   ----------
-  .. [1] C.D. Manning and H. Schutze, "Foundations of Statistical Natural Language 
-     Processing", MIT Press, Cambridge, 1999.
-
-  .. [2] I. Dagan, L. Lee and F. Pereira, "Similarity-Based Methods For Word 
-     Sense Disambiguation", in Proceedings of the Thirty-Fifth Annual Meeting 
-     of the Association for Computational Linguistics and Eighth Conference of 
-     the European Chapter of the Association for Computational Linguistics, 
-     ACL-EACL 1997.
+  ...
 
   Examples
   --------
@@ -162,8 +114,13 @@ def chi2_test_from_counts (f, g):
     g = g [np.newaxis,:]
 
   ## Normalize distributions
-  f = f / np.cumsum (f, axis = 1)[:,-1][:,np.newaxis]
-  g = g / np.cumsum (g, axis = 1)[:,-1][:,np.newaxis]
+  cdf_f = np.cumsum (f, axis = 1)[:,-1]
+  cdf_f = np.where (cdf_f > 0, cdf_f, 1)
+  f = f / cdf_f[:,np.newaxis]
+
+  cdf_g = np.cumsum (g, axis = 1)[:,-1]
+  cdf_g = np.where (cdf_g > 0, cdf_g, 1)
+  g = g / cdf_g[:,np.newaxis]
 
   ## Cleaning datasets from 0s
   g = np.where (g > 0, g, 1e-12)

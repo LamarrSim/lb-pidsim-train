@@ -162,8 +162,13 @@ def JS_div_from_counts (f, g):
     g = g [np.newaxis,:]
 
   ## Normalize distributions
-  f = f / np.cumsum (f, axis = 1)[:,-1][:,np.newaxis]
-  g = g / np.cumsum (g, axis = 1)[:,-1][:,np.newaxis]
+  cdf_f = np.cumsum (f, axis = 1)[:,-1]
+  cdf_f = np.where (cdf_f > 0, cdf_f, 1)
+  f = f / cdf_f[:,np.newaxis]
+
+  cdf_g = np.cumsum (g, axis = 1)[:,-1]
+  cdf_g = np.where (cdf_g > 0, cdf_g, 1)
+  g = g / cdf_g[:,np.newaxis]
 
   ## Cleaning datasets from 0s
   f = np.where (f > 0, f, 1e-12)

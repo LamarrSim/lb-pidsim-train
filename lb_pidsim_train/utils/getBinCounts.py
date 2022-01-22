@@ -3,67 +3,70 @@
 import numpy as np
 
 
-def getBinCounts ( x_gen , 
-                 x_ref , 
-                 bins  = 100  ,
-                 w_gen = None , 
-                 w_ref = None ) -> tuple:
-  """Return two binned PDFs for the two input datasets.
+def getBinCounts ( x_obs , 
+                   x_exp , 
+                   bins  = 100  ,
+                   w_obs = None , 
+                   w_exp = None ) -> tuple:
+  """Return the bin counts of the two input datasets.
 
   Parameters
   ----------
-  x_gen : array_like
-    Array containing the generated dataset.
+  x_obs : array_like
+    Array containing the observed dataset.
 
-  x_ref : array_like
-    Array containing the reference dataset.
+  x_exp : array_like
+    Array containing the expected dataset.
 
   bins : `int`, optional
     Number of equal-width bins in the computed range used to approximate 
-    the two PDFs with binned data (`100`, by default).
+    the two distributions with binned data (`100`, by default).
 
-  w_gen : `int` or `float` or array_like, optional
-    An array of weights, of the same length as `x_gen`. Each value in `x_gen` 
+  w_obs : `int` or `float` or array_like, optional
+    An array of weights, of the same length as `x_obs`. Each value in `x_obs` 
     only contributes its associated weight towards the bin count (instead of 1).
 
-  w_ref : `int` or `float` or array_like, optional
-    An array of weights, of the same length as `x_ref`. Each value in `x_ref` 
+  w_exp : `int` or `float` or array_like, optional
+    An array of weights, of the same length as `x_exp`. Each value in `x_exp` 
     only contributes its associated weight towards the bin count (instead of 1).
 
   Returns
   -------
-  pdf_gen : `np.ndarray`
-    Binned PDF for the generated dataset.
+  n_obs : `np.ndarray`
+    Bin counts of the observed dataset.
 
-  pdf_ref : `np.ndarray`
-    Binned PDF for the reference dataset.
+  n_exp : `np.ndarray`
+    Bin counts of the expected dataset.
 
   See Also
   --------
   numpy.histogram :
-    Numpy function used to compute the binned PDFs of the input datasets.
+    Numpy function used to compute the bin counts of the input datasets.
 
-  lb_pidsim_train.metrics.KL_divergence : 
-    The binned PDFs are used to compute the Kullback–Leibler divergence.
+  lb_pidsim_train.metrics.KL_div : 
+    The bin counts are used to compute the Kullback–Leibler divergence.
 
-  lb_pidsim_train.metrics.JS_divergence : 
-    The binned PDFs are used to compute the Jensen-Shannon divergence.
+  lb_pidsim_train.metrics.JS_div : 
+    The bin counts are used to compute the Jensen-Shannon divergence.
 
   lb_pidsim_train.metrics.KS_test : 
-    The binned PDFs are used to perform the Kolmogorov–Smirnov test.
+    The bin counts are used to perform the Kolmogorov–Smirnov test.
+
+  lb_pidsim_train.metrics.chi2_test : 
+    The bin counts are used to perform the chi-squared test.
   """
   ## Input samples --> Numpy arrays
-  x_gen = np.array ( x_gen )
-  x_ref = np.array ( x_ref )
+  x_obs = np.array ( x_obs )
+  x_exp = np.array ( x_exp )
 
   ## Promotion to 2-D arrays
-  if len (x_gen.shape) == 1:
-    x_gen = x_gen [:, np.newaxis]
-  if len (x_ref.shape) == 1:
-    x_ref = x_ref [:, np.newaxis]
+  if len (x_obs.shape) == 1:
+    x_obs = x_obs [:, np.newaxis]
+  if len (x_exp.shape) == 1:
+    x_exp = x_exp [:, np.newaxis]
 
   ## Dimension control
-  if x_gen.shape[1] != x_ref.shape[1]:
+  if x_obs.shape[1] != x_exp.shape[1]:
     raise ValueError ("The two samples should have the same number of features.")
 
   ## Data-type control
@@ -73,35 +76,35 @@ def getBinCounts ( x_gen ,
     raise TypeError ("The number of bins should be an integer.")
 
   ## Default weights
-  if w_gen is None: w_gen = 1.
-  if w_ref is None: w_ref = 1.
+  if w_obs is None: w_obs = 1.
+  if w_exp is None: w_exp = 1.
 
   ## Scalar weights --> vector weights
-  if isinstance ( w_gen, (int, float) ):
-    w_gen = w_gen * np.ones ( len(x_gen) )
-  if isinstance ( w_ref, (int, float) ):
-    w_ref = w_ref * np.ones ( len(x_ref) )
+  if isinstance ( w_obs, (int, float) ):
+    w_obs = w_obs * np.ones ( len(x_obs) )
+  if isinstance ( w_exp, (int, float) ):
+    w_exp = w_exp * np.ones ( len(x_exp) )
 
   ## Input weights --> Numpy arrays
-  w_gen = np.array ( w_gen )
-  w_ref = np.array ( w_ref )
+  w_obs = np.array ( w_obs )
+  w_exp = np.array ( w_exp )
 
   ## Binned PDFs computation
-  pdf_gen, pdf_ref = list(), list()  
-  for i in range (x_gen.shape[1]):  # loop over features
-    minval = min ( min(x_gen[:,i]), min(x_ref[:,i]) )
-    maxval = max ( max(x_gen[:,i]), max(x_ref[:,i]) )
+  n_obs, n_exp = list(), list()  
+  for i in range (x_obs.shape[1]):  # loop over features
+    minval = min ( min(x_obs[:,i]), min(x_exp[:,i]) )
+    maxval = max ( max(x_obs[:,i]), max(x_exp[:,i]) )
 
-    hist_gen, _ = np.histogram ( x_gen[:,i], 
-                                 bins = bins, range = [minval, maxval], 
-                                 weights = w_gen / len(x_gen[:,i]) )
-    hist_ref, _ = np.histogram ( x_ref[:,i], 
-                                 bins = bins, range = [minval, maxval], 
-                                 weights = w_ref / len(x_ref[:,i]) )
-    pdf_gen . append ( hist_gen )
-    pdf_ref . append ( hist_ref )
+    h_obs, _ = np.histogram ( x_obs[:,i], 
+                              bins = bins, range = [minval, maxval], 
+                              weights = w_obs / len(x_obs[:,i]) )
+    h_exp, _ = np.histogram ( x_exp[:,i], 
+                              bins = bins, range = [minval, maxval], 
+                              weights = w_exp / len(x_exp[:,i]) )
+    n_obs . append ( h_obs )
+    n_exp . append ( h_exp )
   
-  return np.array(pdf_gen), np.array(pdf_ref)
+  return np.array(n_obs), np.array(n_exp)
 
 
 
@@ -116,6 +119,6 @@ if __name__ == "__main__":
   unif_2  = np.random.uniform ( -0.4 , 0.6 , size = int(1e6) )
   sample_2 = np.c_ [gauss_2, unif_2]
 
-  pdf_1, pdf_2 = getBinPDFs (sample_1, sample_2)
+  pdf_1, pdf_2 = getBinCounts (sample_1, sample_2)
   print ( "PDF1 - sum:", np.sum (pdf_1, axis = 1) )
   print ( "PDF2 - sum:", np.sum (pdf_2, axis = 1) )
