@@ -26,14 +26,20 @@ with open ("config/variables.yaml") as file:
 with open ("config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
+hyperparams = dict()
+
+with open ("config/hyperparams/cramergan.yaml") as file:
+  hyperparams["std"] = yaml.full_load (file)
+
 with open ("config/hyperparams/base-cramergan.yaml") as file:
-  hyperparams = yaml.full_load (file)
+  hyperparams["base"] = yaml.full_load (file)
 
 # +----------------------------+
 # |    Trainer construction    | 
 # +----------------------------+
 
 parser = argparser ("Model training")
+parser . add_argument ( "-w", "--weights", default = "yes", choices = ["yes", "no"] )
 args = parser . parse_args()
 
 model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
@@ -47,6 +53,10 @@ trainer = GanTrainer ( name = model_name ,
 # +-------------------------+
 # |    Optimization step    |
 # +-------------------------+
+
+sw = args.weights == "yes"
+
+hyperparams = hyperparams["std"] if sw else hyperparams["base"]
 
 hp = hyperparams[args.model][args.particle][args.sample]
 # TODO add OptunAPI update
