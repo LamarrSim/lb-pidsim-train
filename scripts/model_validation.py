@@ -13,6 +13,7 @@ from html_reports import Report
 from matplotlib.patches import Patch
 from lb_pidsim_train.utils import argparser
 from lb_pidsim_train.trainers import DataHandler
+from lb_pidsim_train.utils import PidsimColTransformer
 
 
 NP_FLOAT = np.float32
@@ -47,6 +48,7 @@ with open ("training/config/validation.yaml") as file:
 
 parser = argparser ("Model validation")
 parser . add_argument ( "-a", "--algo", required = True )   # TODO add choices
+parser . add_argument ( "-w", "--weights", default = "yes", choices = ["yes", "no"] )
 args = parser . parse_args()
 
 model_name = f"{args.algo}_{args.model}_{args.particle}_{args.sample}_{args.version}"
@@ -57,6 +59,8 @@ data_handler = DataHandler()
 # |    Data for validation    |
 # +---------------------------+
 
+sw = args.weights == "yes"
+
 data_dir  = config["data_dir"]
 file_list = datasets[args.model][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
@@ -66,7 +70,7 @@ chunk_size = validation[args.model][args.particle][args.sample]["chunk_size"]
 data_handler . feed_from_root_files ( root_files = file_list , 
                                       X_vars = variables[args.model]["X_vars"][args.sample] , 
                                       Y_vars = variables[args.model]["Y_vars"][args.sample] , 
-                                      w_var  = variables[args.model]["w_vars"][args.sample] , 
+                                      w_var  = variables[args.model]["w_vars"][args.sample] if sw else None, 
                                       selections = selections[args.model][args.sample] , 
                                       tree_names = None , 
                                       chunk_size = chunk_size , 
@@ -85,8 +89,11 @@ generator = tf.keras.models.load_model ( f"{model_dir}/{model_name}/saved_model"
 # |    Preprocessing transformation    |
 # +------------------------------------+
 
-scaler_X = pickle.load ( open (f"{model_dir}/{model_name}/transform_X.pkl", "rb") )
-scaler_Y = pickle.load ( open (f"{model_dir}/{model_name}/transform_Y.pkl", "rb") )
+file_X = f"{model_dir}/{model_name}/transform_X.pkl"
+scaler_X = PidsimColTransformer ( pickle.load ( open (file_X, "rb") ) )
+
+file_Y = f"{model_dir}/{model_name}/transform_Y.pkl"
+scaler_Y = PidsimColTransformer ( pickle.load ( open (file_Y, "rb") ) )
 
 # +---------------------+
 # |    Generate data    |
@@ -254,8 +261,8 @@ def plot_histos (bin_id):
 
       left_edge, right_edge = y_bin[:-1], y_bin[1:]
       values = np.array ( [left_edge, right_edge] ) . T . flatten()
-      entries_gen = np.array ( [entries_gen, entries_gen] ) . T . flatten()
-      entries_ref = np.array ( [entries_ref, entries_ref] ) . T . flatten()
+      entries_gen = np.array ( [entries_gen, entries_gen] ) . T . flatten()   # for horizontal line
+      entries_ref = np.array ( [entries_ref, entries_ref] ) . T . flatten()   # for horizontal line
       plt.axis ([values.min(), values.max(), 0, int (max_entries)])
 
       plt.plot (values, entries_ref, color = "dodgerblue", linewidth = 1.5)
@@ -271,6 +278,11 @@ def plot_histos (bin_id):
                     ha = "center", va = "center", size = 10, 
                     xy = (0.84, 0.90), xycoords = "axes fraction",
                     bbox = dict (boxstyle = "round", fc = "w", alpha = 0.8, ec = ".8"))
+      if not sw:
+        plt.annotate ("no sWeights", color = "w", weight = "bold",
+                      ha = "center", va = "center", size = 10,
+                      xy = (0.84, 0.78), xycoords = "axes fraction", 
+                      bbox = dict (boxstyle = "round", fc = "r", alpha = 1.0, ec = ".8"))
 
       report.add_figure(); plt.close()
 
