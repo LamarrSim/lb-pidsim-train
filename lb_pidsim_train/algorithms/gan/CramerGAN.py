@@ -1,6 +1,5 @@
 #from __future__ import annotations
 
-import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
@@ -103,7 +102,8 @@ class CramerGAN (GAN):   # TODO add class description
     self._discriminator = Sequential ( name = "discriminator" )
     for d_layer in discriminator:
       self._discriminator . add ( d_layer )
-    self._discriminator . add ( Dense (units = critic_dim) )
+    self._discriminator . add ( Dense ( units = critic_dim, activation = "linear", 
+                                        kernel_initializer = "he_normal" ) )
 
   def compile ( self , 
                 d_optimizer ,
@@ -166,10 +166,12 @@ class CramerGAN (GAN):   # TODO add class description
 
     ## Data-batch splitting
     batch_size = tf.cast ( tf.shape(XY_gen)[0] / 2, tf.int32 )
+
     XY_gen_1, XY_gen_2 = XY_gen[:batch_size], XY_gen[batch_size:batch_size*2]
-    XY_ref_1, XY_ref_2 = XY_ref[:batch_size], XY_ref[batch_size:batch_size*2]
     w_gen_1, w_gen_2 = w_gen[:batch_size], w_gen[batch_size:batch_size*2]
-    w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
+
+    XY_ref_1 = XY_ref[:batch_size]
+    w_ref_1 = w_ref[:batch_size]
 
     ## Discriminator loss computation
     d_loss = w_gen_1 * w_gen_2 * self._critic ( XY_gen_1, XY_gen_2 ) - \
@@ -216,10 +218,12 @@ class CramerGAN (GAN):   # TODO add class description
 
     ## Data-batch splitting
     batch_size = tf.cast ( tf.shape(XY_gen)[0] / 2, tf.int32 )
+
     XY_gen_1, XY_gen_2 = XY_gen[:batch_size], XY_gen[batch_size:batch_size*2]
-    XY_ref_1, XY_ref_2 = XY_ref[:batch_size], XY_ref[batch_size:batch_size*2]
     w_gen_1, w_gen_2 = w_gen[:batch_size], w_gen[batch_size:batch_size*2]
-    w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
+
+    XY_ref_1 = XY_ref[:batch_size]
+    w_ref_1 = w_ref[:batch_size]
 
     ## Generator loss computation
     g_loss = w_ref_1 * w_gen_2 * self._critic ( XY_ref_1, XY_gen_2 ) - \
@@ -239,7 +243,7 @@ class CramerGAN (GAN):   # TODO add class description
     th_loss : `tf.Tensor`
       ...
     """
-    XY_ref, w_ref = ref_sample
+    _, w_ref = ref_sample
     th_loss = tf.zeros_like (w_ref)
     return tf.reduce_mean (th_loss)
 

@@ -1,6 +1,8 @@
 #from __future__ import annotations
 
 import tensorflow as tf
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
 from lb_pidsim_train.algorithms.gan import GAN
 
 
@@ -65,6 +67,13 @@ class WGAN_GP (GAN):   # TODO add class description
                        latent_dim    = latent_dim    )
     self._loss_name = "Wasserstein distance"
 
+    ## Discriminator sequential model
+    self._discriminator = Sequential ( name = "discriminator" )
+    for d_layer in discriminator:
+      self._discriminator . add ( d_layer )
+    self._discriminator . add ( Dense ( units = 1, activation = "linear", 
+                                        kernel_initializer = "he_normal" ) )
+
   def compile ( self , 
                 d_optimizer , 
                 g_optimizer ,
@@ -123,7 +132,7 @@ class WGAN_GP (GAN):   # TODO add class description
     ## Standard WGAN loss
     D_gen = self._discriminator ( XY_gen )
     D_ref = self._discriminator ( XY_ref )
-    d_loss = w_gen * D_gen - w_ref * D_ref
+    d_loss = tf.reduce_mean ( w_gen * D_gen - w_ref * D_ref )
     
     ## Gradient penalty
     alpha = tf.random.uniform (
@@ -182,7 +191,7 @@ class WGAN_GP (GAN):   # TODO add class description
     th_loss : `tf.Tensor`
       ...
     """
-    XY_ref, w_ref = ref_sample
+    _, w_ref = ref_sample
     th_loss = tf.zeros_like (w_ref)
     return tf.reduce_mean (th_loss)
 
