@@ -181,7 +181,7 @@ class DataHandler:   # TODO add class description
     if self.w_var is not None:
       w = self._datachunk[self.w_var] . to_numpy()
     else:
-      w = np.ones ( X.shape[0], dtype = NP_FLOAT )
+      w = np.ones ( shape = (X.shape[0], 1), dtype = NP_FLOAT )
 
     X . astype ( NP_FLOAT )
     Y . astype ( NP_FLOAT )

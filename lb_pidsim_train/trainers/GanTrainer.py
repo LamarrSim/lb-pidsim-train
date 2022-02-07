@@ -23,6 +23,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
   def load_model ( self , 
                    filepath , 
                    model_name = "saved_model" ,
+                   save_transformer = True ,
                    verbose = 0 ) -> None:   # TODO add docstring
     """"""
     if not self._datachunk_filled:
@@ -53,6 +54,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
       stop = time()
       if (verbose > 1):
         print (f"Preprocessing time for X: {stop-start:.3f} s")
+      if save_transformer: 
+        self._save_transformer ( "transform_X" , 
+                                 self._scaler_X.sklearn_transformer ,   # saved as Scikit-Learn class
+                                 verbose = (verbose > 0) )
     else:
       self._scaler_X = None
       self._X_scaled = self.X
@@ -68,6 +73,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
       stop = time()
       if (verbose > 1):
         print (f"Preprocessing time for Y: {stop-start:.3f} s")
+      if save_transformer:
+        self._save_transformer ( "transform_Y" , 
+                                 self._scaler_Y.sklearn_transformer ,   # saved as Scikit-Learn class 
+                                 verbose = (verbose > 0) )
     else:
       self._scaler_Y = None
       self._Y_scaled = self.Y

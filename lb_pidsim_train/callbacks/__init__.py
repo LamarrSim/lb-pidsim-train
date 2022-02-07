@@ -1,1 +1,1 @@
-from .schedulers import GanExpLrScheduler, GanPowLrScheduler, GanBaseUpdtScheduler
+from .schedulers import GanExpLrScheduler, GanPowLrScheduler

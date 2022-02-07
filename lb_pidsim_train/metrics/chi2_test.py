@@ -144,5 +144,5 @@ if __name__ == "__main__":
 
   binnings = [10, 100, 1000, 10000]
   for bins in binnings:
-    js_div = chi2_test (sample_1, sample_2, bins)
-    print ( "chi2 test (bins - {:.2e}) : {}" . format (bins, js_div) )
+    chi2 = chi2_test (sample_1, sample_2, bins)
+    print ( "chi2 test (bins - {:.2e}) : {}" . format (bins, chi2) )
