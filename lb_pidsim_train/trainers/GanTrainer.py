@@ -165,16 +165,19 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
-    # report.add_markdown ("<br/>")
 
     ## Learning curves plots
     plt.figure (figsize = (8,5), dpi = 100)
     plt.title  ("Learning curves", fontsize = 14)   # TODO plot loss variance
     plt.xlabel ("Training epochs", fontsize = 12)
     plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
-    plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
-    plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
-    plt.legend (title = "Training players:", loc = "upper right", fontsize = 10)
+    plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator (train-set)")
+    if self._validation_split != 0.0:
+      plt.plot (history.history["val_d_loss"], linewidth = 1.5, color = "seagreen", label = "discriminator (val-set)")
+    plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator (train-set)")
+    if self._validation_split != 0.0:
+      plt.plot (history.history["val_g_loss"], linewidth = 1.5, color = "orange", label = "generator (val-set)")
+    plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
     y_bottom = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
     y_top    = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
     y_bottom += 0.1 * y_bottom
@@ -182,7 +185,6 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
-    # report.add_markdown ("<br/>")
 
     ## Learning rate scheduling plots
     plt.figure (figsize = (8,5), dpi = 100)
@@ -191,10 +193,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.ylabel ("Learning rate", fontsize = 12)
     plt.plot (history.history["d_lr"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_lr"], linewidth = 1.5, color = "coral", label = "generator")
-    plt.legend (title = "Training players:", loc = "upper right", fontsize = 10)
+    plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
 
     report.add_figure(); plt.clf(); plt.close()
-    # report.add_markdown ("<br/>")
 
     ## Validation plots
     rows = cols = len(self.Y_vars)
