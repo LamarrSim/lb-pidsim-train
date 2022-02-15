@@ -1,0 +1,106 @@
+import os
+import yaml
+
+
+# +-------------+
+# |    Setup    |
+# +-------------+
+
+DebugMode = False
+
+STEPS = ["Rich", "Muon", "GlobalMuonId", "GlobalPID"] 
+SLOTS = ["2016MagUp"]
+PARTS = ["Muon", "Pion", "Kaon", "Proton"]
+
+with open ("../../training/config/config.yaml") as file:
+  config = yaml.full_load (file)
+
+DIR = os.path.join ( config["model_dir"], "latest_models" )
+
+CCFLAGS = ["-Ofast", "--shared", "-fPIC"]
+
+if DebugMode:
+  CCFLAGS.append ( "-DDEBUG" )
+
+# +-----------------------+
+# |    Rule: GAN MODEL    |
+# +-----------------------+
+
+rule ganmodel:
+  input: 
+    model = os.path.join ( DIR, "{step}_{part}_{slot}_latest/saved_model"     ) ,
+    tX    = os.path.join ( DIR, "{step}_{part}_{slot}_latest/transform_X.pkl" ) ,
+    tY    = os.path.join ( DIR, "{step}_{part}_{slot}_latest/transform_Y.pkl" )
+
+  output:
+    model = "/tmp/{step}_{part}_{slot}_latest.C"    ,
+    tX    = "/tmp/{step}_{part}_{slot}_latest_tX.C" ,
+    tY    = "/tmp/{step}_{part}_{slot}_latest_tY.C"
+
+  shell:
+    "scikinC --float_t float {wildcards.step}{wildcards.part}={input.model} > {output.model};"
+    "scikinC --float_t float {wildcards.step}{wildcards.part}_tX={input.tX} > {output.tX};"
+    "scikinC --float_t float {wildcards.step}{wildcards.part}_tY={input.tY} > {output.tY}"
+    
+# +--------------------+
+# |    Rule: ISMUON    |
+# +--------------------+
+
+rule ismuoneff:
+  input:
+    model = os.path.join ( DIR, "isMuon_{part}_{slot}_latest/pipeline.pkl" ) ,
+
+  output:
+    model = "/tmp/isMuon_{part}_{slot}_latest.C"    ,
+
+  shell:
+    "scikinC --float_t float IsMuon{wildcards.part}_bdt={input.model} > {output.model}"
+    
+# +----------------------+
+# |    Rule: PIPELINE    |
+# +----------------------+
+
+rule pipeline:
+  input:
+    model  = expand ( "/tmp/{step}_{part}_{slot}_latest.C"    , step = STEPS , part = PARTS , slot = SLOTS , allow_missing = True ) , 
+    tX     = expand ( "/tmp/{step}_{part}_{slot}_latest_tX.C" , step = STEPS , part = PARTS , slot = SLOTS , allow_missing = True ) , 
+    tY     = expand ( "/tmp/{step}_{part}_{slot}_latest_tY.C" , step = STEPS , part = PARTS , slot = SLOTS , allow_missing = True ) , 
+    ismuon = expand ( "/tmp/isMuon_{part}_{slot}_latest.C"    ,                part = PARTS , slot = SLOTS , allow_missing = True ) , 
+    pipe = "../cpipelines/pipeline.C"
+
+  output:
+    shared_object = os.path.join ( DIR, "CompiledModel_{slot}_latest.so" )
+
+  params:
+    flags = CCFLAGS
+
+  shell:
+    "gcc {params.flags} -o {output.shared_object} {input}"
+
+# +------------------+
+# |    Rule: TEST    |
+# +------------------+
+
+rule test:
+  input:
+    shared_object = os.path.join ( DIR, "CompiledModel_{slot}_latest.so" )
+
+  output:
+    ".tested_{part}_{slot}_latest"
+
+  shell:
+    "python3 tests/test.py -i {input.shared_object} -v latest -p {wildcards.part} -s {wildcards.slot} && touch {output}"
+
+# +-----------------+
+# |    Rule: ALL    |
+# +-----------------+
+
+rule all:
+  input:
+    expand ( ".tested_{part}_{slot}_latest", part = PARTS, slot = SLOTS )
+
+  output:
+    ".compiled_models"
+
+  shell:
+    "touch {output}"
