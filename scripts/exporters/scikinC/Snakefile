@@ -38,9 +38,12 @@ rule ganmodel:
     tY    = "/tmp/{step}_{part}_{slot}_latest_tY.C"
 
   shell:
-    "scikinC --float_t float {wildcards.step}{wildcards.part}={input.model} > {output.model};"
-    "scikinC --float_t float {wildcards.step}{wildcards.part}_tX={input.tX} > {output.tX};"
-    "scikinC --float_t float {wildcards.step}{wildcards.part}_tY={input.tY} > {output.tY}"
+    "scikinC --float_t double {wildcards.step}{wildcards.part}={input.model} > {output.model};"
+    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.model};"   # TODO super-clean, not really
+    "scikinC --float_t double {wildcards.step}{wildcards.part}_tX={input.tX} > {output.tX};"
+    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.tX};"   # TODO super-clean, not really
+    "scikinC --float_t double {wildcards.step}{wildcards.part}_tY={input.tY} > {output.tY};"
+    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.tY}"   # TODO super-clean, not really
     
 # +--------------------+
 # |    Rule: ISMUON    |
@@ -51,10 +54,11 @@ rule ismuoneff:
     model = os.path.join ( DIR, "isMuon_{part}_{slot}_latest/pipeline.pkl" ) ,
 
   output:
-    model = "/tmp/isMuon_{part}_{slot}_latest.C"    ,
+    model = "/tmp/isMuon_{part}_{slot}_latest.C" ,
 
   shell:
-    "scikinC --float_t float IsMuon{wildcards.part}_bdt={input.model} > {output.model}"
+    "scikinC --float_t double IsMuon{wildcards.part}={input.model} > {output.model};"
+    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.model}"   # TODO super-clean, not really
     
 # +----------------------+
 # |    Rule: PIPELINE    |
@@ -89,7 +93,7 @@ rule test:
     ".tested_{part}_{slot}_latest"
 
   shell:
-    "python3 tests/test.py -i {input.shared_object} -v latest -p {wildcards.part} -s {wildcards.slot} && touch {output}"
+    "python3 tests/test.py -i {input.shared_object} -p {wildcards.part} -s {wildcards.slot} && touch {output}"
 
 # +-----------------+
 # |    Rule: ALL    |

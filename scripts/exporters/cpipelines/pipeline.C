@@ -1,4 +1,4 @@
-#define FLOAT_T float
+#define FLOAT_T double   // TODO really clean 
 
 #ifndef BUFFERSIZE
 #define BUFFERSIZE 1024
