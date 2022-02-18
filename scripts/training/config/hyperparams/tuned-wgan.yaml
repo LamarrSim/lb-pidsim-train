@@ -21,7 +21,7 @@ Rich:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 8000000   # 150 mln
+      chunk_size : 5000000   # 150 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -31,13 +31,14 @@ Rich:
       add_g_alpha_leaky : 0.05
       latent_dim : 64
       d_lr : 0.00005
-      g_lr : 0.0000025
-      d_updt_per_batch : 3
+      g_lr : 0.0000075
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      lr_sched_factor : 0.95
-      lr_sched_step : 25
+      grad_penalty : 10.0
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
       batch_size : 512
-      num_epochs : 500
+      num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
