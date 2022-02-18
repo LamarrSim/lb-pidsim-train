@@ -12,6 +12,11 @@ saved_model/
 # Optuna
 *.db
 
+# Snakefile
+.snakemake/
+.tested_*
+.compiled_models
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
