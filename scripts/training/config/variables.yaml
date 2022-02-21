@@ -15,15 +15,17 @@ Rich:
       - nTracks_Brunel
       - probe_Brunel_trackcharge
 
-  X_vars_to_preprocess:
+  X_preprocessing:
     2016MagUp:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
     2016MagDown:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
 
   Y_vars:
     2016MagUp:
@@ -37,9 +39,17 @@ Rich:
       - probe_Brunel_RichDLLk
       - probe_Brunel_RichDLLp
 
-  Y_vars_to_preprocess:
+  Y_preprocessing:
     2016MagUp:
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
     2016MagDown:
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
 
   w_vars:
     2016MagUp: probe_sWeight
@@ -62,15 +72,17 @@ Muon:
       - nTracks_Brunel
       - probe_Brunel_trackcharge
 
-  X_vars_to_preprocess:
+  X_preprocessing:
     2016MagUp:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
     2016MagDown:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
 
   Y_vars:
     2016MagUp:
@@ -80,9 +92,13 @@ Muon:
       - probe_Brunel_MuonMuLL
       - probe_Brunel_MuonBgLL
 
-  Y_vars_to_preprocess:
+  Y_preprocessing:
     2016MagUp:
+      - quantile-highbin
+      - quantile-highbin
     2016MagDown:
+      - quantile-highbin
+      - quantile-highbin
 
   w_vars:
     2016MagUp: probe_sWeight
@@ -119,27 +135,31 @@ GlobalPID:
       - probe_Brunel_MuonMuLL
       - probe_Brunel_MuonBgLL
 
-  X_vars_to_preprocess:
+  X_preprocessing:
     2016MagUp:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
-      - probe_Brunel_RichDLLe
-      - probe_Brunel_RichDLLmu
-      - probe_Brunel_RichDLLk
-      - probe_Brunel_RichDLLp
-      - probe_Brunel_MuonMuLL
-      - probe_Brunel_MuonBgLL
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - pass-through
+      - quantile-highbin
+      - quantile-highbin
     2016MagDown:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
-      - probe_Brunel_RichDLLe
-      - probe_Brunel_RichDLLmu
-      - probe_Brunel_RichDLLk
-      - probe_Brunel_RichDLLp
-      - probe_Brunel_MuonMuLL
-      - probe_Brunel_MuonBgLL
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - pass-through
+      - quantile-highbin
+      - quantile-highbin
 
   Y_vars:
     2016MagUp:
@@ -159,9 +179,23 @@ GlobalPID:
       - probe_Brunel_MC15TuneV1_ProbNNk
       - probe_Brunel_MC15TuneV1_ProbNNp
     
-  Y_vars_to_preprocess:
+  Y_preprocessing:
     2016MagUp:
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
     2016MagDown:
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
 
   w_vars:
     2016MagUp: probe_sWeight
@@ -196,27 +230,29 @@ GlobalMuonId:
       - probe_Brunel_MuonMuLL
       - probe_Brunel_MuonBgLL
 
-  X_vars_to_preprocess:
+  X_preprocessing:
     2016MagUp:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
-      - probe_Brunel_RichDLLe
-      - probe_Brunel_RichDLLmu
-      - probe_Brunel_RichDLLk
-      - probe_Brunel_RichDLLp
-      - probe_Brunel_MuonMuLL
-      - probe_Brunel_MuonBgLL
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
     2016MagDown:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
-      - probe_Brunel_RichDLLe
-      - probe_Brunel_RichDLLmu
-      - probe_Brunel_RichDLLk
-      - probe_Brunel_RichDLLp
-      - probe_Brunel_MuonMuLL
-      - probe_Brunel_MuonBgLL
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-highbin
 
   Y_vars:
     2016MagUp:
@@ -226,9 +262,13 @@ GlobalMuonId:
       - probe_Brunel_PIDmu
       - probe_Brunel_MC15TuneV1_ProbNNmu
 
-  Y_vars_to_preprocess:
+  Y_preprocessing:
     2016MagUp:
+      - quantile-highbin
+      - quantile-highbin
     2016MagDown:
+      - quantile-highbin
+      - quantile-highbin
 
   w_vars:
     2016MagUp: probe_sWeight
@@ -251,23 +291,25 @@ isMuon:
       - nTracks_Brunel
       - probe_Brunel_trackcharge
 
-  X_vars_to_preprocess:
+  X_preprocessing:
     2016MagUp:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
     2016MagDown:
-      - probe_Brunel_P
-      - probe_Brunel_ETA
-      - nTracks_Brunel
+      - quantile-highbin
+      - quantile-highbin
+      - quantile-lowbin
+      - pass-through
 
   Y_vars:
     2016MagUp: probe_Brunel_isMuon
     2016MagDown: probe_Brunel_isMuon
 
-  Y_vars_to_preprocess:
-    2016MagUp:
-    2016MagDown:
+  Y_preprocessing:
+    2016MagUp: pass-through
+    2016MagDown: pass-through
 
   w_vars:
     2016MagUp: probe_sWeight

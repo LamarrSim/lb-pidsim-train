@@ -69,10 +69,12 @@ data_dir  = config["data_dir"]
 file_list = datasets[args.model][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 
+sW = args.weights == "yes"
+
 trainer . feed_from_root_files ( root_files = file_list , 
                                  X_vars = variables[args.model]["X_vars"][args.sample] , 
                                  Y_vars = variables[args.model]["Y_vars"][args.sample] , 
-                                 #w_var  = variables[args.model]["w_vars"][args.sample] , 
+                                 w_var  = variables[args.model]["w_vars"][args.sample] if sW else None, 
                                  selections = selections[args.model][args.sample] , 
                                  tree_names = None , 
                                  chunk_size = hp["chunk_size"] , 
@@ -82,13 +84,13 @@ trainer . feed_from_root_files ( root_files = file_list ,
 # |    Data preprocessing    |
 # +--------------------------+
 
-X_vars_to_preprocess = variables[args.model]["X_vars_to_preprocess"][args.sample]
-Y_vars_to_preprocess = variables[args.model]["Y_vars_to_preprocess"][args.sample]
+X_preprocessing = variables[args.model]["X_preprocessing"][args.sample]
+Y_preprocessing = variables[args.model]["Y_preprocessing"][args.sample]
 
-trainer . prepare_dataset ( X_preprocessing = hp["X_preprocessing"] , 
-                            Y_preprocessing = hp["Y_preprocessing"] , 
-                            X_vars_to_preprocess = X_vars_to_preprocess ,
-                            Y_vars_to_preprocess = Y_vars_to_preprocess ,
+trainer . prepare_dataset ( X_preprocessing = X_preprocessing , 
+                            Y_preprocessing = Y_preprocessing , 
+                            X_vars_to_preprocess = trainer.X_vars ,
+                            Y_vars_to_preprocess = trainer.Y_vars ,
                             verbose = 1 )
 
 # +--------------------------+

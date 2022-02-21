@@ -8,7 +8,7 @@ from time import time
 from warnings import warn
 from datetime import datetime
 from lb_pidsim_train.trainers import DataHandler
-from lb_pidsim_train.utils    import preprocessor
+from lb_pidsim_train.utils    import pre_preprocessing_step, preprocessor
 from lb_pidsim_train.utils    import warn_message as wm
 
 
@@ -92,9 +92,9 @@ class BaseTrainer (DataHandler):   # TODO class description
                         Y_preprocessing = None ,
                         X_vars_to_preprocess = None ,
                         Y_vars_to_preprocess = None ,
-                        subsample_size = 100000 ,
+                        subsample_size = 500000 ,
                         save_transformer = True ,
-                        verbose = 0 ) -> None:
+                        verbose = 0 ) -> None:   # TODO fix the attribute types inserted within the docstring
     """Split the data-chunk into X, Y and w, and perform preprocessing.
 
     Parameters
@@ -138,23 +138,16 @@ class BaseTrainer (DataHandler):   # TODO class description
     super().prepare_dataset (verbose = verbose)
     self._dataset_prepared = False   # switch off dataset prepared flag
 
-    ## Data-type control
-    try:
-      subsample_size = int ( subsample_size )
-    except:
-      raise TypeError ("The sub-sample size should be an integer.")
-
     ## Preprocessed input array
     if X_preprocessing is not None:
       start = time()
       if X_vars_to_preprocess is not None:
-        X_cols_to_preprocess = list()
-        for idx, var in enumerate (self._X_vars):
-          if var in X_vars_to_preprocess:
-            X_cols_to_preprocess . append (idx)   # column index
+        X_preprocessing, _, X_cols_to_preprocess = pre_preprocessing_step ( transformers = X_preprocessing ,
+                                                                            vars_to_transform = X_vars_to_preprocess ,
+                                                                            all_vars = self.X_vars )
       else:
         X_cols_to_preprocess = None
-      self._scaler_X = preprocessor ( self.X[:subsample_size], strategy = X_preprocessing, 
+      self._scaler_X = preprocessor ( self.X[:subsample_size], strategies = X_preprocessing, 
                                       cols_to_transform = X_cols_to_preprocess )
       self._X_scaled = self._scaler_X . transform (self.X)   # transform the input-set
       stop = time()
@@ -172,13 +165,12 @@ class BaseTrainer (DataHandler):   # TODO class description
     if Y_preprocessing is not None:
       start = time()
       if Y_vars_to_preprocess is not None:
-        Y_cols_to_preprocess = list()
-        for idx, var in enumerate (self._Y_vars):
-          if var in Y_vars_to_preprocess:
-            Y_cols_to_preprocess . append (idx)   # column index
+        Y_preprocessing, _, Y_cols_to_preprocess = pre_preprocessing_step ( transformers = Y_preprocessing ,
+                                                                            vars_to_transform = Y_vars_to_preprocess ,
+                                                                            all_vars = self.Y_vars )
       else:
         Y_cols_to_preprocess = None
-      self._scaler_Y = preprocessor ( self.Y[:subsample_size], strategy = Y_preprocessing, 
+      self._scaler_Y = preprocessor ( self.Y[:subsample_size], strategies = Y_preprocessing, 
                                       cols_to_transform = Y_cols_to_preprocess )
       self._Y_scaled = self._scaler_Y . transform (self.Y)   # transform the output-set
       stop = time()

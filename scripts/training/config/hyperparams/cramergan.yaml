@@ -8,8 +8,6 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 60 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -36,8 +34,6 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -64,8 +60,6 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -92,8 +86,6 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 105 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -125,8 +117,6 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 10000000   # 23 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -153,8 +143,6 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -181,8 +169,6 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -209,8 +195,6 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 5 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -242,8 +226,6 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 60 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -270,8 +252,6 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -298,8 +278,6 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -326,8 +304,6 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 105 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -359,8 +335,6 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 10000000   # 23 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -387,8 +361,6 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -415,8 +387,6 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -443,8 +413,6 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 5 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05

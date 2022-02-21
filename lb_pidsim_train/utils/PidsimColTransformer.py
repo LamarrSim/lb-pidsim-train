@@ -27,14 +27,14 @@ class PidsimColTransformer:   # TODO add docstring
     ## Transformers: ( (name, fitted_transformer, column) , ... )
     transformers = self._col_transformer.transformers_
 
-    ## Numerical transformer
-    num_transformer = transformers[0][1]
-    num_cols = transformers[0][2]
-    X_tr[:,num_cols] = num_transformer . inverse_transform (X[:,num_cols])
+    ## Numerical transformers
+    for ct in transformers[:-1]:
+      num_transf, num_cols = ct[1], ct[2]
+      X_tr[:,num_cols] = num_transf . inverse_transform (X[:,num_cols])
 
-    ## Function transformer
-    fnc_cols = transformers[1][2]
-    X_tr[:,fnc_cols] = X[:,fnc_cols]
+    ## Pass-through transformer
+    pt_cols = transformers[-1][2]
+    X_tr[:,pt_cols] = X[:,pt_cols]
 
     return X_tr
 
