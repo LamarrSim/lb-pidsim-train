@@ -22,8 +22,6 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      X_preprocessing : quantile
-      Y_preprocessing : quantile
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05

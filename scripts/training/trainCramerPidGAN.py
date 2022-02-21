@@ -69,15 +69,13 @@ data_dir  = config["data_dir"]
 file_list = datasets[args.model][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 
-sW = args.weights == "yes"
-
 trainer . feed_from_root_files ( root_files = file_list , 
                                  X_vars = variables[args.model]["X_vars"][args.sample] , 
                                  Y_vars = variables[args.model]["Y_vars"][args.sample] , 
-                                 w_var  = variables[args.model]["w_vars"][args.sample] if sW else None, 
+                                 w_var  = variables[args.model]["w_vars"][args.sample] if sw else None, 
                                  selections = selections[args.model][args.sample] , 
                                  tree_names = None , 
-                                 chunk_size = hp["chunk_size"] , 
+                                 chunk_size = 500000,#hp["chunk_size"] , 
                                  verbose = 1 )
 
 # +--------------------------+
@@ -149,7 +147,7 @@ lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"], step = hp["lr
 
 trainer . train_model ( model = model ,
                         batch_size = hp["batch_size"] ,
-                        num_epochs = hp["num_epochs"] ,
+                        num_epochs = 1,#hp["num_epochs"] ,
                         validation_split = hp["validation_split"] ,
                         scheduler = lr_scheduler ,
                         verbose = 1 )

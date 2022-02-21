@@ -70,10 +70,10 @@ trainer . feed_from_root_files ( root_files = file_list ,
 # |    Data preprocessing    |
 # +--------------------------+
 
-X_vars_to_preprocess = variables["isMuon"]["X_vars_to_preprocess"][args.sample]
+X_preprocessing = variables[args.model]["X_preprocessing"][args.sample]
 
-trainer . prepare_dataset ( X_preprocessing = hp["X_preprocessing"] , 
-                            X_vars_to_preprocess = X_vars_to_preprocess ,
+trainer . prepare_dataset ( X_preprocessing = X_preprocessing , 
+                            X_vars_to_preprocess = trainer.X_vars ,
                             verbose = 1 )
 
 # +------------------------+
@@ -109,3 +109,5 @@ model = GradientBoostingClassifier ( loss = hp["loss"] ,
 trainer . train_model ( model = model ,
                         validation_split = hp["validation_split"] ,
                         verbose = 1 )
+
+print (trainer.scores[1])

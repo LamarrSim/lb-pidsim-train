@@ -126,7 +126,7 @@ def preprocessor ( data ,
                          f"['quantile-highbin', 'quantile-lowbin', 'standard', 'minmax'], "
                          f"'{strategy}' passed." )
 
-    transformers . append ( (strategy, scaler, col) )
+    transformers . append ( (strategy.replace("-","_"), scaler, col) )
     scaled_cols += col
     del scaler
 

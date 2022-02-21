@@ -8,7 +8,6 @@ isMuon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 10000000   # 60 mln
-      X_preprocessing : quantile
       loss : deviance
       learning_rate : 0.547
       n_estimators  : 9
@@ -24,7 +23,6 @@ isMuon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 20000000   # 150 mln
-      X_preprocessing : quantile
       loss : deviance
       learning_rate : 0.024
       n_estimators  : 142
@@ -40,7 +38,6 @@ isMuon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 20000000   # 150 mln
-      X_preprocessing : quantile
       loss : deviance
       learning_rate : 0.151
       n_estimators  : 7
@@ -56,7 +53,6 @@ isMuon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 50000000   # 105 mln
-      X_preprocessing : quantile
       loss : deviance
       learning_rate : 0.056
       n_estimators  : 147
