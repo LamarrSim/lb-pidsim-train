@@ -75,7 +75,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  w_var  = variables[args.model]["w_vars"][args.sample] if sw else None, 
                                  selections = selections[args.model][args.sample] , 
                                  tree_names = None , 
-                                 chunk_size = 1000000,#hp["chunk_size"] , 
+                                 chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
 # +--------------------------+
@@ -147,7 +147,7 @@ lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"], step = hp["lr
 
 trainer . train_model ( model = model ,
                         batch_size = hp["batch_size"] ,
-                        num_epochs = 1,#hp["num_epochs"] ,
+                        num_epochs = hp["num_epochs"] ,
                         validation_split = hp["validation_split"] ,
                         scheduler = lr_scheduler ,
                         verbose = 1 )
