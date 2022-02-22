@@ -119,7 +119,7 @@ class BaseTrainer (DataHandler):   # TODO class description
 
     subsample_size : `int`, optional
       Data-chunk subsample size used to compute the preprocessing transformer 
-      parameters (`100000`, by default).
+      parameters (`500000`, by default).
 
     save_transformer : `bool`, optional
       Boolean flag to save and export the transformers, if preprocessing 

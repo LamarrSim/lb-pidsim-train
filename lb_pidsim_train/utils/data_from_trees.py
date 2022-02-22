@@ -13,7 +13,7 @@ def data_from_trees ( trees ,
   """Stratified data shuffling from list of `uproot.TTree`.
 
   The number of entries picked from each `uproot.TTree` is proportional to 
-  the fraction of the total entries that that tree includes. For example, 
+  the fraction of the total entries that the tree includes. For example, 
   if `tree_1` has 900 entries and `tree_2` has 100, requiring a `chunk_size` 
   of 100 will return 90 entries picked randomly form `tree_1` and 10 picked 
   randomly from `tree_2`. 

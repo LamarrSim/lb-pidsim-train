@@ -75,7 +75,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  w_var  = variables[args.model]["w_vars"][args.sample] if sw else None, 
                                  selections = selections[args.model][args.sample] , 
                                  tree_names = None , 
-                                 chunk_size = 500000,#hp["chunk_size"] , 
+                                 chunk_size = 1000000,#hp["chunk_size"] , 
                                  verbose = 1 )
 
 # +--------------------------+

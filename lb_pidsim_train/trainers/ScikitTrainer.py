@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from html_reports import Report
 from matplotlib.patches import Patch
+from sklearn.pipeline import Pipeline
 from lb_pidsim_train.trainers import BaseTrainer
 from lb_pidsim_train.metrics import KL_div_from_counts, JS_div_from_counts, KS_test_from_counts, chi2_test_from_counts
 
@@ -102,6 +103,7 @@ class ScikitTrainer (BaseTrainer):
 
     if save_model:
       self._save_model ( "saved_model", model, verbose = (verbose > 0) )
+      self._save_pipeline ( verbose = (verbose > 0) )
 
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
@@ -278,6 +280,21 @@ class ScikitTrainer (BaseTrainer):
     filename = f"{dirname}/{name}.pkl"
     pickle . dump ( model, open (filename, "wb") )
     if verbose: print ( f"Trained model correctly exported to {filename}" )
+
+  def _save_pipeline ( self, verbose = False ) -> None:   # TODO complete docstring
+    """"""
+    t_models = list()
+    t_names  = ["transform_X", "transform_Y", "saved_model"]
+    dirname  = f"{self._export_dir}/{self._export_name}"
+    for n in t_names:
+      filename = f"{dirname}/{n}.pkl"
+      if os.path.exists (filename):
+        with open (filename, "rb") as f:
+          transformer = pickle.load (f)
+        t_models . append ( (n, transformer) )
+    pipeline = Pipeline ( t_models )
+    pickle . dump ( pipeline, open (f"{dirname}/pipeline.pkl", "wb") )
+    if verbose: print ( f"Pipeline correctly exported to {dirname}/pipeline.pkl" )
 
   @property
   def model (self):

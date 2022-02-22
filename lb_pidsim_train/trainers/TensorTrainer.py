@@ -114,7 +114,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                         Y_preprocessing = None , 
                         X_vars_to_preprocess = None , 
                         Y_vars_to_preprocess = None , 
-                        subsample_size = 100000 , 
+                        subsample_size = 500000 , 
                         save_transformer = True , 
                         verbose = 0 ) -> None:
     if self._model_loaded:

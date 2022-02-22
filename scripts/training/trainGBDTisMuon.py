@@ -70,7 +70,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
 # |    Data preprocessing    |
 # +--------------------------+
 
-X_preprocessing = variables[args.model]["X_preprocessing"][args.sample]
+X_preprocessing = variables["isMuon"]["X_preprocessing"][args.sample]
 
 trainer . prepare_dataset ( X_preprocessing = X_preprocessing , 
                             X_vars_to_preprocess = trainer.X_vars ,

@@ -115,11 +115,11 @@ def preprocessor ( data ,
       scaler = StandardScaler()
     elif strategy == "quantile-highbin":
       scaler = QuantileTransformer ( n_quantiles = 1000 , 
-                                     subsample = int (1e5) ,
+                                     subsample = int (1e8) ,
                                      output_distribution = "normal" )
     elif strategy == "quantile-lowbin":
-      scaler = QuantileTransformer ( n_quantiles = 50 , 
-                                     subsample = int (1e5) ,
+      scaler = QuantileTransformer ( n_quantiles = 10 , 
+                                     subsample = int (1e8) ,
                                      output_distribution = "normal" )    
     else:
       raise ValueError ( f"Preprocessing strategy not implemented. Available strategies are " 
