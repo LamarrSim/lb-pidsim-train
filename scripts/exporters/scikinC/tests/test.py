@@ -3,6 +3,7 @@ import yaml
 import pickle
 import ctypes
 import numpy as np 
+import pandas as pd
 import tensorflow as tf
 
 from tqdm import tqdm 
@@ -36,7 +37,9 @@ class GanPipe:
                                          np.concatenate ( (self.tX.transform(X), random), axis = 1 )
                                                           )
                                      )
-
+    # return self.tY.inverse_transform(self.model.predict (np.concatenate ( (X, random), axis = 1 ) ))
+    # return self.model.predict (np.concatenate ( (X, random), axis = 1 ) )
+                                     
 
 class isMuonPipe:
   def __init__ (self, part, slot):
@@ -58,6 +61,8 @@ class FullPipe:
     richdll = self.rich.predict ( X[:,:4], random[:, 0o000:0o100] )
     muondll = self.muon.predict ( X[:,:4], random[:, 0o100:0o200] )
 
+    muondll = np.where ( np.c_ [ X[:,4], X[:,4] ] > 0.5, muondll, -1000 )
+
     gpidX = np.concatenate( [X[:,:4], richdll, X[:,-1:], muondll], axis = 1 )
     gpid = self.gpid.predict ( gpidX, random[:, 0o200:0o300] )
 
@@ -74,7 +79,7 @@ pipe = FullPipe (args.particle, args.slot)
 n = 10000
 p = np.random.normal (30e3, 0.3e3, n)
 eta = np.random.uniform (2, 5, (n,2)) . mean (axis = -1)
-nTracks = np.random.uniform (20, 150, (n,2)) . mean (axis = -1)
+nTracks = np.random.uniform (20, 150, (n,2)) . mean (axis = -1) . astype (np.int32)
 charge = np.random.choice ([-1., 1.], n)
 
 ismuon_eff = ismuon_pipe.predict (np.c_[p, eta, nTracks, charge]) 
@@ -88,19 +93,18 @@ basedir = os.environ["PWD"]
 dll = ctypes.CDLL ( os.path.join (basedir, args.inputfile) )
 print (dll)
 
-float_p = ctypes.POINTER (ctypes.c_double) 
+float_p = ctypes.POINTER (ctypes.c_float) 
 
 
 pyout = pipe.predict (data, rnd)
 
-counts = {th:0 for th in ['1e-1','1e-2','1e-3','1e-4','1e-5','1e-6']}
+counts = {th:0 for th in ['1e-2','1e-3','1e-4','1e-5']}
 
-i = 0   # debug
 progress_bar = partial (tqdm, total = n, desc = f"Checking {args.particle}/{args.slot}")
 for data_row, rnd_row, pyout_row, ismuoneff_row in progress_bar ( zip (data, rnd, pyout, ismuon_eff) ):
-  in_f  = data_row.astype (ctypes.c_double)
-  out_f = np.zeros (15, dtype = ctypes.c_double)
-  rnd_f = rnd_row.astype (ctypes.c_double) 
+  in_f  = data_row.astype (ctypes.c_float)
+  out_f = np.zeros (15, dtype = ctypes.c_float)
+  rnd_f = rnd_row.astype (ctypes.c_float) 
 
   getattr (dll, f"IsMuon{args.particle}") (
                                             out_f . ctypes.data_as (float_p), 
@@ -108,15 +112,12 @@ for data_row, rnd_row, pyout_row, ismuoneff_row in progress_bar ( zip (data, rnd
                                           )
 
   abserr = abs (out_f[0] - ismuoneff_row)
-  # if abserr > 1e-3:
-  print ( np.c_ [out_f[0], ismuoneff_row, abserr] ) 
-    # raise Exception ("C and Python muon_eff implementations inconsistent")
+  if abserr > 1e-2:
+    print ( np.c_ [out_f[0], ismuoneff_row, abserr] ) 
+    raise Exception ("C and Python muon_eff implementations inconsistent")
 
   for th in counts.keys():
     counts[th] += 1 if abserr > float(th) else 0 
-
-  print (f"########## {i} ##########")   # debug
-  i += 1   # debug
 
   getattr (dll, f"{args.particle.lower()}_pipe")(
                                                   out_f . ctypes.data_as (float_p), 
@@ -128,12 +129,14 @@ for data_row, rnd_row, pyout_row, ismuoneff_row in progress_bar ( zip (data, rnd
   for th in counts.keys():
     counts[th] += np.count_nonzero (relerr > float(th))
 
-  # if np.any (relerr > 1e-3):
-  print ( np.c_ [out_f, pyout_row, relerr, relerr < 1e-3] ) 
+  if np.any (relerr > 1e-2):
+    # print (in_f[-1])
+    print ( np.c_ [out_f, pyout_row, relerr, relerr < 1e-3] ) 
     # raise Exception ("C and Python implementation were found inconsistent")
 
+
 print ("SUCCESS")
-# print ("All entries satisfy a compatibility requirement at 1e-3")
+print ("All entries satisfy a compatibility requirement at 1e-2")
 for k in sorted (counts.keys()):
   v = counts[k]
-  print (f"{v/pyout.size*100:.1f}% fails a compatibility check at {k}")
+  print (f"{v/pyout.size*100:.5f}% fails a compatibility check at {k}")

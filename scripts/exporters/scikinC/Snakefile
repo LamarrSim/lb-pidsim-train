@@ -33,17 +33,14 @@ rule ganmodel:
     tY    = os.path.join ( DIR, "{step}_{part}_{slot}_latest/transform_Y.pkl" )
 
   output:
-    model = "/tmp/{step}_{part}_{slot}_latest.C"    ,
-    tX    = "/tmp/{step}_{part}_{slot}_latest_tX.C" ,
-    tY    = "/tmp/{step}_{part}_{slot}_latest_tY.C"
+    model = temp ( "/tmp/{step}_{part}_{slot}_latest.C"    ) ,
+    tX    = temp ( "/tmp/{step}_{part}_{slot}_latest_tX.C" ) ,
+    tY    = temp ( "/tmp/{step}_{part}_{slot}_latest_tY.C" )
 
   shell:
-    "scikinC --float_t double {wildcards.step}{wildcards.part}={input.model} > {output.model};"
-    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.model};"   # TODO super-clean, not really
-    "scikinC --float_t double {wildcards.step}{wildcards.part}_tX={input.tX} > {output.tX};"
-    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.tX};"   # TODO super-clean, not really
-    "scikinC --float_t double {wildcards.step}{wildcards.part}_tY={input.tY} > {output.tY};"
-    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.tY}"   # TODO super-clean, not really
+    "scikinC --float_t float {wildcards.step}{wildcards.part}={input.model} > {output.model};"
+    "scikinC --float_t float {wildcards.step}{wildcards.part}_tX={input.tX} > {output.tX};"
+    "scikinC --float_t float {wildcards.step}{wildcards.part}_tY={input.tY} > {output.tY}"
     
 # +--------------------+
 # |    Rule: ISMUON    |
@@ -54,11 +51,10 @@ rule ismuoneff:
     model = os.path.join ( DIR, "isMuon_{part}_{slot}_latest/pipeline.pkl" ) ,
 
   output:
-    model = "/tmp/isMuon_{part}_{slot}_latest.C" ,
+    model = temp ( "/tmp/isMuon_{part}_{slot}_latest.C" ) ,
 
   shell:
-    "scikinC --float_t double IsMuon{wildcards.part}={input.model} > {output.model};"
-    "sed -i 's#FLOAT_T float#FLOAT_T double#' {output.model}"   # TODO super-clean, not really
+    "scikinC --float_t float IsMuon{wildcards.part}={input.model} > {output.model}"
     
 # +----------------------+
 # |    Rule: PIPELINE    |
@@ -90,7 +86,7 @@ rule test:
     shared_object = os.path.join ( DIR, "CompiledModel_{slot}_latest.so" )
 
   output:
-    ".tested_{part}_{slot}_latest"
+    temp ( ".tested_{part}_{slot}_latest" )
 
   shell:
     "python3 tests/test.py -i {input.shared_object} -p {wildcards.part} -s {wildcards.slot} && touch {output}"

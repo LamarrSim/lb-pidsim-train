@@ -1,4 +1,5 @@
-#define FLOAT_T double   // TODO really clean 
+#define FLOAT_T float
+// #define DEBUG 1
 
 #ifndef BUFFERSIZE
 #define BUFFERSIZE 1024
@@ -55,6 +56,11 @@
 #ifndef N_OUTPUT
 #define N_OUTPUT 16
 #endif 
+
+#ifndef MUON_ERRORCODE
+#define MUON_ERRORCODE -1000
+#endif
+
 
 #ifdef DEBUG
 #include <stdlib.h>
@@ -144,6 +150,9 @@ FLOAT_T* gan_pipe ( mlfun tX,
 
   tX (buf_input, input);
 
+  // for (i = 0; i < nIn; ++i)
+  //   buf_input[i] = input[i];
+
   #ifdef DEBUG
   printf("Preprocessed input\n");
   for (i = 0; i < nIn; ++i)
@@ -164,6 +173,8 @@ FLOAT_T* gan_pipe ( mlfun tX,
     printf("pout[%d] -> out [%d]: %.2f  ->  %.2f\n", i, i, buf_output[i], output[i]); 
 #endif 
 
+  // for (i = 0; i < nOut; ++i)
+  //   output[i] = buf_output[i];
 
   return output; 
 }
@@ -177,7 +188,7 @@ FLOAT_T *GenericPipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *rand
                   )
 {
   short i, j;
-
+  float isMuon;
 
   // Split the random array into four sub arrays
   j = 0; 
@@ -188,7 +199,6 @@ FLOAT_T *GenericPipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *rand
   const FLOAT_T* r2 = random + j;
   j += N_RANDOM_GLOBALPID; 
   const FLOAT_T* r3 = random + j;
-
 
   // Rich
   FLOAT_T richinput [N_INPUT_RICH];
@@ -204,7 +214,6 @@ FLOAT_T *GenericPipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *rand
 
   gan_pipe (richTx, richModel, richTy, richdll, richinput, r0, N_INPUT_RICH, N_OUTPUT_RICH, N_RANDOM_RICH); 
 
-
   // Muon
   FLOAT_T muoninput [N_INPUT_MUON];
   FLOAT_T muondll [N_OUTPUT_MUON];
@@ -214,8 +223,13 @@ FLOAT_T *GenericPipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *rand
 #ifdef DEBUG
   printf (" === MUON === \n");
 #endif
-  gan_pipe (muonTx, muonModel, muonTy, muondll, muoninput, r1, N_INPUT_RICH, N_OUTPUT_RICH, N_RANDOM_RICH); 
+  isMuon = input[N_INPUT_RICH];
 
+  if (isMuon > 0.5)
+    gan_pipe (muonTx, muonModel, muonTy, muondll, muoninput, r1, N_INPUT_RICH, N_OUTPUT_RICH, N_RANDOM_RICH); 
+  else
+    for (i = 0; i < N_OUTPUT_MUON; ++i)
+      muondll[i] = MUON_ERRORCODE; 
 
   // Global PID
   FLOAT_T gpid_input [N_INPUT_GLOBALPID];
@@ -231,18 +245,20 @@ FLOAT_T *GenericPipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *rand
     gpid_input[j++] = richdll[i]; 
 
   // isMuon 
-  gpid_input[j++] = input[N_INPUT_RICH]; 
+  gpid_input[j++] = isMuon; 
+
+
  
   // mullmu, mullbg
   for (i = 0; i < N_OUTPUT_MUON; ++i)
-    gpid_input[j++] = muondll[i]; 
+    gpid_input[j++] = muondll[i];
 
 #ifdef DEBUG
   printf (" === GLOBAL PID === \n");
 #endif
   gan_pipe (gpidTx, gpidModel, gpidTy, gpid_output, gpid_input, r2, N_INPUT_GLOBALPID, N_OUTPUT_GLOBALPID, N_RANDOM_GLOBALPID); 
 
-
+ 
   // Global Muon ID
   FLOAT_T gmuid_input [N_INPUT_GLOBALMUONID];
   FLOAT_T gmuid_output [N_OUTPUT_GLOBALMUONID];
