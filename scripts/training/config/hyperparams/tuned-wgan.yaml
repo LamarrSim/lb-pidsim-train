@@ -7,6 +7,25 @@ Rich:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 5000000   # 60 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Pion
@@ -14,6 +33,25 @@ Rich:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 5000000   # 150 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.0000025
+      d_updt_per_batch : 2
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Kaon
@@ -31,11 +69,11 @@ Rich:
       add_g_alpha_leaky : 0.05
       latent_dim : 64
       d_lr : 0.00005
-      g_lr : 0.0000075
+      g_lr : 0.00001
       d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 10.0
-      lr_sched_factor : 0.90
+      grad_penalty : 0.5
+      lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
@@ -47,6 +85,25 @@ Rich:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 5000000   # 105 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
 
@@ -59,6 +116,25 @@ Muon:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 10000000   # 23 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 5
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Pion
@@ -66,6 +142,25 @@ Muon:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size :   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 5
+      batch_size : 256
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Kaon
@@ -73,6 +168,25 @@ Muon:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size :   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.00001
+      d_updt_per_batch : 5
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 5
+      batch_size : 256
+      num_epochs : 100
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Proton
@@ -80,6 +194,25 @@ Muon:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size :   # 5 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.0000025
+      d_updt_per_batch : 2
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 5
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
 
@@ -92,6 +225,25 @@ GlobalPID:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 5000000   # 60 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Pion
@@ -99,6 +251,25 @@ GlobalPID:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 5000000   # 150 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Kaon
@@ -106,6 +277,25 @@ GlobalPID:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 5000000   # 150 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : null
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.000055
+      g_lr : 0.000015
+      d_updt_per_batch : 2
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 250
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Proton
@@ -113,6 +303,25 @@ GlobalPID:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 5000000   # 105 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
 
@@ -125,6 +334,25 @@ GlobalMuonId:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size : 10000000   # 23 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Pion
@@ -132,6 +360,25 @@ GlobalMuonId:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size :   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.000005
+      d_updt_per_batch : 3
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : 256
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Kaon
@@ -139,6 +386,25 @@ GlobalMuonId:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size :   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : null
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.00001
+      d_updt_per_batch : 10
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : 256
+      num_epochs : 200
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
   #  Proton
@@ -146,5 +412,24 @@ GlobalMuonId:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
+      chunk_size :   # 5 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      fine_tuned_layers : 2
+      add_g_num_layers  : 0
+      add_g_num_nodes   : 128
+      add_g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : 0.00005
+      g_lr : 0.0000025
+      d_updt_per_batch : 2
+      g_updt_per_batch : 1
+      grad_penalty : 10.0
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 50
+      validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
