@@ -44,17 +44,17 @@ args = parser . parse_args()
 
 model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
 
+sw = args.weights == "yes"
+
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
                        export_name = model_name ,
-                       report_dir  = config["report_dir"] ,
+                       report_dir  = config["report_dir"] if sw else "{}/templates" . format ( config["report_dir"] ) ,
                        report_name = model_name )
 
 # +-------------------------+
 # |    Optimization step    |
 # +-------------------------+
-
-sw = args.weights == "yes"
 
 hyperparams = hyperparams["std"] if sw else hyperparams["base"]
 
