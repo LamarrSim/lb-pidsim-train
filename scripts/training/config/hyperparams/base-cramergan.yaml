@@ -2,8 +2,8 @@
 # |    RICH    |
 # +------------+
 Rich:
-  #  Muon
-  # ------
+  #  RICH : Muon
+  # -------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -28,8 +28,8 @@ Rich:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  RICH : Pion
+  # -------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -54,8 +54,8 @@ Rich:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  RICH : Kaon
+  # -------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -80,8 +80,8 @@ Rich:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  RICH : Proton
+  # ---------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -111,8 +111,8 @@ Rich:
 # |    MUON    |
 # +------------+
 Muon:
-  #  Muon
-  # ------
+  #  MUON : Muon
+  # -------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -137,8 +137,8 @@ Muon:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  MUON : Pion
+  # -------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -163,8 +163,8 @@ Muon:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  MUON : Kaon
+  # -------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -189,8 +189,8 @@ Muon:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  MUON : Proton
+  # ---------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -220,8 +220,8 @@ Muon:
 # |    GLOBAL PID    |
 # +------------------+
 GlobalPID:
-  #  Muon
-  # ------
+  #  GLOBAL PID : Muon
+  # -------------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -246,8 +246,8 @@ GlobalPID:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  GLOBAL PID : Pion
+  # -------------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -272,8 +272,8 @@ GlobalPID:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  GLOBAL PID : Kaon
+  # -------------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -298,8 +298,8 @@ GlobalPID:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  GLOBAL PID : Proton
+  # ---------------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -329,8 +329,8 @@ GlobalPID:
 # |    GLOBAL MUON ID    |
 # +----------------------+
 GlobalMuonId:
-  #  Muon
-  # ------
+  #  GLOBAL MUON ID : Muon
+  # -----------------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -355,8 +355,8 @@ GlobalMuonId:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  GLOBAL MUON ID : Pion
+  # -----------------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -381,8 +381,8 @@ GlobalMuonId:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  GLOBAL MUON ID : Kaon
+  # -----------------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -407,8 +407,8 @@ GlobalMuonId:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  GLOBAL MUON ID : Proton
+  # -------------------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:

@@ -2,8 +2,8 @@
 # |    RICH    |
 # +------------+
 Rich:
-  #  Muon
-  # ------
+  #  RICH : Muon
+  # -------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -28,8 +28,8 @@ Rich:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  RICH : Pion
+  # -------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -54,8 +54,8 @@ Rich:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  RICH : Kaon
+  # -------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -63,7 +63,7 @@ Rich:
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
+      fine_tuned_layers : null
       add_g_num_layers  : 0
       add_g_num_nodes   : 128
       add_g_alpha_leaky : 0.05
@@ -72,16 +72,16 @@ Rich:
       g_lr : 0.00001
       d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 0.5
+      grad_penalty : 10.0
       lr_sched_factor : 0.95
-      lr_sched_step : 10
+      lr_sched_step : 5
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  RICH : Proton
+  # ---------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -111,8 +111,8 @@ Rich:
 # |    MUON    |
 # +------------+
 Muon:
-  #  Muon
-  # ------
+  #  MUON : Muon
+  # -------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -137,8 +137,8 @@ Muon:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  MUON : Pion
+  # -------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -163,8 +163,8 @@ Muon:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  MUON : Kaon
+  # -------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -172,7 +172,7 @@ Muon:
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
+      fine_tuned_layers : null
       add_g_num_layers  : 0
       add_g_num_nodes   : 128
       add_g_alpha_leaky : 0.05
@@ -181,7 +181,7 @@ Muon:
       g_lr : 0.00001
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      grad_penalty : 10.0
+      grad_penalty : 1.0
       lr_sched_factor : 0.95
       lr_sched_step : 5
       batch_size : 256
@@ -189,8 +189,8 @@ Muon:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  MUON : Proton
+  # ---------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -220,8 +220,8 @@ Muon:
 # |    GLOBAL PID    |
 # +------------------+
 GlobalPID:
-  #  Muon
-  # ------
+  #  GLOBAL PID : Muon
+  # -------------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -229,25 +229,25 @@ GlobalPID:
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
+      fine_tuned_layers : null
       add_g_num_layers  : 0
       add_g_num_nodes   : 128
       add_g_alpha_leaky : 0.05
       latent_dim : 64
       d_lr : 0.00005
-      g_lr : 0.000005
-      d_updt_per_batch : 3
+      g_lr : 0.00001
+      d_updt_per_batch : 5
       g_updt_per_batch : 1
       grad_penalty : 10.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 50
+      num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  GLOBAL PID : Pion
+  # -------------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -272,8 +272,8 @@ GlobalPID:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  GLOBAL PID : Kaon
+  # -------------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -281,25 +281,25 @@ GlobalPID:
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
-      fine_tuned_layers : null
+      fine_tuned_layers : 2
       add_g_num_layers  : 0
       add_g_num_nodes   : 128
       add_g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.000055
+      d_lr : 0.00005
       g_lr : 0.000015
-      d_updt_per_batch : 2
+      d_updt_per_batch : 5
       g_updt_per_batch : 1
       grad_penalty : 10.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  GLOBAL PID : Proton
+  # ---------------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -329,8 +329,8 @@ GlobalPID:
 # |    GLOBAL MUON ID    |
 # +----------------------+
 GlobalMuonId:
-  #  Muon
-  # ------
+  #  GLOBAL MUON ID : Muon
+  # -----------------------
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -355,8 +355,8 @@ GlobalMuonId:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Pion
-  # ------
+  #  GLOBAL MUON ID : Pion
+  # -----------------------
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -381,8 +381,8 @@ GlobalMuonId:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Kaon
-  # ------
+  #  GLOBAL MUON ID : Kaon
+  # -----------------------
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
@@ -407,8 +407,8 @@ GlobalMuonId:
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
-  #  Proton
-  # --------
+  #  GLOBAL MUON ID : Proton
+  # -------------------------
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
