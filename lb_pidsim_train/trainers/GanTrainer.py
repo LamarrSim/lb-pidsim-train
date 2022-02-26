@@ -193,6 +193,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.ylabel ("Learning rate", fontsize = 12)
     plt.plot (history.history["d_lr"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_lr"], linewidth = 1.5, color = "coral", label = "generator")
+    plt.yscale ("log")
     plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
 
     report.add_figure(); plt.clf(); plt.close()
