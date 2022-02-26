@@ -71,7 +71,7 @@ class WGAN_GP (GAN):   # TODO add class description
     self._discriminator = Sequential ( name = "discriminator" )
     for d_layer in discriminator:
       self._discriminator . add ( d_layer )
-    self._discriminator . add ( Dense ( units = 1, activation = "linear", 
+    self._discriminator . add ( Dense ( units = 1, activation = "tanh", 
                                         kernel_initializer = "he_normal" ) )
 
   def compile ( self , 
