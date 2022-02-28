@@ -137,8 +137,6 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                     num_epochs = 1 ,
                     validation_split = 0.0 ,
                     scheduler = None ,
-                    plots_on_report = True ,
-                    save_model = True ,
                     verbose = 0 ) -> None:   # TODO complete docstring
     """...
     
@@ -159,9 +157,6 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     scheduler : function, optional
       ... (`None`, by default).
 
-    save_model : `bool`, optional
-      Boolean flag to save and export the trained model (`True`, by default).
-
     verbose : {0, 1, 2}, optional
       Verbosity mode. `0` = silent (default), `1` = training progress bar 
       is shown, `2`= one line per training epoch is shown.
@@ -175,8 +170,6 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       raise RuntimeError ("error")   # TODO implement error message
     elif self._dataset_prepared and self._model_loaded:
       raise RuntimeError ("error")   # TODO implement error message
-
-    report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
     try:
@@ -242,7 +235,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                             verbose = verbose )
     self._model_trained = True   # switch on model trained flag
     stop = datetime.now()
-    if (verbose > 0): 
+    if (verbose >= 0): 
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
       timestamp = timestamp . split (":")   # [HH, MM, SS]
       timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
@@ -250,15 +243,13 @@ class TensorTrainer (BaseTrainer):   # TODO class description
 
     self._model = model
 
-    if plots_on_report:
-      self._training_plots (report, history)
-
-    if save_model:
-      self._save_model ( "saved_model", model, verbose = (verbose > 0) )
-    
+    ## Report setup
+    report = Report()   # TODO add hyperparams to the report
+    self._training_plots (report, history)    
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
-    if (verbose > 1):
+
+    if (verbose >= 1):
       print (f"Training report correctly exported to {filename}")
 
   @staticmethod
@@ -305,35 +296,6 @@ class TensorTrainer (BaseTrainer):   # TODO class description
 
   def _training_plots (self, report, history):
     raise NotImplementedError ("error")   # TODO insert error message
-
-  def _save_model ( self, name, model, verbose = False ) -> None:
-    """Save the trained model.
-    
-    Parameters
-    ----------
-    name : `str`
-      Name of the directory containing the TensorFlow SavedModel file.
-
-    model : `tf.keras.Model`
-      TensorFlow model configured for the training procedure.
-
-    verbose : `bool`, optional
-      Verbosity mode. `False` = silent (default), `True` = a control message is printed. 
-
-    See Also
-    --------
-    tf.keras.Model :
-      Set of layers with training and inference features.
-
-    tf.keras.models.save_model :
-      Save a model as a TensorFlow SavedModel or HDF5 file.
-    """
-    dirname = f"{self._export_dir}/{self._export_name}"
-    if not os.path.exists (dirname):
-      os.makedirs (dirname)
-    filename = f"{dirname}/{name}"
-    model . save ( f"{filename}", save_format = "tf" )
-    if verbose: print ( f"Trained model correctly exported to {filename}" )
 
   @property
   def model (self) -> tf.keras.Model:

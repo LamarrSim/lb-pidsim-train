@@ -6,7 +6,7 @@ import tensorflow as tf
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import BceGAN
-from lb_pidsim_train.callbacks  import GanExpLrScheduler
+from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
@@ -123,11 +123,17 @@ model . compile ( d_optimizer = d_opt ,
 
 model . summary()
 
-# +--------------------------------+
-# |    Learning rate scheduling    |
-# +--------------------------------+
+# +-----------------+
+# |    Callbacks    |
+# +-----------------+
 
-lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
+model_saver  = GanModelSaver ( name = model_name , 
+                               dirname = config["model_dir"] , 
+                               model_to_save = "gen" ,
+                               verbose = 1 )
+
+lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"] , 
+                                   step = hp["lr_sched_step"] )
 
 # +--------------------+
 # |    Run training    |
@@ -137,5 +143,5 @@ trainer . train_model ( model = model ,
                         batch_size = hp["batch_size"] ,
                         num_epochs = hp["num_epochs"] ,
                         validation_split = hp["validation_split"] ,
-                        scheduler = lr_scheduler ,
+                        scheduler = [model_saver, lr_scheduler] ,
                         verbose = 1 )

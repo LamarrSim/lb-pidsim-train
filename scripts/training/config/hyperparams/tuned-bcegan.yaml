@@ -8,13 +8,14 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 60 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -33,13 +34,14 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.0000025
@@ -58,13 +60,14 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 4
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.000055
       g_lr : 0.000015
@@ -83,13 +86,14 @@ Rich:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 105 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -113,13 +117,14 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 10000000   # 23 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -138,13 +143,14 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -163,13 +169,14 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 4
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00001
@@ -188,13 +195,14 @@ Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 5 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.0000025
@@ -218,13 +226,14 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 60 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : null
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.00002
@@ -243,13 +252,14 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -268,13 +278,14 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 150 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 4
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.00002
@@ -293,13 +304,14 @@ GlobalPID:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 5000000   # 105 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -323,13 +335,14 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size : 10000000   # 23 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -348,13 +361,14 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.000005
@@ -373,13 +387,14 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 2 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : null
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00010
       g_lr : 0.00005
@@ -398,13 +413,14 @@ GlobalMuonId:
     # <-- 2016 Mag Up -->
     2016MagUp:
       chunk_size :   # 5 mln
-      d_num_layers  : 5
-      d_num_nodes   : 128
-      d_alpha_leaky : 0.05
-      fine_tuned_layers : 2
-      add_g_num_layers  : 0
-      add_g_num_nodes   : 128
-      add_g_alpha_leaky : 0.05
+      fine_tuned_d_layers : 2
+      add_d_num_layers  : null
+      add_d_num_nodes   : null
+      add_d_alpha_leaky : null
+      fine_tuned_g_layers : 2
+      add_g_num_layers  : null
+      add_g_num_nodes   : null
+      add_g_alpha_leaky : null
       latent_dim : 64
       d_lr : 0.00005
       g_lr : 0.0000025

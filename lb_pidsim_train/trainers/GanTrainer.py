@@ -22,7 +22,7 @@ TF_FLOAT = tf.float32
 class GanTrainer (TensorTrainer):   # TODO class description
   def load_model ( self , 
                    filepath , 
-                   model_name = "saved_model" ,
+                   model_to_load = "all" ,
                    save_transformer = True ,
                    verbose = 0 ) -> None:   # TODO add docstring
     """"""
@@ -31,6 +31,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
     
     if self._dataset_prepared:
       raise RuntimeError ("error")   # TODO implement error message
+
+    if model_to_load not in ["gen", "disc", "all"]:
+      raise ValueError ("`model_to_save` should be chosen in ['gen', 'disc', 'all'].")
 
     ## Unpack data
     X, Y, w = self._unpack_data()
@@ -81,16 +84,33 @@ class GanTrainer (TensorTrainer):   # TODO class description
       self._scaler_Y = None
       self._Y_scaled = self.Y
 
-    ## Load the generator
-    self._generator = tf.keras.models.load_model (f"{filepath}/{model_name}")
+    ## Load the models
+    if model_to_load == "gen":
+      self._generator = tf.keras.models.load_model (f"{filepath}/saved_generator")
+      self._gen_loaded = True
+    elif model_to_load == "disc":
+      self._discriminator = tf.keras.models.load_model (f"{filepath}/saved_discriminator")
+      self._disc_loaded = True
+    else:
+      self._generator = tf.keras.models.load_model (f"{filepath}/saved_generator")
+      self._discriminator = tf.keras.models.load_model (f"{filepath}/saved_discriminator")
+      self._gen_loaded = self._disc_loaded = True
     self._model_loaded = True
   
-  def extract_generator ( self, fine_tuned_layers = None ) -> list:   # TODO add docstring
+  def extract_model ( self, player = "gen", fine_tuned_layers = None ) -> list:   # TODO add docstring
     """"""
-    if not self._model_loaded:
-      raise RuntimeError ("error")   # TODO implement error message
+    if player == "gen":
+      if not self._gen_loaded:
+        raise RuntimeError ("error")   # TODO implement error message
+      model = self._generator
+    elif player == "disc":
+      if not self._disc_loaded:
+        raise RuntimeError ("error")   # TODO implement error message
+      model = self._discriminator
+    else:
+      raise ValueError ("error")   # TODO implement error message
 
-    num_g_layers = len ( self._generator.layers[:-1] )
+    num_layers = len ( model.layers[:-1] )
 
     ## Data-type control
     if fine_tuned_layers is not None:
@@ -100,18 +120,18 @@ class GanTrainer (TensorTrainer):   # TODO class description
         raise TypeError (f"The number of layers to fine-tune should be an integer," 
                          f" instead {type(fine_tuned_layers)} passed." )
     else:
-      fine_tuned_layers = num_g_layers
+      fine_tuned_layers = num_layers
 
-    g_layers = list()
-    for i, layer in enumerate ( self._generator.layers[:-1] ):
+    layers = list()
+    for i, layer in enumerate ( model.layers[:-1] ):
       layer._name = f"loaded_{layer.name}"
-      if i < (num_g_layers - fine_tuned_layers): 
+      if i < (num_layers - fine_tuned_layers): 
         layer.trainable = False
       else:
         layer.trainable = True
-      g_layers . append (layer)
+      layers . append (layer)
 
-    return g_layers
+    return layers
 
   def train_model ( self , 
                     model , 
@@ -119,16 +139,12 @@ class GanTrainer (TensorTrainer):   # TODO class description
                     num_epochs = 1 , 
                     validation_split = 0.0 , 
                     scheduler = None , 
-                    plots_on_report = True , 
-                    save_model = True , 
                     verbose = 0 ) -> None:
     super().train_model ( model = model , 
                           batch_size = 2 * batch_size , 
                           num_epochs = num_epochs , 
                           validation_split = validation_split , 
                           scheduler = scheduler , 
-                          plots_on_report = plots_on_report , 
-                          save_model = save_model , 
                           verbose = verbose )
 
   def _training_plots (self, report, history) -> None:   # TODO complete docstring
@@ -227,41 +243,6 @@ class GanTrainer (TensorTrainer):   # TODO class description
           ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")
 
     report.add_figure(); plt.clf(); plt.close()
-    # report.add_markdown ("<br/>")
-
-  def _save_model ( self, name, model, verbose = False ) -> None:   # TODO fix docstring
-    """Save the trained generator.
-    
-    Parameters
-    ----------
-    name : `str`
-      Name of the directory containing the TensorFlow SavedModel file.
-
-    model : `tf.keras.Model`
-      GAN model taken from `lb_pidsim_train.algorithms.gan` and configured 
-      for the training procedure.
-
-    verbose : `bool`, optional
-      Verbosity mode. `False` = silent (default), `True` = a control message 
-      is printed. 
-
-    See Also
-    --------
-    lb_pidsim_train.algorithms.gan :
-      ...
-
-    tf.keras.Model :
-      Set of layers with training and inference features.
-
-    tf.keras.models.save_model :
-      Save a model as a TensorFlow SavedModel or HDF5 file.
-    """
-    dirname = f"{self._export_dir}/{self._export_name}"
-    if not os.path.exists (dirname):
-      os.makedirs (dirname)
-    filename = f"{dirname}/{name}"
-    model.generator . save ( f"{filename}", save_format = "tf" )
-    if verbose: print ( f"Trained generator correctly exported to {filename}" )
 
   def generate (self, X) -> np.ndarray:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.

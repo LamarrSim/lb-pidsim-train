@@ -6,7 +6,7 @@ import tensorflow as tf
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import WGAN_GP
-from lb_pidsim_train.callbacks  import GanExpLrScheduler
+from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU
 
 
@@ -76,30 +76,35 @@ trainer . feed_from_root_files ( root_files = file_list ,
 model_dir = config["model_dir"]
 file_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.base_version}"
 
-trainer . load_model ( filepath = f"{model_dir}/{file_name}", verbose = 1 )
+trainer . load_model ( filepath = f"{model_dir}/{file_name}", model_to_load = "all", verbose = 1 )
 
 # +--------------------------+
 # |    Model construction    |
 # +--------------------------+
 
-d_num_layers  = hp["d_num_layers"]
-d_num_nodes   = hp["d_num_nodes"]
-d_alpha_leaky = hp["d_alpha_leaky"]
+discriminator = trainer . extract_model ( player = "disc" , 
+                                          fine_tuned_layers = hp["fine_tuned_d_layers"] )
 
-discriminator = list()
-for layer in range (d_num_layers):
-  discriminator . append ( Dense (d_num_nodes) )
-  discriminator . append ( LeakyReLU (alpha = d_alpha_leaky) )
+add_d_num_layers  = hp["add_d_num_layers"]
+add_d_num_nodes   = hp["add_d_num_nodes"]
+add_d_alpha_leaky = hp["add_d_alpha_leaky"]
 
-generator = trainer . extract_generator ( fine_tuned_layers = hp["fine_tuned_layers"] )
+if add_d_num_layers:
+  for layer in range (add_d_num_layers):
+    discriminator . append ( Dense (add_d_num_nodes) )
+    discriminator . append ( LeakyReLU (alpha = add_d_alpha_leaky) )
+
+generator = trainer . extract_model ( player = "gen" ,
+                                      fine_tuned_layers = hp["fine_tuned_g_layers"] )
 
 add_g_num_layers  = hp["add_g_num_layers"]
 add_g_num_nodes   = hp["add_g_num_nodes"]
 add_g_alpha_leaky = hp["add_g_alpha_leaky"]
 
-for layer in range (add_g_num_layers):
-  generator . append ( Dense (add_g_num_nodes) )
-  generator . append ( LeakyReLU (alpha = add_g_alpha_leaky) )
+if add_g_num_layers:
+  for layer in range (add_g_num_layers):
+    generator . append ( Dense (add_g_num_nodes) )
+    generator . append ( LeakyReLU (alpha = add_g_alpha_leaky) )
 
 model = WGAN_GP ( X_shape = len(trainer.X_vars) , 
                   Y_shape = len(trainer.Y_vars) , 
@@ -121,11 +126,17 @@ model . compile ( d_optimizer = d_opt ,
 
 model . summary()
 
-# +------------------------------+
-# |    Hyperparams scheduling    |
-# +------------------------------+
+# +-----------------+
+# |    Callbacks    |
+# +-----------------+
 
-lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"], step = hp["lr_sched_step"] )
+model_saver  = GanModelSaver ( name = model_name , 
+                               dirname = config["model_dir"] , 
+                               model_to_save = "gen" ,
+                               verbose = 1 )
+
+lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"] , 
+                                   step = hp["lr_sched_step"] )
 
 # +--------------------+
 # |    Run training    |
@@ -135,5 +146,5 @@ trainer . train_model ( model = model ,
                         batch_size = hp["batch_size"] ,
                         num_epochs = hp["num_epochs"] ,
                         validation_split = hp["validation_split"] ,
-                        scheduler = lr_scheduler ,
+                        scheduler = [model_saver, lr_scheduler] ,
                         verbose = 1 )
