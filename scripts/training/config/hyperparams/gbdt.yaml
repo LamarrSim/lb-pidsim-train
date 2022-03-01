@@ -39,11 +39,11 @@ isMuon:
     2016MagUp:
       chunk_size : 20000000   # 150 mln
       loss : deviance
-      learning_rate : 0.151
-      n_estimators  : 7
+      learning_rate : 0.351
+      n_estimators  : 20
       criterion : friedman_mse
       min_samples_leaf : 1
-      max_depth : 33
+      max_depth : 15
       validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:

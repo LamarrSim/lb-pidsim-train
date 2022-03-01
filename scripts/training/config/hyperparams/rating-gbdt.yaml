@@ -80,7 +80,7 @@ Muon:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 23 mln
+      chunk_size : 5000000   # 23 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -97,7 +97,7 @@ Muon:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -114,7 +114,7 @@ Muon:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -131,7 +131,7 @@ Muon:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 5 mln
+      chunk_size :   # 5 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -226,7 +226,7 @@ GlobalMuonId:
   Muon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 23 mln
+      chunk_size : 5000000   # 23 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -243,7 +243,7 @@ GlobalMuonId:
   Pion:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -260,7 +260,7 @@ GlobalMuonId:
   Kaon:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 2 mln
+      chunk_size :   # 2 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
@@ -277,7 +277,7 @@ GlobalMuonId:
   Proton:
     # <-- 2016 Mag Up -->
     2016MagUp:
-      chunk_size : 1000000   # 5 mln
+      chunk_size :   # 5 mln
       loss : deviance
       learning_rate : 0.05
       n_estimators  : 500
