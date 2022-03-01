@@ -166,6 +166,22 @@ class GanTrainer (TensorTrainer):   # TODO class description
     """
     n_epochs = len (history.history["mse"])
 
+    ## Learning curves plots (train-set)
+    plt.figure (figsize = (8,5), dpi = 100)
+    plt.title  ("Learning curves (training set)", fontsize = 14)   # TODO plot loss variance
+    plt.xlabel ("Training epochs", fontsize = 12)
+    plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
+    plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
+    plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
+    plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
+    y_bottom = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
+    y_top    = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
+    y_bottom += 0.1 * y_bottom
+    y_top    += 0.1 * y_top
+    plt.ylim (bottom = y_bottom, top = y_top)
+
+    report.add_figure(); plt.clf(); plt.close()
+
     ## Metric curves plots
     plt.figure (figsize = (8,5), dpi = 100)
     plt.title  ("Metric curves", fontsize = 14)
@@ -183,23 +199,20 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
     report.add_figure(); plt.clf(); plt.close()
 
-    ## Learning curves plots
+    ## Learning curves plots (val-set)
     plt.figure (figsize = (8,5), dpi = 100)
-    plt.title  ("Learning curves", fontsize = 14)   # TODO plot loss variance
+    plt.title  ("Learning curves (validation set)", fontsize = 14)   # TODO plot loss variance
     plt.xlabel ("Training epochs", fontsize = 12)
     plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
-    plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator (train-set)")
     if self._validation_split != 0.0:
-      plt.plot (history.history["val_d_loss"], linewidth = 1.5, color = "seagreen", label = "discriminator (val-set)")
-    plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator (train-set)")
-    if self._validation_split != 0.0:
-      plt.plot (history.history["val_g_loss"], linewidth = 1.5, color = "orange", label = "generator (val-set)")
-    plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
-    y_bottom = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
-    y_top    = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
-    y_bottom += 0.1 * y_bottom
-    y_top    += 0.1 * y_top
-    plt.ylim (bottom = y_bottom, top = y_top)
+      plt.plot (history.history["val_d_loss"], linewidth = 1.5, color = "seagreen", label = "discriminator")
+      plt.plot (history.history["val_g_loss"], linewidth = 1.5, color = "orange", label = "generator")
+      plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
+      y_bottom = min ( min(history.history["val_d_loss"][int(n_epochs/10):]), min(history.history["val_g_loss"][int(n_epochs/10):]) )
+      y_top    = max ( max(history.history["val_d_loss"][int(n_epochs/10):]), max(history.history["val_g_loss"][int(n_epochs/10):]) )
+      y_bottom += 0.1 * y_bottom
+      y_top    += 0.1 * y_top
+      plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
 
@@ -231,14 +244,14 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax = fig.add_subplot ( gs[0:,0] )
       ax . set_xlabel (y_var, fontsize = 12)
       ax . set_ylabel ("Candidates", fontsize = 12)
-      _, bins, _ = ax . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = "Original")
+      _, bins, _ = ax . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w[:,0], color = "dodgerblue", label = "Original")
       ax . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = "Generated")
       ax . legend (loc = "upper left", fontsize = 10)
 
       ax_p_ref = fig.add_subplot ( gs[0,1] )
       ax_p_ref . set_xlabel (y_var, fontsize = 10)
       ax_p_ref . set_ylabel ("Momentum [Gev/$c$]", fontsize = 10)
-      _, binx_p, biny_p, _ = ax_p_ref . hist2d (Y_ref[:,i], self.X[:,0]/1e3, bins = 25, density = True, weights = self.w, cmin = 0)
+      _, binx_p, biny_p, _ = ax_p_ref . hist2d (Y_ref[:,i], self.X[:,0]/1e3, bins = 25, density = True, weights = self.w[:,0], cmin = 0)
       ax_p_ref . annotate ( "original", color = "w", weight = "bold",
                             ha = "center", va = "center", size = 10,
                             xy = (0.8, 0.9), xycoords = "axes fraction", 
@@ -256,7 +269,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax_eta_ref = fig.add_subplot ( gs[0,2] )
       ax_eta_ref . set_xlabel (y_var, fontsize = 10)
       ax_eta_ref . set_ylabel ("Pseudorapidity", fontsize = 10)
-      _, binx_eta, biny_eta, _ = ax_eta_ref . hist2d (Y_ref[:,i], self.X[:,1], bins = 25, density = True, weights = self.w, cmin = 0)
+      _, binx_eta, biny_eta, _ = ax_eta_ref . hist2d (Y_ref[:,i], self.X[:,1], bins = 25, density = True, weights = self.w[:,0], cmin = 0)
       ax_eta_ref . annotate ( "original", color = "w", weight = "bold",
                               ha = "center", va = "center", size = 10,
                               xy = (0.8, 0.9), xycoords = "axes fraction", 
@@ -274,7 +287,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax_ntk_ref = fig.add_subplot ( gs[0,3] )
       ax_ntk_ref . set_xlabel (y_var, fontsize = 10)
       ax_ntk_ref . set_ylabel ("$\mathtt{nTracks}$", fontsize = 10)
-      _, binx_ntk, biny_ntk, _ = ax_ntk_ref . hist2d (Y_ref[:,i], self.X[:,2], bins = 25, density = True, weights = self.w, cmin = 0)
+      _, binx_ntk, biny_ntk, _ = ax_ntk_ref . hist2d (Y_ref[:,i], self.X[:,2], bins = 25, density = True, weights = self.w[:,0], cmin = 0)
       ax_ntk_ref . annotate ( "original", color = "w", weight = "bold",
                               ha = "center", va = "center", size = 10,
                               xy = (0.8, 0.9), xycoords = "axes fraction", 
@@ -290,6 +303,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
                               bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
 
       report.add_figure(); plt.clf(); plt.close()
+      report.add_markdown ("<br/>")
 
   def generate (self, X) -> np.ndarray:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
