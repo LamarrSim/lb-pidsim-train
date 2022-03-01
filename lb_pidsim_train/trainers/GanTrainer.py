@@ -5,6 +5,7 @@ import pickle
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 from time import time
 from sklearn.utils import shuffle
@@ -214,35 +215,81 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
     report.add_figure(); plt.clf(); plt.close()
 
-    ## Validation plots
-    rows = cols = len(self.Y_vars)
-    fig, ax = plt.subplots (rows, cols, figsize = (14,12), dpi = 200)
-    plt.subplots_adjust (wspace = 0.35, hspace = 0.25)
-
-    titles = self.Y_vars
+    ## Correlation plots
     Y_ref  = self.Y
     Y_gen  = self._scaler_Y . inverse_transform ( self.generate (self.X_scaled) )
-    
-    for i in range(rows):
-      for j in range(cols):
-        ax[i,j] . tick_params (labelsize = 6)
-        if i == j:
-          ax[i,j] . set_xlabel (titles[i], fontsize = 8)
-          _, b, _ = ax[i,j] . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = "Original")
-          ax[i,j] . hist (Y_gen[:,i], bins = b, density = True, histtype = "step", color = "deeppink", label = "Generated")
-          ax[i,j] . legend (loc = "upper left", fontsize = 6)
-        elif i > j:
-          ax[i,j] . set_xlabel (titles[j], fontsize = 8)
-          ax[i,j] . set_ylabel (titles[i], fontsize = 8)
-          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")   # TODO fix sWeight bug
-          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.01, color = "deeppink")
-        elif i < j:
-          ax[i,j] . set_xlabel (titles[j], fontsize = 8)
-          ax[i,j] . set_ylabel (titles[i], fontsize = 8)
-          ax[i,j] . scatter (Y_gen[:,j], Y_gen[:,i], s = 1, alpha = 0.01, color = "deeppink")
-          ax[i,j] . scatter (Y_ref[:,j], Y_ref[:,i], s = 1, alpha = 0.01, color = "dodgerblue")
 
-    report.add_figure(); plt.clf(); plt.close()
+    for i, y_var in enumerate (self.Y_vars):
+      fig = plt.figure ( figsize = (20, 6), dpi = 200 )
+      gs = gridspec.GridSpec ( nrows = 2 , 
+                               ncols = 4 ,
+                               wspace = 0.25 ,
+                               hspace = 0.25 ,
+                               width_ratios  = [2, 1, 1, 1] , 
+                               height_ratios = [1, 1] )
+
+      ax = fig.add_subplot ( gs[0:,0] )
+      ax . set_xlabel (y_var, fontsize = 12)
+      ax . set_ylabel ("Candidates", fontsize = 12)
+      _, bins, _ = ax . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = "Original")
+      ax . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = "Generated")
+      ax . legend (loc = "upper left", fontsize = 10)
+
+      ax_p_ref = fig.add_subplot ( gs[0,1] )
+      ax_p_ref . set_xlabel (y_var, fontsize = 10)
+      ax_p_ref . set_ylabel ("Momentum [Gev/$c$]", fontsize = 10)
+      _, binx_p, biny_p, _ = ax_p_ref . hist2d (Y_ref[:,i], self.X[:,0]/1e3, bins = 25, density = True, weights = self.w, cmin = 0)
+      ax_p_ref . annotate ( "original", color = "w", weight = "bold",
+                            ha = "center", va = "center", size = 10,
+                            xy = (0.8, 0.9), xycoords = "axes fraction", 
+                            bbox = dict (boxstyle = "round", fc = "dodgerblue", alpha = 1.0, ec = "1.0") )
+
+      ax_p_gen = fig.add_subplot ( gs[1,1] )
+      ax_p_gen . set_xlabel (y_var, fontsize = 10)
+      ax_p_gen . set_ylabel ("Momentum [Gev/$c$]", fontsize = 10)
+      ax_p_gen . hist2d (Y_gen[:,i], self.X[:,0]/1e3, bins = [binx_p, biny_p], density = True)
+      ax_p_gen . annotate ( "generated", color = "w", weight = "bold",
+                            ha = "center", va = "center", size = 10,
+                            xy = (0.8, 0.9), xycoords = "axes fraction", 
+                            bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
+
+      ax_eta_ref = fig.add_subplot ( gs[0,2] )
+      ax_eta_ref . set_xlabel (y_var, fontsize = 10)
+      ax_eta_ref . set_ylabel ("Pseudorapidity", fontsize = 10)
+      _, binx_eta, biny_eta, _ = ax_eta_ref . hist2d (Y_ref[:,i], self.X[:,1], bins = 25, density = True, weights = self.w, cmin = 0)
+      ax_eta_ref . annotate ( "original", color = "w", weight = "bold",
+                              ha = "center", va = "center", size = 10,
+                              xy = (0.8, 0.9), xycoords = "axes fraction", 
+                              bbox = dict (boxstyle = "round", fc = "dodgerblue", alpha = 1.0, ec = "1.0") )
+
+      ax_eta_gen = fig.add_subplot ( gs[1,2] )
+      ax_eta_gen . set_xlabel (y_var, fontsize = 10)
+      ax_eta_gen . set_ylabel ("Pseudorapidity", fontsize = 10)
+      ax_eta_gen . hist2d (Y_gen[:,i], self.X[:,1], bins = [binx_eta, biny_eta], density = True)
+      ax_eta_gen . annotate ( "generated", color = "w", weight = "bold",
+                              ha = "center", va = "center", size = 10,
+                              xy = (0.8, 0.9), xycoords = "axes fraction", 
+                              bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
+
+      ax_ntk_ref = fig.add_subplot ( gs[0,3] )
+      ax_ntk_ref . set_xlabel (y_var, fontsize = 10)
+      ax_ntk_ref . set_ylabel ("$\mathtt{nTracks}$", fontsize = 10)
+      _, binx_ntk, biny_ntk, _ = ax_ntk_ref . hist2d (Y_ref[:,i], self.X[:,2], bins = 25, density = True, weights = self.w, cmin = 0)
+      ax_ntk_ref . annotate ( "original", color = "w", weight = "bold",
+                              ha = "center", va = "center", size = 10,
+                              xy = (0.8, 0.9), xycoords = "axes fraction", 
+                              bbox = dict (boxstyle = "round", fc = "dodgerblue", alpha = 1.0, ec = "1.0") )
+
+      ax_ntk_gen = fig.add_subplot ( gs[1,3] )
+      ax_ntk_gen . set_xlabel (y_var, fontsize = 10)
+      ax_ntk_gen . set_ylabel ("$\mathtt{nTracks}$", fontsize = 10)
+      ax_ntk_gen . hist2d (Y_gen[:,i], self.X[:,2], bins = [binx_ntk, biny_ntk], density = True)
+      ax_ntk_gen . annotate ( "generated", color = "w", weight = "bold",
+                              ha = "center", va = "center", size = 10,
+                              xy = (0.8, 0.9), xycoords = "axes fraction", 
+                              bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
+
+      report.add_figure(); plt.clf(); plt.close()
 
   def generate (self, X) -> np.ndarray:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
