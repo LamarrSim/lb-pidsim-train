@@ -36,7 +36,7 @@ with open ("config/hyperparams/wgan.yaml") as file:
 parser = argparser ("Model training")
 args = parser . parse_args()
 
-model_name = f"WGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_wgan-{args.version}"
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -130,7 +130,7 @@ model . summary()
 
 model_saver  = GanModelSaver ( name = model_name , 
                                dirname = config["model_dir"] , 
-                               model_to_save = "gen" ,
+                               model_to_save = "all" ,
                                verbose = 1 )
 
 lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"] , 

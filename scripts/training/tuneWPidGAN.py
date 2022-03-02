@@ -34,10 +34,10 @@ with open ("config/hyperparams/tuned-wgan.yaml") as file:
 # +----------------------------+
 
 parser = argparser ("Model fine-tuning")
-parser . add_argument ( "-b", "--base_version", required = True )
+parser . add_argument ( "-t", "--template", required = True )
 args = parser . parse_args()
 
-model_name = f"WGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_wgan-{args.version}"
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -74,7 +74,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
 # +---------------------+
 
 model_dir = config["model_dir"]
-file_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.base_version}"
+file_name = f"{args.template}"
 
 trainer . load_model ( filepath = f"{model_dir}/{file_name}", model_to_load = "all", verbose = 1 )
 
@@ -132,7 +132,7 @@ model . summary()
 
 model_saver  = GanModelSaver ( name = model_name , 
                                dirname = config["model_dir"] , 
-                               model_to_save = "gen" ,
+                               model_to_save = "all" ,
                                verbose = 1 )
 
 lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"] , 

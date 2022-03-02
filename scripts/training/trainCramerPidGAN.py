@@ -42,7 +42,7 @@ parser = argparser ("Model training")
 parser . add_argument ( "-w", "--weights", default = "yes", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-model_name = f"CramerGAN_{args.model}_{args.particle}_{args.sample}_{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_cramergan-{args.version}"
 
 sw = args.weights == "yes"
 
