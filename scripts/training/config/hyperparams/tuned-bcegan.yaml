@@ -9,22 +9,22 @@ Rich:
     2016MagUp:
       chunk_size : 5000000   # 60 mln
       fine_tuned_d_layers : 2
-      add_d_num_layers  : null
-      add_d_num_nodes   : null
-      add_d_alpha_leaky : null
-      fine_tuned_g_layers : 2
+      add_d_num_layers  : 1
+      add_d_num_nodes   : 128
+      add_d_alpha_leaky : 0.05
+      fine_tuned_g_layers : 4
       add_g_num_layers  : null
       add_g_num_nodes   : null
       add_g_alpha_leaky : null
       latent_dim : 64
-      d_lr : 0.00005
-      g_lr : 0.000005
-      d_updt_per_batch : 3
+      d_lr : 0.000025
+      g_lr : 0.000015
+      d_updt_per_batch : 5
       g_updt_per_batch : 1
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 50
+      num_epochs : 200
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -61,22 +61,22 @@ Rich:
     2016MagUp:
       chunk_size : 5000000   # 150 mln
       fine_tuned_d_layers : 2
-      add_d_num_layers  : null
-      add_d_num_nodes   : null
-      add_d_alpha_leaky : null
-      fine_tuned_g_layers : 2
+      add_d_num_layers  : 1
+      add_d_num_nodes   : 128
+      add_d_alpha_leaky : 0.05
+      fine_tuned_g_layers : 4
       add_g_num_layers  : null
       add_g_num_nodes   : null
       add_g_alpha_leaky : null
       latent_dim : 64
-      d_lr : 0.000055
+      d_lr : 0.000025
       g_lr : 0.000015
-      d_updt_per_batch : 2
+      d_updt_per_batch : 5
       g_updt_per_batch : 1
       lr_sched_factor : 0.95
-      lr_sched_step : 5
+      lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 200
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -170,22 +170,22 @@ Muon:
     2016MagUp:
       chunk_size :   # 2 mln
       fine_tuned_d_layers : 2
-      add_d_num_layers  : null
-      add_d_num_nodes   : null
-      add_d_alpha_leaky : null
-      fine_tuned_g_layers : 2
+      add_d_num_layers  : 2
+      add_d_num_nodes   : 128
+      add_d_alpha_leaky : 0.05
+      fine_tuned_g_layers : 6
       add_g_num_layers  : null
       add_g_num_nodes   : null
       add_g_alpha_leaky : null
       latent_dim : 64
-      d_lr : 0.00002
-      g_lr : 0.00001
+      d_lr : 0.000025
+      g_lr : 0.000005
       d_updt_per_batch : 5
       g_updt_per_batch : 1
       lr_sched_factor : 0.95
-      lr_sched_step : 25
-      batch_size : 256
-      num_epochs : 250
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 300
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:

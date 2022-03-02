@@ -151,15 +151,15 @@ Muon:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.000025
-      g_lr : 0.000025
+      d_lr : 0.00003
+      g_lr : 0.00003
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      grad_penalty : 10.0
+      grad_penalty : 1.0
       lr_sched_factor : 0.95
-      lr_sched_step : 5
-      batch_size : 256
-      num_epochs : 100
+      lr_sched_step : 10
+      batch_size : 512
+      num_epochs : 150
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -203,13 +203,13 @@ Muon:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.000015
-      g_lr : 0.000015
+      d_lr : 0.00002
+      g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      grad_penalty : 10.0
+      grad_penalty : 1.0
       lr_sched_factor : 0.95
-      lr_sched_step : 5
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -400,10 +400,10 @@ GlobalMuonId:
       d_updt_per_batch : 5
       g_updt_per_batch : 1
       grad_penalty : 10.0
-      lr_sched_factor : 0.90
-      lr_sched_step : 10
-      batch_size : 256
-      num_epochs : 100
+      lr_sched_factor : 0.95
+      lr_sched_step : 5
+      batch_size : 512
+      num_epochs : 150
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
