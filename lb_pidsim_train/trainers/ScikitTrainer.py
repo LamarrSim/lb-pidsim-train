@@ -36,14 +36,10 @@ class ScikitTrainer (BaseTrainer):
                     model ,
                     validation_split = 0.2 ,
                     performance_metric = "chi2_test" ,
-                    plots_on_report = True ,
-                    save_model = True ,
                     verbose = 0 ) -> None:   # TODO add docstring
     """"""
     if not self._dataset_prepared:
       raise RuntimeError ("error")   # TODO implement error message
-
-    report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
     try:
@@ -89,25 +85,24 @@ class ScikitTrainer (BaseTrainer):
       print (f"Classifier training completed in {timestamp}.")
 
     self._model = model
-    self._scores = [None, None]
+    self._save_model ( "saved_model", model, verbose = (verbose > 0) )
+    self._save_pipeline ( verbose = (verbose > 0) )
 
-    if plots_on_report:
-      if validation_split != 0.0:
-        report.add_markdown ("## Model performance on validation set")
-        self._eff_hist2d (report, bins = 100, validation = True)
-        self._eff_hist1d (report, bins = 50, validation = True)
-        report.add_markdown ("***")
-      report.add_markdown ("## Model performance on training set")
-      self._eff_hist2d (report, bins = 100, validation = False)
-      self._eff_hist1d (report, bins = 50, validation = False)
+    self._scores = [None, None]   # score init
 
-    if save_model:
-      self._save_model ( "saved_model", model, verbose = (verbose > 0) )
-      self._save_pipeline ( verbose = (verbose > 0) )
-
+    ## Report setup
+    report = Report()   # TODO add hyperparams to the report
+    if validation_split != 0.0:
+      report.add_markdown ("## Model performance on validation set")
+      self._eff_hist2d (report, bins = 100, validation = True)
+      self._eff_hist1d (report, bins = 50, validation = True)
+      report.add_markdown ("***")
+    report.add_markdown ("## Model performance on training set")
+    self._eff_hist2d (report, bins = 100, validation = False)
+    self._eff_hist1d (report, bins = 50, validation = False)
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
-    if (verbose > 1):
+    if (verbose > 0):
       print (f"Training report correctly exported to {filename}")
 
   def _eff_hist2d ( self, report, bins = 100, validation = False ) -> None:   # TODO add docstring
@@ -123,7 +118,7 @@ class ScikitTrainer (BaseTrainer):
     plt.xlabel ("Momentum [GeV/$c$]", fontsize = 12)
     plt.ylabel ("Pseudorapidity", fontsize = 12)
     hist2d = np.histogram2d ( X[:,0][Y == 1]/1e3, X[:,1][Y == 1], weights = w[Y == 1], bins = binning )
-    plt.pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("inferno"), vmin = 0 )
+    plt.pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("viridis"), vmin = 0 )
 
     report.add_figure(); plt.clf(); plt.close()
 
@@ -134,7 +129,7 @@ class ScikitTrainer (BaseTrainer):
     plt.xlabel ("Momentum [GeV/$c$]", fontsize = 12)
     plt.ylabel ("Pseudorapidity", fontsize = 12)
     hist2d = np.histogram2d ( X[:,0]/1e3, X[:,1], weights = w * probas, bins = binning )
-    plt.pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("inferno"), vmin = 0 )
+    plt.pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("viridis"), vmin = 0 )
 
     report.add_figure(); plt.clf(); plt.close()
     # report.add_markdown ("<br/>")

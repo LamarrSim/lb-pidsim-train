@@ -41,7 +41,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
 
     self._model_dir  = model_dir    # TODO check existence
     self._model_name = model_name   # TODO add default value
-    self._generator  = tf.keras.models.load_model (f"{model_dir}/{model_name}/saved_model")
+    self._generator  = tf.keras.models.load_model (f"{model_dir}/{model_name}/saved_generator")
 
     self._name = f"{name}"
 
@@ -129,13 +129,9 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                     validation_split = 0.2 ,
                     inverse_transform = False ,
                     performance_metric = "ks_test" ,
-                    plots_on_report = True ,
-                    save_model = True ,
                     verbose = 0 ) -> None:   # TODO add docstring
     if not self._dataset_prepared:
       raise RuntimeError ("error")   # TODO implement error message
-
-    report = Report()   # TODO add hyperparams to the report
 
     ## Data-type control
     try:
@@ -180,7 +176,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       print (f"Classifier training completed in {timestamp}.")
 
     self._model  = model
-    self._scores = [None, None]
+    self._save_model ( "saved_model", model, verbose = (verbose > 0) )
 
     result = { "weights"     : train_w ,
                "true_labels" : train_labels ,
@@ -193,6 +189,8 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
                         "val_pred_labels" : model.predict (val_feats) ,
                         "val_pred_probas" : model.predict_proba (val_feats) } )
 
+    self._scores = [None, None]   # score init
+
     self.scores[0] = self._compute_score ( result = result , 
                                            validation = False , 
                                            strategy = performance_metric ,
@@ -201,17 +199,14 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       self.scores[1] = self._compute_score ( result = result , 
                                              validation = True , 
                                              strategy = performance_metric ,
-                                             bins = 100 )
+                                             bins = 100 ) 
 
-    if plots_on_report:
-      self._proba_plots (result, report, bins = 100, strategy = performance_metric)
-
-    if save_model:
-      self._save_model ( "saved_model", model, verbose = (verbose > 0) )
-
+    ## Report setup
+    report = Report()   # TODO add hyperparams to the report
+    self._proba_plots (result, report, bins = 100, strategy = performance_metric)
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
-    if (verbose > 1):
+    if (verbose > 0):
       print (f"Training report correctly exported to {filename}")
 
   def _rearrange_dataset ( self , 

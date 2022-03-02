@@ -3,6 +3,7 @@
 import os
 import pickle
 import numpy as np
+from pandas import options
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -205,8 +206,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.xlabel ("Training epochs", fontsize = 12)
     plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
     if self._validation_split != 0.0:
-      plt.plot (history.history["val_d_loss"], linewidth = 1.5, color = "seagreen", label = "discriminator")
-      plt.plot (history.history["val_g_loss"], linewidth = 1.5, color = "orange", label = "generator")
+      plt.plot (history.history["val_d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
+      plt.plot (history.history["val_g_loss"], linewidth = 1.5, color = "coral", label = "generator")
       plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
       y_bottom = min ( min(history.history["val_d_loss"][int(n_epochs/10):]), min(history.history["val_g_loss"][int(n_epochs/10):]) )
       y_top    = max ( max(history.history["val_d_loss"][int(n_epochs/10):]), max(history.history["val_g_loss"][int(n_epochs/10):]) )
@@ -233,77 +234,115 @@ class GanTrainer (TensorTrainer):   # TODO class description
     Y_gen  = self._scaler_Y . inverse_transform ( self.generate (self.X_scaled) )
 
     for i, y_var in enumerate (self.Y_vars):
-      fig = plt.figure ( figsize = (20, 6), dpi = 200 )
+      fig = plt.figure ( figsize = (28, 6), dpi = 200 )
       gs = gridspec.GridSpec ( nrows = 2 , 
-                               ncols = 4 ,
+                               ncols = 5 ,
                                wspace = 0.25 ,
                                hspace = 0.25 ,
-                               width_ratios  = [2, 1, 1, 1] , 
+                               width_ratios  = [2, 2, 1, 1, 1] , 
                                height_ratios = [1, 1] )
 
-      ax = fig.add_subplot ( gs[0:,0] )
-      ax . set_xlabel (y_var, fontsize = 12)
-      ax . set_ylabel ("Candidates", fontsize = 12)
-      _, bins, _ = ax . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w[:,0], color = "dodgerblue", label = "Original")
-      ax . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = "Generated")
-      ax . legend (loc = "upper left", fontsize = 10)
+      ax0 = fig.add_subplot ( gs[0:,0] )
+      ax0 . set_xlabel (y_var, fontsize = 13)
+      ax0 . set_ylabel ("Candidates", fontsize = 13)
+      ref_label = "Original (sWeighted)"  if self.w_var else "Original (no sWeights)"
+      gen_label = "Generated (sWeighted)" if self.w_var else "Generated (no sWeights)"
+      h_ref, bins, _ = ax0 . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = ref_label)
+      h_gen, _ , _ = ax0 . hist (Y_gen[:,i], bins = bins, density = True, weights = self.w, histtype = "step", color = "deeppink", label = gen_label)
+      ax0 . legend (loc = "upper left", fontsize = 11)
+      y_top = max ( h_ref.max(), h_gen.max() )
+      y_top += 0.2 * y_top
+      ax0 . set_ylim (bottom = 0, top = y_top)
 
-      ax_p_ref = fig.add_subplot ( gs[0,1] )
-      ax_p_ref . set_xlabel (y_var, fontsize = 10)
-      ax_p_ref . set_ylabel ("Momentum [Gev/$c$]", fontsize = 10)
-      _, binx_p, biny_p, _ = ax_p_ref . hist2d (Y_ref[:,i], self.X[:,0]/1e3, bins = 25, density = True, weights = self.w[:,0], cmin = 0)
-      ax_p_ref . annotate ( "original", color = "w", weight = "bold",
-                            ha = "center", va = "center", size = 10,
-                            xy = (0.8, 0.9), xycoords = "axes fraction", 
-                            bbox = dict (boxstyle = "round", fc = "dodgerblue", alpha = 1.0, ec = "1.0") )
+      ax1 = fig.add_subplot ( gs[0:,1] )
+      ax1 . set_xlabel (y_var, fontsize = 13)
+      ax1 . set_ylabel ("Candidates", fontsize = 13)
+      ref_label = "Original (sWeighted)"  if self.w_var else "Original (no sWeights)"
+      gen_label = "Generated" if self.w_var else "Generated (no sWeights)"
+      h_ref, bins, _ = ax1 . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = ref_label)
+      h_gen, _ , _ = ax1 . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = gen_label)
+      ax1 . legend (loc = "upper left", fontsize = 11)
+      y_top = max ( h_ref.max(), h_gen.max() ) 
+      y_top += 0.2 * y_top
+      ax1 . set_ylim (bottom = 0, top = y_top)
 
-      ax_p_gen = fig.add_subplot ( gs[1,1] )
-      ax_p_gen . set_xlabel (y_var, fontsize = 10)
-      ax_p_gen . set_ylabel ("Momentum [Gev/$c$]", fontsize = 10)
-      ax_p_gen . hist2d (Y_gen[:,i], self.X[:,0]/1e3, bins = [binx_p, biny_p], density = True)
-      ax_p_gen . annotate ( "generated", color = "w", weight = "bold",
-                            ha = "center", va = "center", size = 10,
-                            xy = (0.8, 0.9), xycoords = "axes fraction", 
-                            bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
+      self._correlation_plot ( figure  = fig ,
+                               gs_list = [ gs[0,2], gs[1,2] ] ,
+                               x_ref = Y_ref[:,i] , 
+                               x_gen = Y_gen[:,i] , 
+                               y = self.X[:,0]/1e3 ,
+                               bins = 25 , 
+                               density = True , 
+                               weights = self.w.flatten() ,
+                               xlabel = y_var ,
+                               ylabel = "Momentum [Gev/$c$]" )
 
-      ax_eta_ref = fig.add_subplot ( gs[0,2] )
-      ax_eta_ref . set_xlabel (y_var, fontsize = 10)
-      ax_eta_ref . set_ylabel ("Pseudorapidity", fontsize = 10)
-      _, binx_eta, biny_eta, _ = ax_eta_ref . hist2d (Y_ref[:,i], self.X[:,1], bins = 25, density = True, weights = self.w[:,0], cmin = 0)
-      ax_eta_ref . annotate ( "original", color = "w", weight = "bold",
-                              ha = "center", va = "center", size = 10,
-                              xy = (0.8, 0.9), xycoords = "axes fraction", 
-                              bbox = dict (boxstyle = "round", fc = "dodgerblue", alpha = 1.0, ec = "1.0") )
+      self._correlation_plot ( figure  = fig ,
+                               gs_list = [ gs[0,3], gs[1,3] ] ,
+                               x_ref = Y_ref[:,i] , 
+                               x_gen = Y_gen[:,i] , 
+                               y = self.X[:,1] ,
+                               bins = 25 , 
+                               density = True , 
+                               weights = self.w.flatten() ,
+                               xlabel = y_var ,
+                               ylabel = "Pseudorapidity" )
 
-      ax_eta_gen = fig.add_subplot ( gs[1,2] )
-      ax_eta_gen . set_xlabel (y_var, fontsize = 10)
-      ax_eta_gen . set_ylabel ("Pseudorapidity", fontsize = 10)
-      ax_eta_gen . hist2d (Y_gen[:,i], self.X[:,1], bins = [binx_eta, biny_eta], density = True)
-      ax_eta_gen . annotate ( "generated", color = "w", weight = "bold",
-                              ha = "center", va = "center", size = 10,
-                              xy = (0.8, 0.9), xycoords = "axes fraction", 
-                              bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
+      self._correlation_plot ( figure  = fig ,
+                               gs_list = [ gs[0,4], gs[1,4] ] ,
+                               x_ref = Y_ref[:,i] , 
+                               x_gen = Y_gen[:,i] , 
+                               y = self.X[:,2] ,
+                               bins = 25 , 
+                               density = True , 
+                               weights = self.w.flatten() ,
+                               xlabel = y_var ,
+                               ylabel = "$\mathtt{nTracks}$" )
 
-      ax_ntk_ref = fig.add_subplot ( gs[0,3] )
-      ax_ntk_ref . set_xlabel (y_var, fontsize = 10)
-      ax_ntk_ref . set_ylabel ("$\mathtt{nTracks}$", fontsize = 10)
-      _, binx_ntk, biny_ntk, _ = ax_ntk_ref . hist2d (Y_ref[:,i], self.X[:,2], bins = 25, density = True, weights = self.w[:,0], cmin = 0)
-      ax_ntk_ref . annotate ( "original", color = "w", weight = "bold",
-                              ha = "center", va = "center", size = 10,
-                              xy = (0.8, 0.9), xycoords = "axes fraction", 
-                              bbox = dict (boxstyle = "round", fc = "dodgerblue", alpha = 1.0, ec = "1.0") )
-
-      ax_ntk_gen = fig.add_subplot ( gs[1,3] )
-      ax_ntk_gen . set_xlabel (y_var, fontsize = 10)
-      ax_ntk_gen . set_ylabel ("$\mathtt{nTracks}$", fontsize = 10)
-      ax_ntk_gen . hist2d (Y_gen[:,i], self.X[:,2], bins = [binx_ntk, biny_ntk], density = True)
-      ax_ntk_gen . annotate ( "generated", color = "w", weight = "bold",
-                              ha = "center", va = "center", size = 10,
-                              xy = (0.8, 0.9), xycoords = "axes fraction", 
-                              bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
-
-      report.add_figure(); plt.clf(); plt.close()
+      report.add_figure(options = "width=100%"); plt.clf(); plt.close()
       report.add_markdown ("<br/>")
+
+  def _correlation_plot ( self , 
+                          figure  ,
+                          gs_list , 
+                          x_ref , x_gen , y , 
+                          bins = 10 , 
+                          density = False , 
+                          weights = None  ,
+                          xlabel  = None  ,
+                          ylabel  = None  ) -> None:
+    """Internal function"""
+    if len(gs_list) != 2: raise ValueError ("It should be passed only 2 GridSpec positions.")
+
+    ## Binning definition
+    x_min = min ( x_ref.min() , x_gen.min() )
+    x_max = max ( x_ref.max() , x_gen.max() )
+    x_min -= 0.1 * ( x_max - x_min )
+    x_max += 0.1 * ( x_max - x_min )
+    y_min = y.min() - 0.1 * ( y.max() - y.min() )
+    y_max = y.max() + 0.1 * ( y.max() - y.min() )
+    binning = [ np.linspace ( x_min, x_max, bins + 1 ) ,
+                np.linspace ( y_min, y_max, bins + 1 ) ]
+
+    ax0 = figure.add_subplot ( gs_list[0] )
+    if xlabel: ax0 . set_xlabel ( xlabel, fontsize = 10 )
+    if ylabel: ax0 . set_ylabel ( ylabel, fontsize = 10 )
+    hist2d = np.histogram2d ( x_ref, y, weights = weights, density = density, bins = binning )
+    ax0 . pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("viridis"), vmin = 0 )
+    ax0 . annotate ( "original", color = "w", weight = "bold",
+                     ha = "center", va = "center", size = 10,
+                     xy = (0.8, 0.9), xycoords = "axes fraction", 
+                     bbox = dict (boxstyle = "round", fc = "dodgerblue", alpha = 1.0, ec = "1.0") )
+
+    ax1 = figure.add_subplot ( gs_list[1] )
+    if xlabel: ax1 . set_xlabel ( xlabel, fontsize = 10 )
+    if ylabel: ax1 . set_ylabel ( ylabel, fontsize = 10 )
+    hist2d = np.histogram2d ( x_gen, y, weights = weights, density = density, bins = binning )
+    ax1 . pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("viridis"), vmin = 0 )
+    ax1 . annotate ( "generated", color = "w", weight = "bold",
+                     ha = "center", va = "center", size = 10,
+                     xy = (0.8, 0.9), xycoords = "axes fraction", 
+                     bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
 
   def generate (self, X) -> np.ndarray:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.

@@ -235,7 +235,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                             verbose = verbose )
     self._model_trained = True   # switch on model trained flag
     stop = datetime.now()
-    if (verbose >= 0): 
+    if (verbose > 0): 
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
       timestamp = timestamp . split (":")   # [HH, MM, SS]
       timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
@@ -249,7 +249,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
 
-    if (verbose >= 1):
+    if (verbose > 0):
       print (f"Training report correctly exported to {filename}")
 
   @staticmethod
