@@ -1,5 +1,6 @@
 #from __future__ import annotations
 
+import os
 import yaml
 import pickle
 import numpy as np
@@ -51,7 +52,8 @@ parser . add_argument ( "-a", "--algo", required = True )   # TODO add choices
 parser . add_argument ( "-w", "--weights", default = "yes", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-model_name = f"{args.algo}_{args.model}_{args.particle}_{args.sample}_{args.version}"
+algo = f"{args.algo}".lower()
+model_name = f"{args.model}_{args.particle}_{args.sample}_{algo}-{args.version}"
 
 data_handler = DataHandler()
 
@@ -59,7 +61,7 @@ data_handler = DataHandler()
 # |    Data for validation    |
 # +---------------------------+
 
-sw = args.weights == "yes"
+sw = (args.weights == "yes")
 
 data_dir  = config["data_dir"]
 file_list = datasets[args.model][args.particle][args.sample]
@@ -83,7 +85,7 @@ data_handler . prepare_dataset()
 # +------------------------+
 
 model_dir = config["model_dir"]
-generator = tf.keras.models.load_model ( f"{model_dir}/{model_name}/saved_model" )
+generator = tf.keras.models.load_model ( f"{model_dir}/{model_name}/saved_generator" )
 
 # +------------------------------------+
 # |    Preprocessing transformation    |
@@ -297,8 +299,10 @@ for bin_id in tqdm (combinations, total = total_combs, desc = "Formatting", unit
   plot_histos (bin_id)
   report.add_markdown ("***")
 
-report_dir = config["report_dir"]
-filename = f"{report_dir}/val_{model_name}.html"
+report_dir = "{}/validation/{}" . format (config["report_dir"], args.model) 
+if not os.path.exists (report_dir):
+  os.makedirs (report_dir)
 
+filename = f"{report_dir}/val_{model_name}.html"
 report.write_report ( filename = filename )
 print ( f"Report correctly exported to {filename}" )
