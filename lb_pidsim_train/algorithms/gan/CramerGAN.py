@@ -179,19 +179,19 @@ class CramerGAN (GAN):   # TODO add class description
     d_loss = tf.reduce_mean (d_loss)
 
     ## Gradient penalty
-    alpha = tf.random.uniform (
-                                shape  = (tf.shape(XY_ref_1)[0], 1) , 
-                                minval = 0.0 , 
-                                maxval = 1.0 ,
-                              )
+    epsilon = tf.random.uniform (
+                                  shape  = (tf.shape(XY_ref_1)[0], 1) , 
+                                  minval = 0.0 , 
+                                  maxval = 1.0 ,
+                                )
     differences  = XY_gen_1 - XY_ref_1
-    interpolates = XY_ref_1 + alpha * differences
+    interpolates = XY_ref_1 + epsilon * differences
     critic_int = self._critic ( interpolates , XY_gen_2 )
     grad = tf.gradients ( critic_int , interpolates )
     grad = tf.concat  ( grad , axis = 1 )
     grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
     slopes  = tf.norm ( grad , axis = 1 )
-    gp_term = tf.square ( tf.maximum ( tf.abs (slopes) - 1.0, 0.0 ) )
+    gp_term = tf.square ( tf.abs (slopes) - 1.0 )   # two-sided penalty
     gp_term = self._grad_penalty * tf.reduce_mean (gp_term)   # gradient penalty
     d_loss += gp_term
     return d_loss
@@ -245,7 +245,7 @@ class CramerGAN (GAN):   # TODO add class description
     """
     _, w_ref = ref_sample
     th_loss = tf.zeros_like (w_ref)
-    return tf.reduce_mean (th_loss)
+    return tf.reduce_sum (th_loss)
 
   @property
   def discriminator (self) -> tf.keras.Sequential:

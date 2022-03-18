@@ -135,19 +135,19 @@ class WGAN_GP (GAN):   # TODO add class description
     d_loss = tf.reduce_mean ( w_gen * D_gen - w_ref * D_ref )
     
     ## Gradient penalty
-    alpha = tf.random.uniform (
-                                shape  = (tf.shape(XY_ref)[0], 1) ,
-                                minval = 0.0 ,
-                                maxval = 1.0 ,
-                              )
+    epsilon = tf.random.uniform (
+                                  shape  = (tf.shape(XY_ref)[0], 1) ,
+                                  minval = 0.0 ,
+                                  maxval = 1.0 ,
+                                )
     differences  = XY_gen - XY_ref
-    interpolates = XY_ref + alpha * differences
+    interpolates = XY_ref + epsilon * differences
     D_int = self._discriminator ( interpolates )
     grad = tf.gradients ( D_int , interpolates )
     grad = tf.concat  ( grad , axis = 1 )
     grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
     slopes  = tf.norm ( grad , axis = 1 )
-    gp_term = tf.square ( tf.maximum ( tf.abs (slopes) - 1.0, 0.0 ) )
+    gp_term = tf.square ( tf.abs (slopes) - 1.0 )   # two-sided penalty
     gp_term = self._grad_penalty * tf.reduce_mean (gp_term)
     d_loss += gp_term
     return d_loss
@@ -193,7 +193,7 @@ class WGAN_GP (GAN):   # TODO add class description
     """
     _, w_ref = ref_sample
     th_loss = tf.zeros_like (w_ref)
-    return tf.reduce_mean (th_loss)
+    return tf.reduce_sum (th_loss)
 
   @property
   def discriminator (self) -> tf.keras.Sequential:

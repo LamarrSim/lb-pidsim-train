@@ -356,8 +356,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     D_ref = self._discriminator ( XY_ref + rnd_ref )
 
     ## Loss computation
-    g_loss = w_ref * tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) ) + \
-             w_gen * tf.math.log ( tf.clip_by_value (1 - D_gen, 1e-12, 1.) )
+    g_loss = w_gen * tf.math.log ( tf.clip_by_value (1 - D_gen, 1e-12, 1.) ) + \
+             w_ref * tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) )
     return tf.reduce_mean (g_loss)
 
   def _compute_threshold (self, ref_sample) -> tf.Tensor:   # TODO complete docstring
