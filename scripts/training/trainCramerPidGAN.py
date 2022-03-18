@@ -44,7 +44,7 @@ args = parser . parse_args()
 
 model_name = f"{args.model}_{args.particle}_{args.sample}_cramergan-{args.version}"
 
-sw = args.weights == "yes"
+sw = (args.weights == "yes")
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
