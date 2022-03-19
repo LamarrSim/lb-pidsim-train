@@ -191,7 +191,7 @@ class CramerGAN (GAN):   # TODO add class description
     grad = tf.concat  ( grad , axis = 1 )
     grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
     slopes  = tf.norm ( grad , axis = 1 )
-    gp_term = tf.square ( tf.abs (slopes) - 1.0 )   # two-sided penalty
+    gp_term = tf.square ( slopes - 1.0 )   # two-sided penalty
     gp_term = self._grad_penalty * tf.reduce_mean (gp_term)   # gradient penalty
     d_loss += gp_term
     return d_loss
