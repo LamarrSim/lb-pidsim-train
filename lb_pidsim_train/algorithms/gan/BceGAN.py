@@ -118,12 +118,12 @@ class BceGAN (GAN):   # TODO add class description
     D_ref = self._discriminator ( XY_ref + rnd_ref )
 
     ## Loss computation
-    true_gen = 0.9
-    true_ref = 0.1
-    g_loss = w_gen * true_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1. ) ) + \
-             w_gen * (1 - true_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1. ) ) + \
-             w_ref * true_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
-             w_ref * (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
+    k_gen = 0.1
+    k_ref = 0.9
+    g_loss = w_gen * k_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1. ) ) + \
+             w_gen * (1 - k_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1. ) ) + \
+             w_ref * k_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
+             w_ref * (1 - k_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
     return tf.reduce_mean (g_loss)
 
   def _compute_threshold (self, ref_sample) -> tf.Tensor:   # TODO complete docstring
@@ -152,12 +152,12 @@ class BceGAN (GAN):   # TODO add class description
     w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
 
     ## Threshold loss computation
-    true_gen = 0.9
-    true_ref = 0.1
-    th_loss = w_ref_1 * true_gen       * tf.math.log ( tf.clip_by_value ( D_ref_1     , 1e-12 , 1. ) ) + \
-              w_ref_1 * (1 - true_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_1 , 1e-12 , 1. ) ) + \
-              w_ref_2 * true_ref       * tf.math.log ( tf.clip_by_value ( D_ref_2     , 1e-12 , 1. ) ) + \
-              w_ref_2 * (1 - true_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1. ) ) 
+    k_gen = 0.1
+    k_ref = 0.9
+    th_loss = w_ref_1 * k_gen       * tf.math.log ( tf.clip_by_value ( D_ref_1     , 1e-12 , 1. ) ) + \
+              w_ref_1 * (1 - k_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_1 , 1e-12 , 1. ) ) + \
+              w_ref_2 * k_ref       * tf.math.log ( tf.clip_by_value ( D_ref_2     , 1e-12 , 1. ) ) + \
+              w_ref_2 * (1 - k_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1. ) ) 
     return tf.reduce_mean (th_loss)
 
   @property
