@@ -9,11 +9,11 @@ isMuon:
     2016MagUp:
       chunk_size : 10000000   # 60 mln
       loss : deviance
-      learning_rate : 0.547
-      n_estimators  : 9
-      criterion : friedman_mse
-      min_samples_leaf : 1
-      max_depth : 13
+      learning_rate : 0.039
+      n_estimators  : 131
+      criterion : squared_error
+      min_samples_leaf : 10
+      max_depth : 12
       validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -39,11 +39,11 @@ isMuon:
     2016MagUp:
       chunk_size : 20000000   # 150 mln
       loss : deviance
-      learning_rate : 0.351
-      n_estimators  : 20
+      learning_rate : 0.129
+      n_estimators  : 149
       criterion : friedman_mse
-      min_samples_leaf : 1
-      max_depth : 15
+      min_samples_leaf : 50
+      max_depth : 3
       validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -54,11 +54,11 @@ isMuon:
     2016MagUp:
       chunk_size : 50000000   # 105 mln
       loss : deviance
-      learning_rate : 0.056
-      n_estimators  : 147
-      criterion : squared_error
-      min_samples_leaf : 1
-      max_depth : 10
+      learning_rate : 0.131
+      n_estimators  : 115
+      criterion : friedman_mse
+      min_samples_leaf : 50
+      max_depth : 7
       validation_split : 0.5
     # <-- 2016 Mag Down -->
     2016MagDown:
