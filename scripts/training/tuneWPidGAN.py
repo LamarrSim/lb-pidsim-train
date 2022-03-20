@@ -26,8 +26,13 @@ with open ("config/variables.yaml") as file:
 with open ("config/selections.yaml") as file:
   selections = yaml.full_load (file)
 
+hyperparams = dict()
+
 with open ("config/hyperparams/tuned-wgan.yaml") as file:
-  hyperparams = yaml.full_load (file)
+  hyperparams["tune"] = yaml.full_load (file)
+
+with open ("config/hyperparams/fine-tuned-wgan.yaml") as file:
+  hyperparams["fine"] = yaml.full_load (file)
 
 # +----------------------------+
 # |    Trainer construction    | 
@@ -35,9 +40,16 @@ with open ("config/hyperparams/tuned-wgan.yaml") as file:
 
 parser = argparser ("Model fine-tuning")
 parser . add_argument ( "-t", "--template", required = True )
+parser . add_argument ( "-f", "--finetuning", default = "no", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-model_name = f"{args.model}_{args.particle}_{args.sample}_wgan-{args.version}"
+ft = (args.finetuning == "yes")
+template_name = f"{args.template}"
+
+if ft:
+  model_name = f"{template_name}_wgan-finetuning"
+else:
+  model_name = f"{args.model}_{args.particle}_{args.sample}_wgan-{args.version}"
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -48,6 +60,8 @@ trainer = GanTrainer ( name = model_name ,
 # +-------------------------+
 # |    Optimization step    |
 # +-------------------------+
+
+hyperparams = hyperparams["fine"] if ft else hyperparams["tune"]
 
 hp = hyperparams[args.model][args.particle][args.sample]
 # TODO add OptunAPI update
@@ -73,21 +87,20 @@ trainer . feed_from_root_files ( root_files = file_list ,
 # |    Model loading    |
 # +---------------------+
 
-model_dir = config["model_dir"]
-file_name = f"{args.template}"
-
-trainer . load_model ( filepath = f"{model_dir}/{file_name}", model_to_load = "all", verbose = 1 )
+trainer . load_model ( filepath = "{}/{}" . format ( config["model_dir"], template_name ) , 
+                       model_to_load = "all" , 
+                       verbose = 1 )
 
 # +--------------------------+
 # |    Model construction    |
 # +--------------------------+
 
 discriminator = trainer . extract_model ( player = "disc" , 
-                                          fine_tuned_layers = hp["fine_tuned_d_layers"] )
+                                          fine_tuned_layers = None if ft else hp["fine_tuned_d_layers"] )
 
-add_d_num_layers  = hp["add_d_num_layers"]
-add_d_num_nodes   = hp["add_d_num_nodes"]
-add_d_alpha_leaky = hp["add_d_alpha_leaky"]
+add_d_num_layers  = None if ft else hp["add_d_num_layers"]
+add_d_num_nodes   = None if ft else hp["add_d_num_nodes"]
+add_d_alpha_leaky = None if ft else hp["add_d_alpha_leaky"]
 
 if add_d_num_layers:
   for layer in range (add_d_num_layers):
@@ -95,11 +108,11 @@ if add_d_num_layers:
     discriminator . append ( LeakyReLU (alpha = add_d_alpha_leaky) )
 
 generator = trainer . extract_model ( player = "gen" ,
-                                      fine_tuned_layers = hp["fine_tuned_g_layers"] )
+                                      fine_tuned_layers = None if ft else hp["fine_tuned_g_layers"] )
 
-add_g_num_layers  = hp["add_g_num_layers"]
-add_g_num_nodes   = hp["add_g_num_nodes"]
-add_g_alpha_leaky = hp["add_g_alpha_leaky"]
+add_g_num_layers  = None if ft else hp["add_g_num_layers"]
+add_g_num_nodes   = None if ft else hp["add_g_num_nodes"]
+add_g_alpha_leaky = None if ft else hp["add_g_alpha_leaky"]
 
 if add_g_num_layers:
   for layer in range (add_g_num_layers):
