@@ -79,6 +79,7 @@ trainer . prepare_dataset ( X_preprocessing = X_preprocessing ,
                             Y_preprocessing = Y_preprocessing , 
                             X_vars_to_preprocess = trainer.X_vars ,
                             Y_vars_to_preprocess = trainer.Y_vars ,
+                            enable_reweights = True ,
                             verbose = 1 )
 
 # +--------------------------+

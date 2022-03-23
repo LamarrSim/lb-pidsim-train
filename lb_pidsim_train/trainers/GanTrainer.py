@@ -3,15 +3,19 @@
 import os
 import pickle
 import numpy as np
-from pandas import options
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from time import time
 from sklearn.utils import shuffle
-from lb_pidsim_train.trainers import TensorTrainer
-from lb_pidsim_train.utils import PidsimColTransformer
+from tensorflow.keras.models     import Sequential
+from tensorflow.keras.layers     import Dense, LeakyReLU
+from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.losses     import MeanSquaredError
+from lb_pidsim_train.trainers    import TensorTrainer
+from lb_pidsim_train.utils       import PidsimColTransformer
+from lb_pidsim_train.metrics     import KS_test
 
 
 NP_FLOAT = np.float32
@@ -22,9 +26,74 @@ TF_FLOAT = tf.float32
 
 
 class GanTrainer (TensorTrainer):   # TODO class description
+
+  def prepare_dataset ( self , 
+                        X_preprocessing = None , 
+                        Y_preprocessing = None , 
+                        X_vars_to_preprocess = None , 
+                        Y_vars_to_preprocess = None , 
+                        subsample_size = 500000 , 
+                        enable_reweights = True ,
+                        save_transformer = True , 
+                        verbose = 0 ) -> None:
+    super().prepare_dataset ( X_preprocessing = X_preprocessing , 
+                              Y_preprocessing = Y_preprocessing , 
+                              X_vars_to_preprocess = X_vars_to_preprocess , 
+                              Y_vars_to_preprocess = Y_vars_to_preprocess , 
+                              subsample_size = subsample_size , 
+                              save_transformer = save_transformer , 
+                              verbose = verbose )
+
+    if enable_reweights:
+      if self.w_var is not None:
+        reweighter = self._train_reweighter ( num_epochs = 10 ,
+                                              batch_size = 1024 ,
+                                              save_model = save_transformer ,
+                                              verbose = verbose )
+        self._w_X = reweighter (self.X_scaled) . numpy() . reshape (self._w_Y.shape) . astype (NP_FLOAT)
+      else:
+        print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
+
+  def _train_reweighter ( self ,
+                          num_epochs = 1 ,
+                          batch_size = None ,
+                          save_model = True ,
+                          verbose = 0 ) -> tf.keras.Sequential:   # TODO add docstring
+    ## Model construction
+    reweighter = Sequential()
+    for layer in range (5):
+      reweighter.add ( Dense (units = 32) )
+      reweighter.add ( LeakyReLU (alpha = 0.05) )
+    reweighter.add ( Dense (units = 1, activation = "relu") )
+
+    ## Model configuration
+    reweighter.compile ( optimizer = RMSprop (learning_rate = 5e-4), loss = MeanSquaredError() )
+
+    ## Model training
+    start = time()
+    reweighter.fit ( self.X_scaled, self.w, epochs = num_epochs, batch_size = batch_size, verbose = 0 )
+    stop = time()
+    if (verbose > 0): 
+      print ( f"Reweighter training completed in {(stop-start)/60:.3f} min" )
+    if (verbose > 1):
+      ks_test = KS_test ( x_obs = self.X_scaled , 
+                          x_exp = self.X_scaled , 
+                          w_obs = reweighter (self.X_scaled) . numpy() . flatten() , 
+                          w_exp = self.w . flatten() )
+      print ( f"Worst reweighter performance: {max(ks_test):.4f} (K-S test)" )
+
+    ## Model saving
+    if save_model:
+      filename = f"{self._export_dir}/{self._export_name}/saved_reweighter"
+      if not os.path.exists (filename): os.makedirs (filename)
+      reweighter.save (filename, save_format = "tf")
+      if (verbose > 0): print ( f"Reweighter correctly exported to {filename}" )
+    return reweighter
+
   def load_model ( self , 
                    filepath , 
                    model_to_load = "all" ,
+                   enable_reweights = True ,
                    save_transformer = True ,
                    verbose = 0 ) -> None:   # TODO add docstring
     """"""
@@ -53,12 +122,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if os.path.exists (file_X):
       start = time()
       self._scaler_X = PidsimColTransformer ( pickle.load (open (file_X, "rb")) )
-      if (verbose > 0):
-        print (f"Transformer correctly loaded from {file_X}.")
+      if (verbose > 0): print (f"Transformer correctly loaded from {file_X}")
       self._X_scaled = self._scaler_X . transform ( self.X )
       stop = time()
-      if (verbose > 1):
-        print (f"Preprocessing time for X: {stop-start:.3f} s")
+      if (verbose > 1): print (f"Preprocessing time for X: {stop-start:.3f} s")
       if save_transformer: 
         self._save_transformer ( "transform_X" , 
                                  self._scaler_X.sklearn_transformer ,   # saved as Scikit-Learn class
@@ -72,12 +139,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if os.path.exists (file_Y):
       start = time()
       self._scaler_Y = PidsimColTransformer ( pickle.load (open (file_Y, "rb")) )
-      if (verbose > 0):
-        print (f"Transformer correctly loaded from {file_Y}.")
+      if (verbose > 0): print (f"Transformer correctly loaded from {file_Y}")
       self._Y_scaled = self._scaler_Y . transform ( self.Y )
       stop = time()
-      if (verbose > 1):
-        print (f"Preprocessing time for Y: {stop-start:.3f} s")
+      if (verbose > 1): print (f"Preprocessing time for Y: {stop-start:.3f} s")
       if save_transformer:
         self._save_transformer ( "transform_Y" , 
                                  self._scaler_Y.sklearn_transformer ,   # saved as Scikit-Learn class 
@@ -85,6 +150,28 @@ class GanTrainer (TensorTrainer):   # TODO class description
     else:
       self._scaler_Y = None
       self._Y_scaled = self.Y
+
+    ## Weights or reweighted weights
+    self._w_X = np.copy (self._w)
+    self._w_Y = np.copy (self._w)
+    if enable_reweights:
+      if self.w_var is not None:
+        file_W = f"{filepath}/saved_reweighter"
+        if os.path.exists (file_W):
+          reweighter = tf.keras.models.load_model (file_W)
+          if (verbose > 0): print (f"Reweighter correctly loaded from {file_W}")
+        else:
+          reweighter = self._train_reweighter ( num_epochs = 10 ,
+                                                batch_size = 1024 ,
+                                                save_model = False ,
+                                                verbose = verbose )
+        self._w_X = reweighter (self.X_scaled) . numpy() . reshape (self._w_Y.shape) . astype (NP_FLOAT)
+        if save_transformer:
+          reweighter.save (f"{self._export_dir}/{self._export_name}/saved_reweighter", save_format = "tf")
+        if (verbose > 0): 
+          print ( f"Reweighter correctly exported to {self._export_dir}/{self._export_name}/saved_reweighter" )
+      else:
+        print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
 
     ## Load the models
     if model_to_load == "gen":

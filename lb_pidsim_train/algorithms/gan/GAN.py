@@ -164,27 +164,28 @@ class GAN (tf.keras.Model):   # TODO add class description
   @staticmethod
   def _unpack_data (data):
     """Unpack data-batch into input, output and weights (`None`, if not available)."""
-    if len(data) == 3:
-      X , Y , w = data
+    if len(data) == 4:
+      X , Y , w_X , w_Y = data
     else:
       X , Y = data
-      w = None
-    return X, Y, w
+      w_X = None
+      w_Y = None
+    return X, Y, w_X, w_Y
 
   def train_step (self, data) -> dict:
     """Train step for Keras APIs."""
-    X, Y, w = self._unpack_data (data)
+    X, Y, w_X, w_Y = self._unpack_data (data)
 
     ## Discriminator updates per batch
     for i in range(self._d_updt_per_batch):
-      self._train_d_step (X, Y, w)
+      self._train_d_step (X, Y, w_X, w_Y)
 
     ## Generator updates per batch
     for j in range(self._g_updt_per_batch):
-      self._train_g_step (X, Y, w)
+      self._train_g_step (X, Y, w_X, w_Y)
 
     ## Loss computation
-    ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+    ref_sample, gen_sample = self._arrange_samples (X, Y, w_X, w_Y)
     d_loss = self._compute_d_loss (gen_sample, ref_sample)
     g_loss = self._compute_g_loss (gen_sample, ref_sample)
     threshold = self._compute_threshold (ref_sample)
@@ -194,7 +195,7 @@ class GAN (tf.keras.Model):   # TODO add class description
     g_loss_tracker . update_state (g_loss - threshold)
 
     Y_gen = self.generate (X)
-    mse_tracker . update_state (Y, Y_gen, sample_weight = w)
+    mse_tracker . update_state (Y, Y_gen, sample_weight = w_Y)
 
     return { "mse"    : mse_tracker.result()    ,
              "d_loss" : d_loss_tracker.result() , 
@@ -204,10 +205,10 @@ class GAN (tf.keras.Model):   # TODO add class description
 
   def test_step (self, data) -> dict:
     """Test step for Keras APIs."""
-    X, Y, w = self._unpack_data (data)
+    X, Y, w_X, w_Y = self._unpack_data (data)
 
     ## Loss computation
-    ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+    ref_sample, gen_sample = self._arrange_samples (X, Y, w_X, w_Y)
     d_loss = self._compute_d_loss (gen_sample, ref_sample)
     g_loss = self._compute_g_loss (gen_sample, ref_sample)
     threshold = self._compute_threshold (ref_sample)
@@ -217,7 +218,7 @@ class GAN (tf.keras.Model):   # TODO add class description
     g_loss_tracker . update_state (g_loss - threshold)
 
     Y_gen = self.generate (X)
-    mse_tracker . update_state (Y, Y_gen, sample_weight = w)
+    mse_tracker . update_state (Y, Y_gen, sample_weight = w_Y)
 
     return { "mse"    : mse_tracker.result()    ,
              "d_loss" : d_loss_tracker.result() , 
@@ -225,7 +226,7 @@ class GAN (tf.keras.Model):   # TODO add class description
              "d_lr"   : self._d_optimizer.lr    ,
              "g_lr"   : self._g_optimizer.lr    }
 
-  def _arrange_samples (self, X, Y, w = None) -> tuple:   # TODO complete docstring
+  def _arrange_samples (self, X, Y, w_X = None, w_Y = None) -> tuple:   # TODO complete docstring
     """Arrange the reference and generated samples.
     
     Parameters
@@ -236,7 +237,10 @@ class GAN (tf.keras.Model):   # TODO add class description
     Y : `tf.Tensor`
       ...
 
-    w : `tf.Tensor`, optional
+    w_X : `tf.Tensor`, optional
+      ... (`None`, by default).
+
+    w_Y : `tf.Tensor`, optional
       ... (`None`, by default).
     
     Returns
@@ -251,8 +255,9 @@ class GAN (tf.keras.Model):   # TODO add class description
     batch_size = tf.cast ( tf.shape(X)[0] / 2, tf.int32 )
     X_ref , X_gen = X[:batch_size], X[batch_size:batch_size*2]
     Y_ref = Y[:batch_size]
-    if w is not None:
-      w_ref, w_gen = w[:batch_size], w[batch_size:batch_size*2]
+    if (w_X is not None) and (w_Y is not None):
+      w_ref = w_Y[:batch_size]
+      w_gen = w_X[batch_size:batch_size*2]
     else:
       w_ref = tf.ones ( tf.shape(X_ref)[0] )
       w_gen = tf.ones ( tf.shape(X_gen)[0] )
@@ -271,7 +276,7 @@ class GAN (tf.keras.Model):   # TODO add class description
     gen_sample = ( XY_gen, w_gen )
     return ref_sample, gen_sample
 
-  def _train_d_step (self, X, Y, w = None) -> None:   # TODO complete docstring
+  def _train_d_step (self, X, Y, w_X = None, w_Y = None) -> None:   # TODO complete docstring
     """Training step for the discriminator.
     
     Parameters
@@ -282,11 +287,14 @@ class GAN (tf.keras.Model):   # TODO add class description
     Y : `tf.Tensor`
       ...
 
-    w : `tf.Tensor`, optional
+    w_X : `tf.Tensor`, optional
+      ... (`None`, by default).
+
+    w_Y : `tf.Tensor`, optional
       ... (`None`, by default).
     """
     with tf.GradientTape() as tape:
-      ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+      ref_sample, gen_sample = self._arrange_samples (X, Y, w_X, w_Y)
       d_loss = self._compute_d_loss ( gen_sample, ref_sample )
     grads = tape.gradient ( d_loss, self._discriminator.trainable_weights )
     self._d_optimizer.apply_gradients ( zip (grads, self._discriminator.trainable_weights) )
@@ -309,7 +317,7 @@ class GAN (tf.keras.Model):   # TODO add class description
     """
     return - self._compute_g_loss (gen_sample, ref_sample)
 
-  def _train_g_step (self, X, Y, w = None) -> None:   # TODO complete docstring
+  def _train_g_step (self, X, Y, w_X = None, w_Y = None) -> None:   # TODO complete docstring
     """Training step for the generator.
     
     Parameters
@@ -320,11 +328,14 @@ class GAN (tf.keras.Model):   # TODO add class description
     Y : `tf.Tensor`
       ...
 
-    w : `tf.Tensor`, optional
+    w_X : `tf.Tensor`, optional
+      ... (`None`, by default).
+
+    w_Y : `tf.Tensor`, optional
       ... (`None`, by default).
     """
     with tf.GradientTape() as tape:
-      ref_sample, gen_sample = self._arrange_samples (X, Y, w)
+      ref_sample, gen_sample = self._arrange_samples (X, Y, w_X, w_Y)
       g_loss = self._compute_g_loss ( gen_sample, ref_sample )
     grads = tape.gradient ( g_loss, self._generator.trainable_weights )
     self._g_optimizer.apply_gradients ( zip (grads, self._generator.trainable_weights) )

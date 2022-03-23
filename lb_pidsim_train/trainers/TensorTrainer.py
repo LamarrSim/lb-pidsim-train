@@ -1,6 +1,6 @@
 #from __future__ import annotations
 
-import os
+import numpy as np
 import tensorflow as tf
 
 from datetime import datetime
@@ -128,6 +128,9 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                               save_transformer = save_transformer , 
                               verbose = verbose )
 
+    self._w_X = np.copy (self._w)
+    self._w_Y = np.copy (self._w)
+
   def load_model (self) -> None:
     raise NotImplementedError ("error")   # TODO implement error message
 
@@ -204,17 +207,23 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     self._validation_split = validation_split
 
     ## Sizes computation
-    sample_size = self._X . shape[0]
+    sample_size = self.X . shape[0]
     trainset_size = int ( (1.0 - validation_split) * sample_size )
     steps_per_epoch = max ( 1, int (trainset_size / batch_size) )
 
     ## Training dataset
-    trainset = ( self._X_scaled[:trainset_size], self._Y_scaled[:trainset_size], self._w[:trainset_size] )
+    trainset = ( self.X_scaled [:trainset_size] , 
+                 self.Y_scaled [:trainset_size] , 
+                 self._w_X     [:trainset_size] ,
+                 self._w_Y     [:trainset_size] )
     train_ds = self._create_dataset ( trainset, batch_size = batch_size )
 
     ## Validation dataset
     if validation_split != 0.0:
-      valset = ( self._X_scaled[trainset_size:], self._Y_scaled[trainset_size:], self._w[trainset_size:] )
+      valset = ( self.X_scaled [trainset_size:] , 
+                 self.Y_scaled [trainset_size:] , 
+                 self._w_X     [trainset_size:] ,
+                 self._w_Y     [trainset_size:] )
       val_ds = self._create_dataset ( valset, batch_size = batch_size )
     else:
       val_ds = None
@@ -279,16 +288,18 @@ class TensorTrainer (BaseTrainer):   # TODO class description
 
     if gpu_avail:
       with tf.device ("/gpu:0"):
-        X = tf.cast ( tf.convert_to_tensor(data[0]), dtype = TF_FLOAT )
-        Y = tf.cast ( tf.convert_to_tensor(data[1]), dtype = TF_FLOAT )
-        w = tf.cast ( tf.convert_to_tensor(data[2]), dtype = TF_FLOAT )
+        X   = tf.cast ( tf.convert_to_tensor(data[0]), dtype = TF_FLOAT )
+        Y   = tf.cast ( tf.convert_to_tensor(data[1]), dtype = TF_FLOAT )
+        w_X = tf.cast ( tf.convert_to_tensor(data[2]), dtype = TF_FLOAT )
+        w_Y = tf.cast ( tf.convert_to_tensor(data[3]), dtype = TF_FLOAT )
     else:
       with tf.device ("/cpu:0"):
-        X = tf.cast ( tf.convert_to_tensor(data[0]), dtype = TF_FLOAT )
-        Y = tf.cast ( tf.convert_to_tensor(data[1]), dtype = TF_FLOAT )
-        w = tf.cast ( tf.convert_to_tensor(data[2]), dtype = TF_FLOAT )
+        X   = tf.cast ( tf.convert_to_tensor(data[0]), dtype = TF_FLOAT )
+        Y   = tf.cast ( tf.convert_to_tensor(data[1]), dtype = TF_FLOAT )
+        w_X = tf.cast ( tf.convert_to_tensor(data[2]), dtype = TF_FLOAT )
+        w_Y = tf.cast ( tf.convert_to_tensor(data[3]), dtype = TF_FLOAT )
 
-    dataset = tf.data.Dataset.from_tensor_slices ( (X, Y, w) )
+    dataset = tf.data.Dataset.from_tensor_slices ( (X, Y, w_X, w_Y) )
     dataset = dataset.batch ( batch_size, drop_remainder = True )
     dataset = dataset.cache()
     dataset = dataset.prefetch ( tf.data.AUTOTUNE )

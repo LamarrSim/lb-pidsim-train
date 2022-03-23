@@ -184,7 +184,7 @@ class BaseTrainer (DataHandler):   # TODO class description
       self._scaler_Y = None
       self._Y_scaled = self.Y
 
-    self._dataset_prepared = True # switch on dataset prepared flag
+    self._dataset_prepared = True   # switch on dataset prepared flag
 
   def _save_transformer (self, name, transformer, verbose = False) -> None:
     """Save the preprocessing transformer.

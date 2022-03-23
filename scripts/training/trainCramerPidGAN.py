@@ -44,19 +44,19 @@ args = parser . parse_args()
 
 model_name = f"{args.model}_{args.particle}_{args.sample}_cramergan-{args.version}"
 
-sw = (args.weights == "yes")
+sw_avail = (args.weights == "yes")
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
                        export_name = model_name ,
-                       report_dir  = config["report_dir"] if sw else "{}/templates" . format ( config["report_dir"] ) ,
+                       report_dir  = config["report_dir"] if sw_avail else "{}/templates" . format ( config["report_dir"] ) ,
                        report_name = model_name )
 
 # +-------------------------+
 # |    Optimization step    |
 # +-------------------------+
 
-hyperparams = hyperparams["std"] if sw else hyperparams["base"]
+hyperparams = hyperparams["std"] if sw_avail else hyperparams["base"]
 
 hp = hyperparams[args.model][args.particle][args.sample]
 # TODO add OptunAPI update
@@ -72,7 +72,7 @@ file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 trainer . feed_from_root_files ( root_files = file_list , 
                                  X_vars = variables[args.model]["X_vars"][args.sample] , 
                                  Y_vars = variables[args.model]["Y_vars"][args.sample] , 
-                                 w_var  = variables[args.model]["w_vars"][args.sample] if sw else None, 
+                                 w_var  = variables[args.model]["w_vars"][args.sample] if sw_avail else None, 
                                  selections = selections[args.model][args.sample] , 
                                  tree_names = None , 
                                  chunk_size = hp["chunk_size"] , 
@@ -89,6 +89,7 @@ trainer . prepare_dataset ( X_preprocessing = X_preprocessing ,
                             Y_preprocessing = Y_preprocessing , 
                             X_vars_to_preprocess = trainer.X_vars ,
                             Y_vars_to_preprocess = trainer.Y_vars ,
+                            enable_reweights = sw_avail ,
                             verbose = 1 )
 
 # +--------------------------+
@@ -141,7 +142,7 @@ model . summary()
 
 model_saver  = GanModelSaver ( name = model_name , 
                                dirname = config["model_dir"] , 
-                               model_to_save = "gen" if sw else "all",
+                               model_to_save = "gen" if sw_avail else "all",
                                verbose = 1 )
 
 lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"] , 
