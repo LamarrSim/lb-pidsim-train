@@ -7,7 +7,7 @@ from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import WGAN_GP
 from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
-from tensorflow.keras.layers    import Dense, LeakyReLU
+from tensorflow.keras.layers    import Dense, LeakyReLU, Dropout
 
 
 # +---------------------------+
@@ -79,7 +79,7 @@ trainer . prepare_dataset ( X_preprocessing = X_preprocessing ,
                             Y_preprocessing = Y_preprocessing , 
                             X_vars_to_preprocess = trainer.X_vars ,
                             Y_vars_to_preprocess = trainer.Y_vars ,
-                            enable_reweights = True ,
+                            enable_reweights = False ,
                             verbose = 1 )
 
 # +--------------------------+
@@ -92,7 +92,7 @@ d_alpha_leaky = hp["d_alpha_leaky"]
 
 discriminator = list()
 for layer in range (d_num_layers):
-  discriminator . append ( Dense (d_num_nodes) )
+  discriminator . append ( Dense (d_num_nodes, kernel_initializer = "glorot_uniform") )
   discriminator . append ( LeakyReLU (alpha = d_alpha_leaky) )
 
 g_num_layers  = hp["g_num_layers"]
@@ -101,8 +101,9 @@ g_alpha_leaky = hp["g_alpha_leaky"]
 
 generator = list()
 for layer in range (g_num_layers):
-  generator . append ( Dense (g_num_nodes) )
+  generator . append ( Dense (g_num_nodes, kernel_initializer = "glorot_uniform") )
   generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
+  generator . append ( Dropout (rate = 0.1) )
 
 model = WGAN_GP ( X_shape = len(trainer.X_vars) , 
                   Y_shape = len(trainer.Y_vars) , 

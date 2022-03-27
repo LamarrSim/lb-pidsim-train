@@ -1,8 +1,8 @@
 #from __future__ import annotations
 
 import tensorflow as tf
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers        import Dense
+from tensorflow.keras.models        import Sequential
 from lb_pidsim_train.algorithms.gan import GAN
 
 
@@ -102,8 +102,8 @@ class CramerGAN (GAN):   # TODO add class description
     self._discriminator = Sequential ( name = "discriminator" )
     for d_layer in discriminator:
       self._discriminator . add ( d_layer )
-    self._discriminator . add ( Dense ( units = critic_dim, activation = "linear", 
-                                        kernel_initializer = "he_normal" ) )
+    self._discriminator . add ( Dense ( units = critic_dim, activation = "linear" , 
+                                        kernel_initializer = "glorot_normal" ) )
 
   def compile ( self , 
                 d_optimizer ,

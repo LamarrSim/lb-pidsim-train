@@ -7,7 +7,7 @@ from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
 from lb_pidsim_train.algorithms import BceGAN
 from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
-from tensorflow.keras.layers    import Dense, LeakyReLU
+from tensorflow.keras.layers    import Dense, LeakyReLU, Dropout
 
 
 # +---------------------------+
@@ -43,10 +43,10 @@ parser . add_argument ( "-t", "--template", required = True )
 parser . add_argument ( "-f", "--finetuning", default = "no", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-ft = (args.finetuning == "yes")
+ft_enabled = (args.finetuning == "yes")
 template_name = f"{args.template}"
 
-if ft:
+if ft_enabled:
   model_name = f"{template_name}_bcegan-finetuning"
 else:
   model_name = f"{args.model}_{args.particle}_{args.sample}_bcegan-{args.version}"
@@ -61,7 +61,7 @@ trainer = GanTrainer ( name = model_name ,
 # |    Optimization step    |
 # +-------------------------+
 
-hyperparams = hyperparams["fine"] if ft else hyperparams["tune"]
+hyperparams = hyperparams["fine"] if ft_enabled else hyperparams["tune"]
 
 hp = hyperparams[args.model][args.particle][args.sample]
 # TODO add OptunAPI update
@@ -89,7 +89,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
 
 trainer . load_model ( filepath = "{}/{}" . format ( config["model_dir"], template_name ) , 
                        model_to_load = "all" , 
-                       enable_reweights = True ,
+                       enable_reweights = False ,
                        verbose = 1 )
 
 # +--------------------------+
@@ -97,28 +97,29 @@ trainer . load_model ( filepath = "{}/{}" . format ( config["model_dir"], templa
 # +--------------------------+
 
 discriminator = trainer . extract_model ( player = "disc" , 
-                                          fine_tuned_layers = None if ft else hp["fine_tuned_d_layers"] )
+                                          fine_tuned_layers = None if ft_enabled else hp["fine_tuned_d_layers"] )
 
-add_d_num_layers  = None if ft else hp["add_d_num_layers"]
-add_d_num_nodes   = None if ft else hp["add_d_num_nodes"]
-add_d_alpha_leaky = None if ft else hp["add_d_alpha_leaky"]
+add_d_num_layers  = None if ft_enabled else hp["add_d_num_layers"]
+add_d_num_nodes   = None if ft_enabled else hp["add_d_num_nodes"]
+add_d_alpha_leaky = None if ft_enabled else hp["add_d_alpha_leaky"]
 
 if add_d_num_layers:
   for layer in range (add_d_num_layers):
-    discriminator . append ( Dense (add_d_num_nodes) )
+    discriminator . append ( Dense (add_d_num_nodes, kernel_initializer = "glorot_uniform") )
     discriminator . append ( LeakyReLU (alpha = add_d_alpha_leaky) )
 
 generator = trainer . extract_model ( player = "gen" ,
-                                      fine_tuned_layers = None if ft else hp["fine_tuned_g_layers"] )
+                                      fine_tuned_layers = None if ft_enabled else hp["fine_tuned_g_layers"] )
 
-add_g_num_layers  = None if ft else hp["add_g_num_layers"]
-add_g_num_nodes   = None if ft else hp["add_g_num_nodes"]
-add_g_alpha_leaky = None if ft else hp["add_g_alpha_leaky"]
+add_g_num_layers  = None if ft_enabled else hp["add_g_num_layers"]
+add_g_num_nodes   = None if ft_enabled else hp["add_g_num_nodes"]
+add_g_alpha_leaky = None if ft_enabled else hp["add_g_alpha_leaky"]
 
 if add_g_num_layers:
   for layer in range (add_g_num_layers):
-    generator . append ( Dense (add_g_num_nodes) )
+    generator . append ( Dense (add_g_num_nodes, kernel_initializer = "glorot_uniform") )
     generator . append ( LeakyReLU (alpha = add_g_alpha_leaky) )
+    # generator . append ( Dropout (rate = 0.2) )
 
 model = BceGAN ( X_shape = len(trainer.X_vars) , 
                  Y_shape = len(trainer.Y_vars) , 

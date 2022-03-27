@@ -71,8 +71,8 @@ class WGAN_GP (GAN):   # TODO add class description
     self._discriminator = Sequential ( name = "discriminator" )
     for d_layer in discriminator:
       self._discriminator . add ( d_layer )
-    self._discriminator . add ( Dense ( units = 1, activation = "linear", 
-                                        kernel_initializer = "he_normal" ) )
+    self._discriminator . add ( Dense ( units = 1, activation = "linear" , 
+                                        kernel_initializer = "glorot_normal" ) )
 
   def compile ( self , 
                 d_optimizer , 
@@ -132,7 +132,8 @@ class WGAN_GP (GAN):   # TODO add class description
     ## Standard WGAN loss
     D_gen = self._discriminator ( XY_gen )
     D_ref = self._discriminator ( XY_ref )
-    d_loss = tf.reduce_mean ( w_gen * D_gen - w_ref * D_ref )
+    d_loss = tf.clip_by_value ( w_gen * D_gen - w_ref * D_ref, -10.0, 10.0 )
+    d_loss = tf.reduce_mean ( d_loss )
     
     ## Gradient penalty
     epsilon = tf.random.uniform (
@@ -146,7 +147,7 @@ class WGAN_GP (GAN):   # TODO add class description
     grad = tf.gradients ( D_int , interpolates )
     grad = tf.concat  ( grad , axis = 1 )
     grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
-    slopes  = tf.norm ( grad , axis = 1 )
+    slopes  = tf.norm ( grad , ord = 2 , axis = 1 )
     gp_term = tf.square ( slopes - 1.0 )   # two-sided penalty
     gp_term = self._grad_penalty * tf.reduce_mean (gp_term)
     d_loss += gp_term
@@ -175,7 +176,7 @@ class WGAN_GP (GAN):   # TODO add class description
     ## Standard WGAN loss
     D_gen = self._discriminator ( XY_gen )
     D_ref = self._discriminator ( XY_ref )
-    g_loss = w_ref * D_ref - w_gen * D_gen
+    g_loss = tf.clip_by_value ( w_ref * D_ref - w_gen * D_gen, -10.0, 10.0 )
     return tf.reduce_mean (g_loss)
 
   def _compute_threshold (self, ref_sample) -> tf.Tensor:

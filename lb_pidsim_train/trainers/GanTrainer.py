@@ -156,20 +156,11 @@ class GanTrainer (TensorTrainer):   # TODO class description
     self._w_Y = np.copy (self._w)
     if enable_reweights:
       if self.w_var is not None:
-        file_W = f"{filepath}/saved_reweighter"
-        if os.path.exists (file_W):
-          reweighter = tf.keras.models.load_model (file_W)
-          if (verbose > 0): print (f"Reweighter correctly loaded from {file_W}")
-        else:
-          reweighter = self._train_reweighter ( num_epochs = 10 ,
-                                                batch_size = 1024 ,
-                                                save_model = False ,
-                                                verbose = verbose )
+        reweighter = self._train_reweighter ( num_epochs = 10 ,
+                                              batch_size = 1024 ,
+                                              save_model = save_transformer ,
+                                              verbose = verbose )
         self._w_X = reweighter (self.X_scaled) . numpy() . reshape (self._w_Y.shape) . astype (NP_FLOAT)
-        if save_transformer:
-          reweighter.save (f"{self._export_dir}/{self._export_name}/saved_reweighter", save_format = "tf")
-        if (verbose > 0): 
-          print ( f"Reweighter correctly exported to {self._export_dir}/{self._export_name}/saved_reweighter" )
       else:
         print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
 
@@ -186,7 +177,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
       self._gen_loaded = self._disc_loaded = True
     self._model_loaded = True
   
-  def extract_model ( self, player = "gen", fine_tuned_layers = None ) -> list:   # TODO add docstring
+  def extract_model ( self , 
+                      player = "gen" , 
+                      fine_tuned_layers = None , 
+                      freeze_layers = False ) -> list:   # TODO add docstring
     """"""
     if player == "gen":
       if not self._gen_loaded:
@@ -211,16 +205,20 @@ class GanTrainer (TensorTrainer):   # TODO class description
     else:
       fine_tuned_layers = num_layers
 
-    layers = list()
+    layer_list = list()
     for i, layer in enumerate ( model.layers[:-1] ):
       layer._name = f"loaded_{layer.name}"
       if i < (num_layers - fine_tuned_layers): 
         layer.trainable = False
       else:
         layer.trainable = True
-      layers . append (layer)
+      layer_list . append (layer)
 
-    return layers
+    if freeze_layers:
+      for layer in layer_list:
+        layer.trainable = False
+
+    return layer_list
 
   def train_model ( self , 
                     model , 
@@ -264,8 +262,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
     y_bottom = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
     y_top    = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
-    y_bottom += 0.1 * y_bottom
-    y_top    += 0.1 * y_top
+    y_bottom -= 0.2 * np.abs (y_top)
+    y_top    += 0.2 * np.abs (y_top)
     plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
@@ -281,8 +279,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.legend (loc = "upper right", fontsize = 10)
     y_bottom = min ( min(history.history["mse"][int(n_epochs/10):]), min(history.history["val_mse"][int(n_epochs/10):]) )
     y_top    = max ( max(history.history["mse"][int(n_epochs/10):]), max(history.history["val_mse"][int(n_epochs/10):]) )
-    y_bottom -= 0.1 * y_bottom
-    y_top    += 0.1 * y_top
+    y_bottom -= 0.2 * np.abs (y_top)
+    y_top    += 0.2 * np.abs (y_top)
     plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
@@ -298,8 +296,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
       plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
       y_bottom = min ( min(history.history["val_d_loss"][int(n_epochs/10):]), min(history.history["val_g_loss"][int(n_epochs/10):]) )
       y_top    = max ( max(history.history["val_d_loss"][int(n_epochs/10):]), max(history.history["val_g_loss"][int(n_epochs/10):]) )
-      y_bottom += 0.1 * y_bottom
-      y_top    += 0.1 * y_top
+      y_bottom -= 0.2 * np.abs (y_top)
+      y_top    += 0.2 * np.abs (y_top)
       plt.ylim (bottom = y_bottom, top = y_top)
 
     report.add_figure(); plt.clf(); plt.close()
@@ -312,7 +310,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.plot (history.history["d_lr"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_lr"], linewidth = 1.5, color = "coral", label = "generator")
     plt.yscale ("log")
-    plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
+    plt.legend (title = "Adversarial players:", loc = "lower left", fontsize = 10)
 
     report.add_figure(); plt.clf(); plt.close()
 

@@ -94,15 +94,15 @@ class GAN (tf.keras.Model):   # TODO add class description
     self._discriminator = Sequential ( name = "discriminator" )
     for d_layer in discriminator:
       self._discriminator . add ( d_layer )
-    self._discriminator . add ( Dense ( units = 1 , 
-                                        activation = "sigmoid" , 
-                                        kernel_initializer = "he_normal" ) )
+    self._discriminator . add ( Dense ( units = 1, activation = "sigmoid" , 
+                                        kernel_initializer = "glorot_normal" ) )
 
     ## Generator sequential model
     self._generator = Sequential ( name = "generator" )
     for g_layer in generator:
       self._generator . add ( g_layer )
-    self._generator . add ( Dense (units = Y_shape) )
+    self._generator . add ( Dense ( units = Y_shape, activation = "linear" ,
+                                    kernel_initializer = "glorot_normal" ) )
 
   def compile ( self , 
                 d_optimizer ,

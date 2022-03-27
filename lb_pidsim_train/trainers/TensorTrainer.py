@@ -284,9 +284,9 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       Abstraction over a data pipeline that can pull data from several 
       sources, as well as efficiently apply various data transformations.
     """
-    gpu_avail = len ( tf.config.list_physical_devices("GPU") ) > 0
+    physical_devices = tf.config.list_physical_devices ("GPU")
 
-    if gpu_avail:
+    if ( len (physical_devices) > 0 ):
       with tf.device ("/gpu:0"):
         X   = tf.cast ( tf.convert_to_tensor(data[0]), dtype = TF_FLOAT )
         Y   = tf.cast ( tf.convert_to_tensor(data[1]), dtype = TF_FLOAT )
