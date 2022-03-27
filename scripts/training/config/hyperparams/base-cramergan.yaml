@@ -343,8 +343,8 @@ GlobalMuonId:
       g_alpha_leaky : 0.05
       latent_dim : 64
       critic_dim : 256
-      d_lr : 0.000025
-      g_lr : 0.000025
+      d_lr : 0.00003
+      g_lr : 0.00003
       d_updt_per_batch : 5
       g_updt_per_batch : 1
       grad_penalty : 10.0
