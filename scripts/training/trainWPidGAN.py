@@ -36,7 +36,7 @@ with open ("config/hyperparams/wgan.yaml") as file:
 parser = argparser ("Model training")
 args = parser . parse_args()
 
-model_name = f"{args.model}_{args.particle}_{args.sample}_wgan-{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.sw"   # standard WGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,

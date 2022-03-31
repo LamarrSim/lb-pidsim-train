@@ -48,12 +48,10 @@ with open ("../training/config/validation.yaml") as file:
 # +---------------------------------+
 
 parser = argparser ("Model validation")
-parser . add_argument ( "-a", "--algo", required = True )   # TODO add choices
 parser . add_argument ( "-w", "--weights", default = "yes", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-algo = f"{args.algo}".lower()
-model_name = f"{args.model}_{args.particle}_{args.sample}_{algo}-{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 
 data_handler = DataHandler()
 

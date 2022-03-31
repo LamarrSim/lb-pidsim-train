@@ -31,17 +31,15 @@ with open ("../training/config/hyperparams/rating-gbdt.yaml") as file:
 # +----------------------------+
 
 parser = argparser ("Model rating")
-parser . add_argument ( "-a", "--algo", required = True )   # TODO add choices
 args = parser . parse_args()
 
-algo = f"{args.algo}".lower()
-model_name = f"{args.model}_{args.particle}_{args.sample}_{algo}-{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 class_name = f"rtg_{model_name}"
 
 trainer = ScikitClassifier ( name = class_name ,
                              model_dir   = config["model_dir"] ,
                              model_name  = model_name ,
-                             export_dir  = config["class_dir"] ,
+                             export_dir  = "{}/rating/{}" . format (config["class_dir"], args.model) ,
                              export_name = class_name ,
                              report_dir  = "{}/rating/{}" . format (config["report_dir"], args.model) ,
                              report_name = class_name )

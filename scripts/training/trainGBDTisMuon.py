@@ -34,7 +34,7 @@ with open ("config/hyperparams/gbdt.yaml") as file:
 parser = argparser ("Model training", avoid_arguments = "model")
 args = parser . parse_args()
 
-model_name = f"isMuon_{args.particle}_{args.sample}_gbdt-{args.version}"
+model_name = f"isMuon_{args.particle}_{args.sample}_{args.version}"
 
 trainer = ScikitTrainer ( name = model_name ,
                           export_dir  = config["class_dir"] ,

@@ -43,13 +43,15 @@ parser . add_argument ( "-t", "--template", required = True )
 parser . add_argument ( "-f", "--finetuning", default = "no", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-ft_enabled = (args.finetuning == "yes")
 template_name = f"{args.template}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.{template_name[-2:]}"
+
+ft_enabled = (args.finetuning == "yes")
 
 if ft_enabled:
-  model_name = f"{template_name}_bcegan-finetuning"
+  model_name += ".fb"   # fine-tuning with BceGAN
 else:
-  model_name = f"{args.model}_{args.particle}_{args.sample}_bcegan-{args.version}"
+  model_name += ".tb"   # tuning with BceGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,

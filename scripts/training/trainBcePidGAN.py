@@ -36,7 +36,7 @@ with open ("config/hyperparams/bcegan.yaml") as file:
 parser = argparser ("Model training")
 args = parser . parse_args()
 
-model_name = f"{args.model}_{args.particle}_{args.sample}_bcegan-{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.sb"   # standard BceGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,

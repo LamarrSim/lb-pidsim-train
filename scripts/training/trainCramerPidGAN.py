@@ -42,14 +42,19 @@ parser = argparser ("Model training")
 parser . add_argument ( "-w", "--weights", default = "yes", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-model_name = f"{args.model}_{args.particle}_{args.sample}_cramergan-{args.version}"
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 
 sw_avail = (args.weights == "yes")
+
+if sw_avail:
+  model_name += ".sc"   # standard CramerGAN
+else:
+  model_name += ".bc"   # base CramerGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
                        export_name = model_name ,
-                       report_dir  = config["report_dir"] if sw_avail else "{}/templates" . format ( config["report_dir"] ) ,
+                       report_dir  = config["report_dir"] ,
                        report_name = model_name )
 
 # +-------------------------+
