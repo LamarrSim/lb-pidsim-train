@@ -41,17 +41,23 @@ with open ("config/hyperparams/fine-tuned-bcegan.yaml") as file:
 parser = argparser ("Model fine-tuning")
 parser . add_argument ( "-t", "--template", required = True )
 parser . add_argument ( "-f", "--finetuning", default = "no", choices = ["yes", "no"] )
+parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
 args = parser . parse_args()
 
 template_name = f"{args.template}"
-model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.{template_name[-2:]}"
+template_vrs  = template_name.split("_v")[1][4:]
+
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.{template_vrs}"
 
 ft_enabled = (args.finetuning == "yes")
+rw_enabled = (args.reweighting == "yes")
+
+if rw_enabled: model_name += ".r"
 
 if ft_enabled:
-  model_name += ".fb"   # fine-tuning with BceGAN
+  model_name += ".fw"   # fine-tuning with BceGAN
 else:
-  model_name += ".tb"   # tuning with BceGAN
+  model_name += ".tw"   # tuning with BceGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -133,8 +139,8 @@ model = BceGAN ( X_shape = len(trainer.X_vars) ,
 # |    Model configuration    |
 # +---------------------------+
 
-d_opt = tf.optimizers.RMSprop ( learning_rate = hp["d_lr"] )
-g_opt = tf.optimizers.RMSprop ( learning_rate = hp["g_lr"] )
+d_opt = tf.optimizers.Adam ( learning_rate = hp["d_lr"] )
+g_opt = tf.optimizers.Adam ( learning_rate = hp["g_lr"] )
 
 model . compile ( d_optimizer = d_opt , 
                   g_optimizer = g_opt , 

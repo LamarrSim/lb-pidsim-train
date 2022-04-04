@@ -34,9 +34,15 @@ with open ("config/hyperparams/bcegan.yaml") as file:
 # +----------------------------+
 
 parser = argparser ("Model training")
+parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
 args = parser . parse_args()
 
-model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.sb"   # standard BceGAN
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
+
+rw_enabled = (args.reweighting == "yes")
+
+if rw_enabled: model_name += ".r"
+model_name += ".sb"   # standard BceGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -79,7 +85,7 @@ trainer . prepare_dataset ( X_preprocessing = X_preprocessing ,
                             Y_preprocessing = Y_preprocessing , 
                             X_vars_to_preprocess = trainer.X_vars ,
                             Y_vars_to_preprocess = trainer.Y_vars ,
-                            enable_reweights = False ,
+                            enable_reweights = rw_enabled ,
                             verbose = 1 )
 
 # +--------------------------+

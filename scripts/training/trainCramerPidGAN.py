@@ -40,11 +40,15 @@ with open ("config/hyperparams/base-cramergan.yaml") as file:
 
 parser = argparser ("Model training")
 parser . add_argument ( "-w", "--weights", default = "yes", choices = ["yes", "no"] )
+parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
 args = parser . parse_args()
 
 model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 
+rw_enabled = (args.reweighting == "yes")
 sw_avail = (args.weights == "yes")
+
+if rw_enabled: model_name += ".r"
 
 if sw_avail:
   model_name += ".sc"   # standard CramerGAN
@@ -94,7 +98,7 @@ trainer . prepare_dataset ( X_preprocessing = X_preprocessing ,
                             Y_preprocessing = Y_preprocessing , 
                             X_vars_to_preprocess = trainer.X_vars ,
                             Y_vars_to_preprocess = trainer.Y_vars ,
-                            enable_reweights = sw_avail ,
+                            enable_reweights = rw_enabled ,
                             verbose = 1 )
 
 # +--------------------------+

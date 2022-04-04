@@ -41,12 +41,18 @@ with open ("config/hyperparams/fine-tuned-wgan.yaml") as file:
 parser = argparser ("Model fine-tuning")
 parser . add_argument ( "-t", "--template", required = True )
 parser . add_argument ( "-f", "--finetuning", default = "no", choices = ["yes", "no"] )
+parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
 args = parser . parse_args()
 
 template_name = f"{args.template}"
-model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.{template_name[-2:]}"
+template_vrs  = template_name.split("_v")[1][4:]
+
+model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.{template_vrs}"
 
 ft_enabled = (args.finetuning == "yes")
+rw_enabled = (args.reweighting == "yes")
+
+if rw_enabled: model_name += ".r"
 
 if ft_enabled:
   model_name += ".fw"   # fine-tuning with WGAN
@@ -91,7 +97,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
 
 trainer . load_model ( filepath = "{}/{}" . format ( config["model_dir"], template_name ) , 
                        model_to_load = "all" , 
-                       enable_reweights = False ,
+                       enable_reweights = rw_enabled ,
                        verbose = 1 )
 
 # +--------------------------+
@@ -133,8 +139,8 @@ model = WGAN_GP ( X_shape = len(trainer.X_vars) ,
 # |    Model configuration    |
 # +---------------------------+
 
-d_opt = tf.optimizers.RMSprop ( learning_rate = hp["d_lr"] )
-g_opt = tf.optimizers.RMSprop ( learning_rate = hp["g_lr"] )
+d_opt = tf.optimizers.Adam ( learning_rate = hp["d_lr"] )
+g_opt = tf.optimizers.Adam ( learning_rate = hp["g_lr"] )
 
 model . compile ( d_optimizer = d_opt , 
                   g_optimizer = g_opt , 

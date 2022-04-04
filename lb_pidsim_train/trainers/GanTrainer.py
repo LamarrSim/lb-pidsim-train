@@ -54,6 +54,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
       else:
         print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
 
+    self._rw_enabled = enable_reweights
+
   def _train_reweighter ( self ,
                           num_epochs = 1 ,
                           batch_size = None ,
@@ -163,6 +165,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
         self._w_X = reweighter (self.X_scaled) . numpy() . reshape (self._w_Y.shape) . astype (NP_FLOAT)
       else:
         print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
+
+    self._rw_enabled = enable_reweights
 
     ## Load the models
     if model_to_load == "gen":
@@ -330,10 +334,14 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax0 = fig.add_subplot ( gs[0:,0] )
       ax0 . set_xlabel (y_var, fontsize = 13)
       ax0 . set_ylabel ("Candidates", fontsize = 13)
-      ref_label = "Original (sWeighted)"  if self.w_var else "Original (no sWeights)"
-      gen_label = "Generated (sWeighted)" if self.w_var else "Generated (no sWeights)"
-      h_ref, bins, _ = ax0 . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = ref_label)
-      h_gen, _ , _ = ax0 . hist (Y_gen[:,i], bins = bins, density = True, weights = self.w, histtype = "step", color = "deeppink", label = gen_label)
+      if self.w_var is not None:
+        ref_label = "Original (sWeighted)"
+        gen_label = "Generated (reweighted)" if self._rw_enabled else "Generated (sWeighted)"
+      else:
+        ref_label = "Original (no sWeights)"
+        gen_label = "Generated (no sWeights)"
+      h_ref, bins, _ = ax0 . hist (Y_ref[:,i], bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
+      h_gen, _ , _ = ax0 . hist (Y_gen[:,i], bins = bins, density = True, weights = self._w_X, histtype = "step", color = "deeppink", label = gen_label)
       ax0 . legend (loc = "upper left", fontsize = 11)
       y_top = max ( h_ref.max(), h_gen.max() )
       y_top += 0.2 * y_top
@@ -342,9 +350,13 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax1 = fig.add_subplot ( gs[0:,1] )
       ax1 . set_xlabel (y_var, fontsize = 13)
       ax1 . set_ylabel ("Candidates", fontsize = 13)
-      ref_label = "Original (sWeighted)"  if self.w_var else "Original (no sWeights)"
-      gen_label = "Generated" if self.w_var else "Generated (no sWeights)"
-      h_ref, bins, _ = ax1 . hist (Y_ref[:,i], bins = 100, density = True, weights = self.w, color = "dodgerblue", label = ref_label)
+      if self.w_var is not None:
+        ref_label = "Original (sWeighted)"
+        gen_label = "Generated (reweighted)" if self._rw_enabled else "Generated (sWeighted)"
+      else:
+        ref_label = "Original (no sWeights)"
+        gen_label = "Generated (no sWeights)"
+      h_ref, bins, _ = ax1 . hist (Y_ref[:,i], bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
       h_gen, _ , _ = ax1 . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = gen_label)
       ax1 . legend (loc = "upper left", fontsize = 11)
       y_top = max ( h_ref.max(), h_gen.max() ) 
@@ -358,7 +370,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
                                y = self.X[:,0]/1e3 ,
                                bins = 25 , 
                                density = True , 
-                               weights = self.w.flatten() ,
+                               w_ref = self._w_Y.flatten() ,
+                               w_gen = self._w_X.flatten() ,
                                xlabel = y_var ,
                                ylabel = "Momentum [Gev/$c$]" )
 
@@ -369,7 +382,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
                                y = self.X[:,1] ,
                                bins = 25 , 
                                density = True , 
-                               weights = self.w.flatten() ,
+                               w_ref = self._w_Y.flatten() ,
+                               w_gen = self._w_X.flatten() ,
                                xlabel = y_var ,
                                ylabel = "Pseudorapidity" )
 
@@ -380,7 +394,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
                                y = self.X[:,2] ,
                                bins = 25 , 
                                density = True , 
-                               weights = self.w.flatten() ,
+                               w_ref = self._w_Y.flatten() ,
+                               w_gen = self._w_X.flatten() ,
                                xlabel = y_var ,
                                ylabel = "$\mathtt{nTracks}$" )
 
@@ -393,7 +408,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
                           x_ref , x_gen , y , 
                           bins = 10 , 
                           density = False , 
-                          weights = None  ,
+                          w_ref   = None  ,
+                          w_gen   = None  ,
                           xlabel  = None  ,
                           ylabel  = None  ) -> None:
     """Internal function"""
@@ -412,7 +428,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     ax0 = figure.add_subplot ( gs_list[0] )
     if xlabel: ax0 . set_xlabel ( xlabel, fontsize = 10 )
     if ylabel: ax0 . set_ylabel ( ylabel, fontsize = 10 )
-    hist2d = np.histogram2d ( x_ref, y, weights = weights, density = density, bins = binning )
+    hist2d = np.histogram2d ( x_ref, y, weights = w_ref, density = density, bins = binning )
     ax0 . pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("viridis"), vmin = 0 )
     ax0 . annotate ( "original", color = "w", weight = "bold",
                      ha = "center", va = "center", size = 10,
@@ -422,7 +438,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     ax1 = figure.add_subplot ( gs_list[1] )
     if xlabel: ax1 . set_xlabel ( xlabel, fontsize = 10 )
     if ylabel: ax1 . set_ylabel ( ylabel, fontsize = 10 )
-    hist2d = np.histogram2d ( x_gen, y, weights = weights, density = density, bins = binning )
+    hist2d = np.histogram2d ( x_gen, y, weights = w_gen, density = density, bins = binning )
     ax1 . pcolormesh ( binning[0], binning[1], hist2d[0].T, cmap = plt.get_cmap ("viridis"), vmin = 0 )
     ax1 . annotate ( "generated", color = "w", weight = "bold",
                      ha = "center", va = "center", size = 10,
