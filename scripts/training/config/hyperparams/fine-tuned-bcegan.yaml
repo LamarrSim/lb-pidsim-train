@@ -9,14 +9,14 @@ Rich:
     2016MagUp:
       chunk_size : 5000000   # 60 mln
       latent_dim : 64
-      d_lr : 0.000025
-      g_lr : 0.000015
-      d_updt_per_batch : 5
+      d_lr : 0.000005
+      g_lr : 0.000005
+      d_updt_per_batch : 1
       g_updt_per_batch : 1
-      lr_sched_factor : 0.95
-      lr_sched_step : 10
+      lr_sched_factor : 1.0
+      lr_sched_step : 1
       batch_size : 512
-      num_epochs : 200
+      num_epochs : 150
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -104,12 +104,12 @@ Muon:
     2016MagUp:
       chunk_size :   # 2 mln
       latent_dim : 64
-      d_lr : 0.00002
-      g_lr : 0.00001
-      d_updt_per_batch : 3
+      d_lr : 0.000002
+      g_lr : 0.000002
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      lr_sched_factor : 0.95
-      lr_sched_step : 10
+      lr_sched_factor : 1.0
+      lr_sched_step : 1
       batch_size : 512
       num_epochs : 150
       validation_split : 0.2
@@ -181,14 +181,14 @@ GlobalPID:
     2016MagUp:
       chunk_size : 5000000   # 150 mln
       latent_dim : 64
-      d_lr : 0.000015
-      g_lr : 0.000015
-      d_updt_per_batch : 7
+      d_lr : 0.000005
+      g_lr : 0.000005
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      lr_sched_factor : 0.95
-      lr_sched_step : 10
+      lr_sched_factor : 1.0
+      lr_sched_step : 1
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 150
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -240,14 +240,14 @@ GlobalMuonId:
     2016MagUp:
       chunk_size : 10000000   # 23 mln
       latent_dim : 64
-      d_lr : 0.00002
-      g_lr : 0.00001
+      d_lr : 0.000005
+      g_lr : 0.000005
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      lr_sched_factor : 0.90
-      lr_sched_step : 10
+      lr_sched_factor : 1.0
+      lr_sched_step : 1
       batch_size : 512
-      num_epochs : 25
+      num_epochs : 150
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -258,14 +258,14 @@ GlobalMuonId:
     2016MagUp:
       chunk_size :   # 2 mln
       latent_dim : 64
-      d_lr : 0.00002
-      g_lr : 0.00001
-      d_updt_per_batch : 5
+      d_lr : 0.000005
+      g_lr : 0.000005
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      lr_sched_factor : 0.95
-      lr_sched_step : 10
+      lr_sched_factor : 1.0
+      lr_sched_step : 1
       batch_size : 512
-      num_epochs : 200
+      num_epochs : 150
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
