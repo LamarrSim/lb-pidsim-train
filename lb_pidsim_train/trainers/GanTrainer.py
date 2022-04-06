@@ -50,7 +50,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
                                               batch_size = 1024 ,
                                               save_model = save_transformer ,
                                               verbose = verbose )
-        self._w_X = reweighter (self.X_scaled) . numpy() . reshape (self._w_Y.shape) . astype (NP_FLOAT)
+        with tf.device ("/cpu:0"): 
+          X = tf.cast ( tf.convert_to_tensor(self.X_scaled) , dtype = TF_FLOAT )
+          self._w_X = reweighter(X) . numpy() . reshape(self._w_Y.shape) . astype(NP_FLOAT)
       else:
         print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
 
@@ -61,6 +63,24 @@ class GanTrainer (TensorTrainer):   # TODO class description
                           batch_size = None ,
                           save_model = True ,
                           verbose = 0 ) -> tf.keras.Sequential:   # TODO add docstring
+    physical_devices = tf.config.list_physical_devices ("GPU")
+
+    ## Memory allocation
+    if ( len (physical_devices) > 0 ):
+      with tf.device ("/gpu:0"):
+        input  = tf.cast ( tf.convert_to_tensor(self.X_scaled) , dtype = TF_FLOAT )
+        output = tf.cast ( tf.convert_to_tensor(self.w)        , dtype = TF_FLOAT )
+    else:
+      with tf.device ("/cpu:0"):
+        input  = tf.cast ( tf.convert_to_tensor(self.X_scaled) , dtype = TF_FLOAT )
+        output = tf.cast ( tf.convert_to_tensor(self.w)        , dtype = TF_FLOAT )
+
+    ## TF dataset
+    dataset = tf.data.Dataset.from_tensor_slices ( (input, output) )
+    dataset = dataset.batch ( batch_size, drop_remainder = True )
+    dataset = dataset.cache()
+    dataset = dataset.prefetch ( tf.data.AUTOTUNE )
+
     ## Model construction
     reweighter = Sequential()
     for layer in range (5):
@@ -73,7 +93,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
     ## Model training
     start = time()
-    reweighter.fit ( self.X_scaled, self.w, epochs = num_epochs, batch_size = batch_size, verbose = 0 )
+    rw_history = reweighter . fit ( dataset, epochs = num_epochs, verbose = 0 )
     stop = time()
     if (verbose > 0): 
       print ( f"Reweighter training completed in {(stop-start)/60:.3f} min" )
@@ -350,12 +370,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax1 = fig.add_subplot ( gs[0:,1] )
       ax1 . set_xlabel (y_var, fontsize = 13)
       ax1 . set_ylabel ("Candidates", fontsize = 13)
-      if self.w_var is not None:
-        ref_label = "Original (sWeighted)"
-        gen_label = "Generated (reweighted)" if self._rw_enabled else "Generated (sWeighted)"
-      else:
-        ref_label = "Original (no sWeights)"
-        gen_label = "Generated (no sWeights)"
+      ref_label = "Original (sWeighted)" if self.w_var else "Original (no sWeights)"
+      gen_label = "Generated"
       h_ref, bins, _ = ax1 . hist (Y_ref[:,i], bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
       h_gen, _ , _ = ax1 . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = gen_label)
       ax1 . legend (loc = "upper left", fontsize = 11)
