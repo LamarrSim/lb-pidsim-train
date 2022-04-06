@@ -182,7 +182,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
                                               batch_size = 1024 ,
                                               save_model = save_transformer ,
                                               verbose = verbose )
-        self._w_X = reweighter (self.X_scaled) . numpy() . reshape (self._w_Y.shape) . astype (NP_FLOAT)
+        with tf.device ("/cpu:0"): 
+          X = tf.cast ( tf.convert_to_tensor(self.X_scaled) , dtype = TF_FLOAT )
+          self._w_X = reweighter(X) . numpy() . reshape(self._w_Y.shape) . astype(NP_FLOAT)
       else:
         print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
 
