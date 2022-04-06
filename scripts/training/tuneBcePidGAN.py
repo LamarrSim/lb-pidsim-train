@@ -55,9 +55,9 @@ rw_enabled = (args.reweighting == "yes")
 if rw_enabled: model_name += ".r"
 
 if ft_enabled:
-  model_name += ".fw"   # fine-tuning with BceGAN
+  model_name += ".fb"   # fine-tuning with BceGAN
 else:
-  model_name += ".tw"   # tuning with BceGAN
+  model_name += ".tb"   # tuning with BceGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
