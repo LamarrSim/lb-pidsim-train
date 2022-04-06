@@ -100,7 +100,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if (verbose > 1):
       ks_test = KS_test ( x_obs = self.X_scaled , 
                           x_exp = self.X_scaled , 
-                          w_obs = reweighter (self.X_scaled) . numpy() . flatten() , 
+                          w_obs = reweighter(self.X_scaled) . numpy() . flatten() , 
                           w_exp = self.w . flatten() )
       print ( f"Worst reweighter performance: {max(ks_test):.4f} (K-S test)" )
 

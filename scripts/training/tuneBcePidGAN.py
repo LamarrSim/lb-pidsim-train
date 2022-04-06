@@ -97,7 +97,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
 
 trainer . load_model ( filepath = "{}/{}" . format ( config["model_dir"], template_name ) , 
                        model_to_load = "all" , 
-                       enable_reweights = False ,
+                       enable_reweights = rw_enabled ,
                        verbose = 1 )
 
 # +--------------------------+
