@@ -41,7 +41,7 @@ setup (
         install_requires = requirements(),
         python_requires  = '>=3.6, <4',
         classifiers = [
-                        'Development Status :: 3 - Alpha',
+                        'Development Status :: 4 - Beta',
                         'Intended Audience :: Science/Research',
                         'Intended Audience :: Developers',
                         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
