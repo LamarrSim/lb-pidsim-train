@@ -178,14 +178,14 @@ Muon:
       add_g_num_nodes     : 96
       add_g_alpha_leaky   : 0.05
       latent_dim : 64
-      d_lr : 0.000025
-      g_lr : 0.000025
+      d_lr : 0.00004
+      g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 500
+      num_epochs : 300
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -204,14 +204,14 @@ Muon:
       add_g_num_nodes     : 96
       add_g_alpha_leaky   : 0.05
       latent_dim : 64
-      d_lr : 0.00002
+      d_lr : 0.00004
       g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 200
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
