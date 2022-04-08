@@ -166,7 +166,7 @@ class ScikitTrainer (BaseTrainer):
       h_all, bin_edges = np.histogram ( X[:,1][query], bins = eta_bins, weights = w[query] )
       bin_centers = ( bin_edges[1:] + bin_edges[:-1] ) / 2
       h_all = np.where ( h_all > 0, h_all, 0 )   # ensure positive entries
-      h_all = h_all . astype (np.int32)           # ensure integer entries
+      h_all = h_all . astype (np.int32)          # ensure integer entries
       ax.errorbar ( bin_centers, h_all, yerr = 0.0, color = "red", drawstyle = "steps-mid", zorder = 2 )
       custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "red") )
       custom_labels  . append ( "TurboCalib" )
