@@ -161,7 +161,7 @@ Muon:
       g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      grad_penalty : 0.5
+      grad_penalty : 1.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
@@ -185,14 +185,14 @@ Muon:
       add_g_alpha_leaky   : null
       latent_dim : 64
       d_lr : 0.00001
-      g_lr : 0.00002
+      g_lr : 0.00001
       d_updt_per_batch : 2
       g_updt_per_batch : 1
       grad_penalty : 0.1
       lr_sched_factor : 0.95
       lr_sched_step : 10
-      batch_size : 256
-      num_epochs : 200
+      batch_size : 512
+      num_epochs : 100
       validation_split : 0.2
     # <-- 2016 Mag Down -->
     2016MagDown:
@@ -383,8 +383,8 @@ GlobalMuonId:
       add_g_num_nodes     : 128
       add_g_alpha_leaky   : 0.05
       latent_dim : 64
-      d_lr : 0.000010
-      g_lr : 0.000015
+      d_lr : 0.00001
+      g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
       grad_penalty : 0.1
