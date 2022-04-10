@@ -139,8 +139,8 @@ model = BceGAN ( X_shape = len(trainer.X_vars) ,
 # |    Model configuration    |
 # +---------------------------+
 
-d_opt = tf.optimizers.Adam ( learning_rate = hp["d_lr"] )
-g_opt = tf.optimizers.Adam ( learning_rate = hp["g_lr"] )
+d_opt = tf.optimizers.RMSprop ( learning_rate = hp["d_lr"] )
+g_opt = tf.optimizers.RMSprop ( learning_rate = hp["g_lr"] )
 
 model . compile ( d_optimizer = d_opt , 
                   g_optimizer = g_opt , 

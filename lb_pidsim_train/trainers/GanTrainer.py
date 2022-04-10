@@ -365,12 +365,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
       h_ref, bins, _ = ax0 . hist (Y_ref[:,i], bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
       h_gen, _ , _ = ax0 . hist (Y_gen[:,i], bins = bins, density = True, weights = self._w_X, histtype = "step", color = "deeppink", label = gen_label)
       ax0 . legend (loc = "upper left", fontsize = 11)
-      y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
       y_max = max ( h_ref.max(), h_gen.max() )
       y_max += 0.2 * y_max
-      # y_max *= 15
-      ax0 . set_ylim (bottom = y_min, top = y_max)
-      # ax0 . set_yscale ("log")
+      ax0 . set_ylim (bottom = 0.0, top = y_max)
 
       ax1 = fig.add_subplot ( gs[0:,1] )
       ax1 . set_xlabel (y_var, fontsize = 13)
@@ -380,12 +377,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
       h_ref, bins, _ = ax1 . hist (Y_ref[:,i], bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
       h_gen, _ , _ = ax1 . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = gen_label)
       ax1 . legend (loc = "upper left", fontsize = 11)
-      y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
       y_max = max ( h_ref.max(), h_gen.max() )
       y_max += 0.2 * y_max
-      # y_max *= 15
-      ax1 . set_ylim (bottom = y_min, top = y_max)
-      # ax1 . set_yscale ("log")
+      ax1 . set_ylim (bottom = 0.0, top = y_max)
 
       self._correlation_plot ( figure  = fig ,
                                gs_list = [ gs[0,2], gs[1,2] ] ,
