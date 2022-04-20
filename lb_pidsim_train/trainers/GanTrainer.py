@@ -340,11 +340,20 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
     report.add_figure(); plt.clf(); plt.close()
 
-    ## Correlation plots
+    ## Validation plots
     Y_ref  = self.Y
     Y_gen  = self._scaler_Y . inverse_transform ( self.generate (self.X_scaled) )
 
     for i, y_var in enumerate (self.Y_vars):
+      self._validation_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = False )
+      self._validation_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = True  )
+    
+  def _validation_plot ( self , 
+                         report , 
+                         x_ref  , 
+                         x_gen  ,
+                         x_label = None ,
+                         log_scale = False ) -> None:
       fig = plt.figure ( figsize = (28, 6), dpi = 200 )
       gs = gridspec.GridSpec ( nrows = 2 , 
                                ncols = 5 ,
@@ -354,7 +363,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
                                height_ratios = [1, 1] )
 
       ax0 = fig.add_subplot ( gs[0:,0] )
-      ax0 . set_xlabel (y_var, fontsize = 13)
+      ax0 . set_xlabel (x_label, fontsize = 13)
       ax0 . set_ylabel ("Candidates", fontsize = 13)
       if self.w_var is not None:
         ref_label = "Original (sWeighted)"
@@ -362,59 +371,71 @@ class GanTrainer (TensorTrainer):   # TODO class description
       else:
         ref_label = "Original (no sWeights)"
         gen_label = "Generated (no sWeights)"
-      h_ref, bins, _ = ax0 . hist (Y_ref[:,i], bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
-      h_gen, _ , _ = ax0 . hist (Y_gen[:,i], bins = bins, density = True, weights = self._w_X, histtype = "step", color = "deeppink", label = gen_label)
+      h_ref, bins, _ = ax0 . hist (x_ref, bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
+      h_gen, _ , _ = ax0 . hist (x_gen, bins = bins, density = True, weights = self._w_X, histtype = "step", color = "deeppink", label = gen_label)
       ax0 . legend (loc = "upper left", fontsize = 11)
       y_max = max ( h_ref.max(), h_gen.max() )
-      y_max += 0.2 * y_max
-      ax0 . set_ylim (bottom = 0.0, top = y_max)
+      if log_scale:
+        y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
+        y_max *= 20
+        ax0 . set_yscale ("log")
+      else:
+        y_min = 0.0
+        y_max += 0.2 * y_max
+      ax0 . set_ylim (bottom = y_min, top = y_max)
 
       ax1 = fig.add_subplot ( gs[0:,1] )
-      ax1 . set_xlabel (y_var, fontsize = 13)
+      ax1 . set_xlabel (x_label, fontsize = 13)
       ax1 . set_ylabel ("Candidates", fontsize = 13)
       ref_label = "Original (sWeighted)" if self.w_var else "Original (no sWeights)"
       gen_label = "Generated"
-      h_ref, bins, _ = ax1 . hist (Y_ref[:,i], bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
-      h_gen, _ , _ = ax1 . hist (Y_gen[:,i], bins = bins, density = True, histtype = "step", color = "deeppink", label = gen_label)
+      h_ref, bins, _ = ax1 . hist (x_ref, bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
+      h_gen, _ , _ = ax1 . hist (x_gen, bins = bins, density = True, histtype = "step", color = "deeppink", label = gen_label)
       ax1 . legend (loc = "upper left", fontsize = 11)
       y_max = max ( h_ref.max(), h_gen.max() )
-      y_max += 0.2 * y_max
-      ax1 . set_ylim (bottom = 0.0, top = y_max)
+      if log_scale:
+        y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
+        y_max *= 20
+        ax1 . set_yscale ("log")
+      else:
+        y_min = 0.0
+        y_max += 0.2 * y_max
+      ax1 . set_ylim (bottom = y_min, top = y_max)
 
       self._correlation_plot ( figure  = fig ,
                                gs_list = [ gs[0,2], gs[1,2] ] ,
-                               x_ref = Y_ref[:,i] , 
-                               x_gen = Y_gen[:,i] , 
+                               x_ref = x_ref , 
+                               x_gen = x_gen , 
                                y = self.X[:,0]/1e3 ,
                                bins = 25 , 
                                density = True , 
                                w_ref = self._w_Y.flatten() ,
                                w_gen = self._w_X.flatten() ,
-                               xlabel = y_var ,
+                               xlabel = x_label ,
                                ylabel = "Momentum [Gev/$c$]" )
 
       self._correlation_plot ( figure  = fig ,
                                gs_list = [ gs[0,3], gs[1,3] ] ,
-                               x_ref = Y_ref[:,i] , 
-                               x_gen = Y_gen[:,i] , 
+                               x_ref = x_ref , 
+                               x_gen = x_gen , 
                                y = self.X[:,1] ,
                                bins = 25 , 
                                density = True , 
                                w_ref = self._w_Y.flatten() ,
                                w_gen = self._w_X.flatten() ,
-                               xlabel = y_var ,
+                               xlabel = x_label ,
                                ylabel = "Pseudorapidity" )
 
       self._correlation_plot ( figure  = fig ,
                                gs_list = [ gs[0,4], gs[1,4] ] ,
-                               x_ref = Y_ref[:,i] , 
-                               x_gen = Y_gen[:,i] , 
+                               x_ref = x_ref , 
+                               x_gen = x_gen , 
                                y = self.X[:,2] ,
                                bins = 25 , 
                                density = True , 
                                w_ref = self._w_Y.flatten() ,
                                w_gen = self._w_X.flatten() ,
-                               xlabel = y_var ,
+                               xlabel = x_label ,
                                ylabel = "$\mathtt{nTracks}$" )
 
       report.add_figure(options = "width=100%"); plt.clf(); plt.close()
