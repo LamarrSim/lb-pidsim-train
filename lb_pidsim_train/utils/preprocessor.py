@@ -114,7 +114,7 @@ def preprocessor ( data ,
     elif strategy == "standard":
       scaler = StandardScaler()
     elif strategy == "quantile-highbin":
-      scaler = QuantileTransformer ( n_quantiles = 1000 , 
+      scaler = QuantileTransformer ( n_quantiles = 10000 , 
                                      subsample = int (1e8) ,
                                      output_distribution = "normal" )
     elif strategy == "quantile-lowbin":
