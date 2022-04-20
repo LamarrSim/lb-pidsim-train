@@ -91,6 +91,11 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
+if args.model == "Muon":
+  trainer._Y_vars . append ( "probe_Brunel_MuonLL" )
+  trainer._datachunk["probe_Brunel_MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
+                                              trainer._datachunk["probe_Brunel_MuonBgLL"]
+
 # +---------------------+
 # |    Model loading    |
 # +---------------------+
