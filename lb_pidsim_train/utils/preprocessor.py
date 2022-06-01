@@ -2,12 +2,15 @@
 
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, QuantileTransformer, FunctionTransformer
-from lb_pidsim_train.utils import PidsimColTransformer
+from lb_pidsim_train.preprocessing import WeightedQuantileTransformer, LbColTransformer
+
+STRATEGIES = ["pass-through", "minmax", "standard", "simple-quantile", "weighted-quantile"]
 
 
 def preprocessor ( data ,
-                   strategies , 
-                   cols_to_transform = None ) -> PidsimColTransformer:
+                   weights = None ,
+                   strategies = "standard", 
+                   cols_to_transform = None ) -> LbColTransformer:
   """Scikit-Learn transformer for data preprocessing.
   
   Parameters
@@ -28,7 +31,7 @@ def preprocessor ( data ,
 
   Returns
   -------
-  scaler : `lb_pidsim_train.utils.PidsimColTransformer`
+  scaler : `lb_pidsim_train.utils.LbColTransformer`
     Scikit-Learn transformer fitted and ready to use (calling 
     the `transform` method).
 
@@ -51,36 +54,37 @@ def preprocessor ( data ,
   >>> c = np.where ( a[:,0] < 0, -1, 1 )
   >>> data = np.c_ [a, b, c]
   >>> print (data)
-  [[ 4.48592375  2.58189332  0.33288739  1.        ]
-   [-0.18804986 -0.72362047  1.3272863  -1.        ]
-   [ 3.97474628  1.00386848  0.01257831  1.        ]
+  [[ 3.73251479  1.80495666  1.74969503  1.        ]
+   [ 0.06708618 -0.43481269  2.85217265  1.        ]
+   [ 1.02627701 -2.477204    2.94474338  1.        ]
    ...
-   [ 3.59323927 -4.89095396  1.39652514  1.        ]
-   [ 0.01236004  2.96300772  2.00442855  1.        ]
-   [ 0.30250978  4.52430715  1.07108719  1.        ]]
+   [-4.11890958  2.12049264  2.40337247 -1.        ]
+   [ 2.8872164  -4.50525599  1.35950868  1.        ]
+   [ 4.76668602 -1.1865085   0.65532981  1.        ]]
+  >>> w = np.random.normal ( size = 1000 )
   >>> from lb_pidsim_train.utils import preprocessor
-  >>> scaler = preprocessor ( data, ["standard","minmax"], [(0,1),2] )
+  >>> scaler = preprocessor ( data, weights = w, strategies = ["standard","minmax"], cols_to_transform = [(0,1),2] )
   >>> data_scaled = scaler . transform (data)
   >>> print (data_scaled)
-  [[ 1.57515219e+00  9.07773146e-01  2.10757643e-02  1.00000000e+00]
-   [-2.73322282e-02 -2.42265881e-01  8.59144492e-02 -1.00000000e+00]
-   [ 1.39989362e+00  3.58754061e-01  1.90363833e-04  1.00000000e+00]
+  [[ 1.12664787  0.7559853   0.14892489  1.        ]
+   [-0.06086264  0.18719734  0.24302712  1.        ]
+   [ 0.24989207 -0.3314666   0.25092852  1.        ]
    ...
-   [ 1.26909292e+00 -1.69214522e+00  9.04290914e-02  1.00000000e+00]
-   [ 4.13788463e-02  1.04036870e+00  1.30066764e-01  1.00000000e+00]
-   [ 1.40857465e-01  1.58356876e+00  6.92092689e-02  1.00000000e+00]]
+   [-1.41702434  0.83611546  0.20471968 -1.        ]
+   [ 0.85279157 -0.84648909  0.11562044  1.        ]
+   [ 1.46169442 -0.00369532  0.05551509  1.        ]]
   >>> data_inv_tr = scaler . inverse_transform (data_scaled)
   >>> print (data_inv_tr)
-  [[ 4.48592375  2.58189332  0.33288739  1.        ]
-   [-0.18804986 -0.72362047  1.3272863  -1.        ]
-   [ 3.97474628  1.00386848  0.01257831  1.        ]
+  [[ 3.73251479  1.80495666  1.74969503  1.        ]
+   [ 0.06708618 -0.43481269  2.85217265  1.        ]
+   [ 1.02627701 -2.477204    2.94474338  1.        ]
    ...
-   [ 3.59323927 -4.89095396  1.39652514  1.        ]
-   [ 0.01236004  2.96300772  2.00442855  1.        ]
-   [ 0.30250978  4.52430715  1.07108719  1.        ]]
+   [-4.11890958  2.12049264  2.40337247 -1.        ]
+   [ 2.8872164  -4.50525599  1.35950868  1.        ]
+   [ 4.76668602 -1.1865085   0.65532981  1.        ]]
   >>> err = np.max (abs (data_inv_tr - data) / (1 + abs (data)))
   >>> print (err)
-  1.7737186817999972e-16
+  2.329972186166122e-16
   """
   ## List data-type promotion
   if isinstance (strategies, str):
@@ -113,18 +117,25 @@ def preprocessor ( data ,
       scaler = MinMaxScaler()
     elif strategy == "standard":
       scaler = StandardScaler()
-    elif strategy == "quantile-highbin":
-      scaler = QuantileTransformer ( n_quantiles = 10000 , 
+    elif "-".join(strategy.split("-")[:2]) == "simple-quantile":
+      if len(strategy.split("-")) == 3:
+        n_quantiles = int ( strategy.split("-")[2] )
+      else:
+        n_quantiles = 1000 
+      scaler = QuantileTransformer ( n_quantiles = n_quantiles , 
                                      subsample = int (1e8) ,
                                      output_distribution = "normal" )
-    elif strategy == "quantile-lowbin":
-      scaler = QuantileTransformer ( n_quantiles = 10 , 
-                                     subsample = int (1e8) ,
-                                     output_distribution = "normal" )    
+    elif "-".join(strategy.split("-")[:2]) == "weighted-quantile":
+      if len(strategy.split("-")) == 3:
+        n_quantiles = int ( strategy.split("-")[2] )
+      else:
+        n_quantiles = 1000 
+      scaler = WeightedQuantileTransformer ( n_quantiles = n_quantiles , 
+                                             subsample = int (1e8) ,
+                                             output_distribution = "normal" )
     else:
       raise ValueError ( f"Preprocessing strategy not implemented. Available strategies are " 
-                         f"['quantile-highbin', 'quantile-lowbin', 'standard', 'minmax'], "
-                         f"'{strategy}' passed." )
+                         f"{STRATEGIES}, '{strategy}' passed." )
 
     transformers . append ( (strategy.replace("-","_"), scaler, col) )
     scaled_cols += col
@@ -133,11 +144,14 @@ def preprocessor ( data ,
   scaled_cols = np.unique (scaled_cols)
   cols_to_ignore = list ( np.delete (indices, scaled_cols) )
 
-  final_scaler = PidsimColTransformer ( transformers + \
-                                        [ ( "pass-through", FunctionTransformer(), cols_to_ignore ) ] 
+  if len(cols_to_ignore) > 0:
+    final_scaler = LbColTransformer ( transformers + \
+                                        [ ( "pass_through", FunctionTransformer(), cols_to_ignore ) ] 
                                       )
+  else:
+    final_scaler = LbColTransformer ( transformers )
   
-  final_scaler . fit ( data )
+  final_scaler . fit ( data, sample_weight = weights )
   return final_scaler
 
 
@@ -147,17 +161,31 @@ if __name__ == "__main__":
   a = np.random.uniform ( -5, 5, size = (1000,2) )
   b = np.random.exponential ( 2, size = 1000 )
   c = np.where (a[:,0] < 0, -1, 1)
+  w = np.random.normal ( size = 1000 )
   data = np.c_ [a, b, c]
-  print (data)
+  print ("\t\t\t\t\t+-----------+")
+  print ("\t\t\t\t\t|   DATA    |")
+  print ("\t\t\t\t\t+-----------+")
+  print (data, "\n")
+  # print (w, "\n")
 
   ## Dataset after preprocessing
-  scaler = preprocessor ( data, ["standard","minmax"], [(0,1),2] )
+  scaler = preprocessor ( data, weights = w, strategies = ["standard","minmax"], cols_to_transform = [(0,1),2] )
   data_scaled = scaler . transform (data)
-  print (data_scaled)
+  print ("\t\t\t\t\t+--------------------+")
+  print ("\t\t\t\t\t|   FIT_TRANSFORM    |")
+  print ("\t\t\t\t\t+--------------------+")
+  print (data_scaled, "\n")
 
   ## Dataset back-projected
   data_inv_tr = scaler . inverse_transform (data_scaled)
-  print (data_inv_tr)
+  print ("\t\t\t\t\t+------------------------+")
+  print ("\t\t\t\t\t|   INVERSE_TRANSFORM    |")
+  print ("\t\t\t\t\t+------------------------+")
+  print (data_inv_tr, "\n")
 
   err = np.max (abs (data_inv_tr - data) / (1 + abs (data)))
+  print ("\t\t\t\t\t+------------+")
+  print ("\t\t\t\t\t|   ERROR    |")
+  print ("\t\t\t\t\t+------------+")
   print (err)

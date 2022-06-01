@@ -147,12 +147,14 @@ class BaseTrainer (DataHandler):   # TODO class description
                                                                             all_vars = self.X_vars )
       else:
         X_cols_to_preprocess = None
-      self._scaler_X = preprocessor ( self.X[:subsample_size], strategies = X_preprocessing, 
+      self._scaler_X = preprocessor ( data = self.X[:subsample_size] ,
+                                      weights = self._w if self.w_var else None , 
+                                      strategies = X_preprocessing , 
                                       cols_to_transform = X_cols_to_preprocess )
       self._X_scaled = self._scaler_X . transform (self.X)   # transform the input-set
       stop = time()
       if (verbose > 1): 
-        print ( f"Preprocessing time for X: {stop-start:.3f} s" )
+        print ( f"[INFO] X-features preprocessed in {stop-start:.3f} s" )
       if save_transformer: 
         self._save_transformer ( "transform_X" , 
                                  self._scaler_X.sklearn_transformer ,   # saved as Scikit-Learn class
@@ -170,12 +172,14 @@ class BaseTrainer (DataHandler):   # TODO class description
                                                                             all_vars = self.Y_vars )
       else:
         Y_cols_to_preprocess = None
-      self._scaler_Y = preprocessor ( self.Y[:subsample_size], strategies = Y_preprocessing, 
+      self._scaler_Y = preprocessor ( data = self.Y[:subsample_size] ,
+                                      weights = self._w if self.w_var else None , 
+                                      strategies = Y_preprocessing , 
                                       cols_to_transform = Y_cols_to_preprocess )
       self._Y_scaled = self._scaler_Y . transform (self.Y)   # transform the output-set
       stop = time()
       if (verbose > 1): 
-        print ( f"Preprocessing time for Y: {stop-start:.3f} s" )
+        print ( f"[INFO] Y-features preprocessed in {stop-start:.3f} s" )
       if save_transformer:
         self._save_transformer ( "transform_Y" , 
                                  self._scaler_Y.sklearn_transformer ,   # saved as Scikit-Learn class 
@@ -210,7 +214,7 @@ class BaseTrainer (DataHandler):   # TODO class description
       os.makedirs (dirname)
     filename = f"{dirname}/{name}.pkl"
     pickle . dump ( transformer, open (filename, "wb") )
-    if verbose: print ( f"Transformer correctly exported to {filename}" )
+    if verbose: print ( f"[INFO] Transformer correctly exported to {filename}" )
 
   def train_model (self) -> None:   # TODO add docstring
     """short description"""

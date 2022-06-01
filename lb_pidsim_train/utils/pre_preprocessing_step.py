@@ -2,22 +2,22 @@
 
 import numpy as np
 
+STRATEGIES = ["pass-through", "minmax", "standard", "simple-quantile", "weighted-quantile"]
 
 def pre_preprocessing_step (transformers, vars_to_transform, all_vars) -> tuple:   # TODO add docstring
   ## Data-type control
   if isinstance (transformers, str):
-    if transformers not in ["pass-through", "minmax", "standard", "quantile-lowbin", "quantile-highbin"]:
+    if "-".join (transformers.split("-")[:2]) not in STRATEGIES:
         raise ValueError ( f"Preprocessing strategy not implemented. Available strategies " 
-                           f"are ['quantile-highbin', 'quantile-lowbin', 'standard', "
-                           f"'minmax', 'pass-through'], '{transformers}' passed." )
+                           f"are {STRATEGIES}, '{transformers}' passed." )
     transformers = [transformers]
     vars_to_transform = [vars_to_transform]
+
   elif isinstance (transformers, list):
     for preprocess in transformers:
-      if preprocess not in ["pass-through", "minmax", "standard", "quantile-lowbin", "quantile-highbin"]:
+      if "-".join (preprocess.split("-")[:2]) not in STRATEGIES:
         raise ValueError ( f"Preprocessing strategy not implemented. Available strategies " 
-                           f"are ['quantile-highbin', 'quantile-lowbin', 'standard', "
-                           f"'minmax', 'pass-through'], '{preprocess}' passed." )
+                           f"are {STRATEGIES}, '{preprocess}' passed." )
     if not isinstance (vars_to_transform, list):
       raise ValueError ( f"The list of variables to preprocess should be passed as a list "
                          f"of length equal to the preprocessing stategies one." )
