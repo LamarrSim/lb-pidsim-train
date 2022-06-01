@@ -13,7 +13,7 @@ from html_reports import Report
 from sklearn.utils import shuffle
 from lb_pidsim_train.trainers import BaseTrainer
 from lb_pidsim_train.utils import warn_message as wm
-from lb_pidsim_train.utils import PidsimColTransformer
+from lb_pidsim_train.preprocessing import LbColTransformer
 from lb_pidsim_train.metrics import KL_div, JS_div, KS_test, chi2_test
 
 
@@ -98,13 +98,13 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     file_X = f"{self._model_dir}/{self._model_name}/transform_X.pkl"
     if os.path.exists (file_X):
       start = time()
-      self._scaler_X = PidsimColTransformer ( pickle.load (open (file_X, "rb")) )
+      self._scaler_X = LbColTransformer ( pickle.load (open (file_X, "rb")) )
       if (verbose > 0):
-        print (f"Transformer correctly loaded from {file_X}.")
+        print ( f"[INFO] Transformer correctly loaded from {file_X}" )
       self._X_scaled = self._scaler_X . transform ( self.X )
       stop = time()
       if (verbose > 1):
-        print (f"Preprocessing time for X: {stop-start:.3f} s")
+        print ( f"[INFO] X-features preprocessed in {stop-start:.3f} s" )
     else:
       self._scaler_X = None
 
@@ -112,13 +112,13 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     file_Y = f"{self._model_dir}/{self._model_name}/transform_Y.pkl"
     if os.path.exists (file_Y):
       start = time()
-      self._scaler_Y = PidsimColTransformer ( pickle.load (open (file_Y, "rb")) )
+      self._scaler_Y = LbColTransformer ( pickle.load (open (file_Y, "rb")) )
       if (verbose > 0):
-        print (f"Transformer correctly loaded from {file_Y}.")
+        print ( f"[INFO] Transformer correctly loaded from {file_Y}" )
       self._Y_scaled = self._scaler_Y . transform ( self.Y )
       stop = time()
       if (verbose > 1):
-        print (f"Preprocessing time for Y: {stop-start:.3f} s")
+        print ( f"[INFO] Y-features preprocessed in {stop-start:.3f} s" )
     else:
       self._scaler_Y = None
 
@@ -173,7 +173,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
       timestamp = timestamp . split (":")   # [HH, MM, SS]
       timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
-      print (f"Classifier training completed in {timestamp}.")
+      print ( f"[INFO] Classifier training completed in {timestamp}" )
 
     self._model  = model
     self._save_model ( "saved_model", model, verbose = (verbose > 0) )
@@ -207,7 +207,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
     if (verbose > 0):
-      print (f"Training report correctly exported to {filename}")
+      print ( f"[INFO] Training report correctly exported to {filename}" )
 
   def _rearrange_dataset ( self , 
                            data , 
@@ -351,7 +351,7 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
       os.makedirs (dirname)
     filename = f"{dirname}/{name}.pkl"
     pickle . dump ( model, open (filename, "wb") )
-    if verbose: print ( f"Trained classifier correctly exported to {filename}" )
+    if verbose: print ( f"[INFO] Trained classifier correctly exported to {filename}" )
 
   @property
   def model (self):

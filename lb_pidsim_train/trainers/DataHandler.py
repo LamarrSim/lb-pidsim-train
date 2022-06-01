@@ -129,7 +129,7 @@ class DataHandler:   # TODO add class description
                                         chunk_size = chunk_size )
     self._datachunk_filled = True   # switch on datachunk-filled flag
     stop = time()
-    if (verbose > 0): print ( f"Data-chunk of {len(self.datachunk)} rows"
+    if (verbose > 0): print ( f"[INFO] Data-chunk of {len(self.datachunk)} rows"
                               f" correctly loaded in {stop-start:.3f} s" )
 
   def prepare_dataset (self, verbose = 0) -> None:
@@ -148,7 +148,7 @@ class DataHandler:   # TODO add class description
     start = time()
     X, Y, w = shuffle (X, Y, w)
     stop = time()
-    if verbose: print ( f"Shuffle-time: {stop-start:.3f} s" )
+    if verbose: print ( f"[INFO] Whole data-chunk shuffled in {stop-start:.3f} s" )
 
     self._X = X
     self._Y = Y

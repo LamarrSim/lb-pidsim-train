@@ -82,7 +82,7 @@ class ScikitTrainer (BaseTrainer):
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
       timestamp = timestamp . split (":")   # [HH, MM, SS]
       timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
-      print (f"Classifier training completed in {timestamp}.")
+      print ( f"[INFO] Classifier training completed in {timestamp}" )
 
     self._model = model
     self._save_model ( "saved_model", model, verbose = (verbose > 0) )
@@ -103,7 +103,7 @@ class ScikitTrainer (BaseTrainer):
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
     if (verbose > 0):
-      print (f"Training report correctly exported to {filename}")
+      print ( f"[INFO] Training report correctly exported to {filename}" )
 
   def _eff_hist2d ( self, report, bins = 100, validation = False ) -> None:   # TODO add docstring
     """"""
@@ -274,7 +274,7 @@ class ScikitTrainer (BaseTrainer):
       os.makedirs (dirname)
     filename = f"{dirname}/{name}.pkl"
     pickle . dump ( model, open (filename, "wb") )
-    if verbose: print ( f"Trained model correctly exported to {filename}" )
+    if verbose: print ( f"[INFO] Trained model correctly exported to {filename}" )
 
   def _save_pipeline ( self, verbose = False ) -> None:   # TODO complete docstring
     """"""
@@ -289,7 +289,7 @@ class ScikitTrainer (BaseTrainer):
         t_models . append ( (n, transformer) )
     pipeline = Pipeline ( t_models )
     pickle . dump ( pipeline, open (f"{dirname}/pipeline.pkl", "wb") )
-    if verbose: print ( f"Pipeline correctly exported to {dirname}/pipeline.pkl" )
+    if verbose: print ( f"[INFO] Pipeline correctly exported to {dirname}/pipeline.pkl" )
 
   @property
   def model (self):

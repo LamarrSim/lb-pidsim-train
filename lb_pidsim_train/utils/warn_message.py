@@ -24,7 +24,7 @@ def name_not_passed (attr_name, default = None) -> str:
   >>> print (mess)
   No export dirname passed, './models' will be assigned by default.
   """
-  message = "No %s passed, '%s' will be assigned by default." % (attr_name, default)
+  message = f"[WARNING] No {attr_name} passed, '{default}' will be assigned by default."
   return message
 
 
@@ -48,6 +48,6 @@ def directory_not_found (dirname) -> str:
   >>> print (mess)
   './models' not found, the directory will be created.
   """
-  message = "'%s' not found, the directory will be created." % dirname
+  message = f"[WARNING] '{dirname}' not found, the directory will be created."
   return message
   

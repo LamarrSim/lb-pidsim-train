@@ -248,7 +248,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
       timestamp = timestamp . split (":")   # [HH, MM, SS]
       timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
-      print (f"Model training completed in {timestamp}.")
+      print (f"[INFO] Model training completed in {timestamp}")
 
     self._model = model
 
@@ -259,7 +259,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     report . write_report ( filename = f"{filename}.html" )
 
     if (verbose > 0):
-      print (f"Training report correctly exported to {filename}")
+      print (f"[INFO] Training report correctly exported to {filename}")
 
   @staticmethod
   def _create_dataset ( data, batch_size = 100 ) -> tf.data.Dataset:   # TODO complete docstring
