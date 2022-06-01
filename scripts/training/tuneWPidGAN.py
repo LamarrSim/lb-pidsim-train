@@ -10,54 +10,67 @@ from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU, Dropout
 
 
+# +---------------------+
+# |    Initial setup    |
+# +---------------------+
+
+print ( "\n\t\t\t\t\t+---------------------------------------+"   )
+print (   "\t\t\t\t\t|                                       |"   )
+print (   "\t\t\t\t\t|        Wasserstein GAN - tuning       |"   )
+print (   "\t\t\t\t\t|                                       |"   )
+print (   "\t\t\t\t\t+---------------------------------------+\n" )
+
+parser = argparser ("WGAN tuning")
+parser . add_argument ( "-t", "--template", required = True )
+parser . add_argument ( "-w", "--weights", default = "no", choices = ["yes", "no"] )
+parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
+args = parser . parse_args()
+
+slot = "-" . join ( args.sample . split("-") [:-1] )
+calib_sample = ( "data" in args.sample )
+
+if calib_sample : print ( "[INFO] Calibration samples selected for training" )
+else            : print ( "[INFO] Monte Carlo samples selected for training" )
+
+sw_avail = ( args.weights == "yes" )
+if sw_avail: print ( "[INFO] sWeighted GAN training selected" )
+
+rw_enabled = ( args.reweighting == "yes" )
+if rw_enabled: print ( "[INFO] Reweighting strategy enabled for training" )
+
 # +---------------------------+
 # |    Configuration files    |
 # +---------------------------+
 
-with open ("config/config.yaml") as file:
+with open ("config/config.yml") as file:
   config = yaml.full_load (file)
 
-with open ("config/datasets.yaml") as file:
+with open ("config/datasets.yml") as file:
   datasets = yaml.full_load (file)
 
-with open ("config/variables.yaml") as file:
+with open ("config/variables.yml") as file:
   variables = yaml.full_load (file)
 
-with open ("config/selections.yaml") as file:
+with open ("config/selections.yml") as file:
   selections = yaml.full_load (file)
 
 hyperparams = dict()
 
-with open ("config/hyperparams/tuned-wgan.yaml") as file:
-  hyperparams["tune"] = yaml.full_load (file)
-
-with open ("config/hyperparams/fine-tuned-wgan.yaml") as file:
-  hyperparams["fine"] = yaml.full_load (file)
+with open ("config/hyperparams/{args.model.lower()}-wgan.yml") as file:
+  hyperparams["tune"] = yaml.full_load (file) ["tuning"]
 
 # +----------------------------+
 # |    Trainer construction    | 
 # +----------------------------+
-
-parser = argparser ("Model fine-tuning")
-parser . add_argument ( "-t", "--template", required = True )
-parser . add_argument ( "-f", "--finetuning", default = "no", choices = ["yes", "no"] )
-parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
-args = parser . parse_args()
 
 template_name = f"{args.template}"
 template_vrs  = template_name.split("_v")[1][4:]
 
 model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}.{template_vrs}"
 
-ft_enabled = (args.finetuning == "yes")
-rw_enabled = (args.reweighting == "yes")
-
-if rw_enabled: model_name += ".r"
-
-if ft_enabled:
-  model_name += ".fw"   # fine-tuning with WGAN
-else:
-  model_name += ".tw"   # tuning with WGAN
+if rw_enabled : model_name += ".r"     # reweighting enabled
+if sw_avail   : model_name += ".tww"   # tuned WGAN with weights
+else          : model_name += ".tbw"   # tuned base WGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -69,32 +82,36 @@ trainer = GanTrainer ( name = model_name ,
 # |    Optimization step    |
 # +-------------------------+
 
-hyperparams = hyperparams["fine"] if ft_enabled else hyperparams["tune"]
-
-hp = hyperparams[args.model][args.particle][args.sample]
+hp = hyperparams[args.model][args.particle]
 # TODO add OptunAPI update
 
 # +-------------------------+
 # |    Data for training    |
 # +-------------------------+
 
-data_dir  = config["data_dir"]
+if calib_sample:
+  data_dir = config["data_dir"]["data"]
+else:
+  data_dir = config["data_dir"]["simu"]
+  
 file_list = datasets[args.model][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 
 trainer . feed_from_root_files ( root_files = file_list , 
-                                 X_vars = variables[args.model]["X_vars"][args.sample] , 
-                                 Y_vars = variables[args.model]["Y_vars"][args.sample] , 
-                                 w_var  = variables[args.model]["w_vars"][args.sample] , 
-                                 selections = selections[args.model][args.sample] , 
-                                 tree_names = None , 
+                                 X_vars = variables[args.model]["X_vars"][slot] , 
+                                 Y_vars = variables[args.model]["Y_vars"][slot] , 
+                                 w_var  = variables[args.model]["w_vars"][slot] if sw_avail else None , 
+                                 selections = selections[args.model][slot] , 
+                                 tree_names = None if calib_sample else f"make_tuple/tuple_{args.particle.lower()}" , 
                                  chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
-if args.model == "Muon":
-  trainer._Y_vars . append ( "probe_Brunel_MuonLL" )
-  trainer._datachunk["probe_Brunel_MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
-                                              trainer._datachunk["probe_Brunel_MuonBgLL"]
+if args.model == "Muon":   # Compute MuonLL to replace MuonMuLL
+  trainer._datachunk["MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
+                                 trainer._datachunk["probe_Brunel_MuonBgLL"]
+  trainer._Y_vars[-1] = "MuonLL"
+  columns = trainer.X_vars + trainer.Y_vars + trainer.w_var if trainer.w_var else trainer.X_vars + trainer.Y_vars
+  trainer._datachunk = trainer._datachunk[columns]
 
 # +---------------------+
 # |    Model loading    |
@@ -110,29 +127,19 @@ trainer . load_model ( filepath = "{}/{}" . format ( config["model_dir"], templa
 # +--------------------------+
 
 discriminator = trainer . extract_model ( player = "disc" , 
-                                          fine_tuned_layers = None if ft_enabled else hp["fine_tuned_d_layers"] )
+                                          fine_tuned_layers = hp["fine_tuned_d_layers"] )
 
-add_d_num_layers  = None if ft_enabled else hp["add_d_num_layers"]
-add_d_num_nodes   = None if ft_enabled else hp["add_d_num_nodes"]
-add_d_alpha_leaky = None if ft_enabled else hp["add_d_alpha_leaky"]
+for layer in range ( hp["add_d_num_layers"] ):
+  discriminator . append ( Dense ( hp["add_d_num_nodes"], kernel_initializer = "glorot_uniform" ) )
+  discriminator . append ( LeakyReLU ( alpha = hp["add_d_alpha_leaky"] ) )
 
-if add_d_num_layers:
-  for layer in range (add_d_num_layers):
-    discriminator . append ( Dense (add_d_num_nodes, kernel_initializer = "glorot_uniform" ) )
-    discriminator . append ( LeakyReLU (alpha = add_d_alpha_leaky) )
+generator = trainer . extract_model ( player = "gen" ,
+                                      fine_tuned_layers = hp["fine_tuned_g_layers"] )
 
-generator = trainer . extract_model ( player = "gen" , 
-                                      fine_tuned_layers = None if ft_enabled else hp["fine_tuned_g_layers"] )
-
-add_g_num_layers  = None if ft_enabled else hp["add_g_num_layers"]
-add_g_num_nodes   = None if ft_enabled else hp["add_g_num_nodes"]
-add_g_alpha_leaky = None if ft_enabled else hp["add_g_alpha_leaky"]
-
-if add_g_num_layers:
-  for layer in range (add_g_num_layers):
-    generator . append ( Dense (add_g_num_nodes, kernel_initializer = "glorot_uniform" ) )
-    generator . append ( LeakyReLU (alpha = add_g_alpha_leaky) )
-    # generator . append ( Dropout (rate = 0.2) )
+for layer in range ( hp["add_g_num_layers"] ):
+  generator . append ( Dense ( hp["add_g_num_nodes"], kernel_initializer = "glorot_uniform" ) )
+  generator . append ( LeakyReLU ( alpha = hp["add_g_alpha_leaky"] ) )
+  # generator . append ( Dropout (rate = 0.2) )
 
 model = WGAN_GP ( X_shape = len(trainer.X_vars) , 
                   Y_shape = len(trainer.Y_vars) , 

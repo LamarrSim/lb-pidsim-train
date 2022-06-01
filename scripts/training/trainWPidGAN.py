@@ -10,39 +10,62 @@ from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU, Dropout
 
 
+# +---------------------+
+# |    Initial setup    |
+# +---------------------+
+
+print ( "\n\t\t\t\t\t+------------------------------------------+"   )
+print (   "\t\t\t\t\t|                                          |"   )
+print (   "\t\t\t\t\t|        Wasserstein GAN - training        |"   )
+print (   "\t\t\t\t\t|                                          |"   )
+print (   "\t\t\t\t\t+------------------------------------------+\n" )
+
+parser = argparser ("WGAN training")
+parser . add_argument ( "-w", "--weights", default = "no", choices = ["yes", "no"] )
+parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
+args = parser . parse_args()
+
+slot = "-" . join ( args.sample . split("-") [:-1] )
+calib_sample = ( "data" in args.sample )
+
+if calib_sample : print ( "[INFO] Calibration samples selected for training" )
+else            : print ( "[INFO] Monte Carlo samples selected for training" )
+
+sw_avail = ( args.weights == "yes" )
+if sw_avail: print ( "[INFO] sWeighted GAN training selected" )
+
+rw_enabled = ( args.reweighting == "yes" )
+if rw_enabled: print ( "[INFO] Reweighting strategy enabled for training" )
+
 # +---------------------------+
 # |    Configuration files    |
 # +---------------------------+
 
-with open ("config/config.yaml") as file:
+with open ("config/config.yml") as file:
   config = yaml.full_load (file)
 
-with open ("config/datasets.yaml") as file:
+with open ("config/datasets.yml") as file:
   datasets = yaml.full_load (file)
 
-with open ("config/variables.yaml") as file:
+with open ("config/variables.yml") as file:
   variables = yaml.full_load (file)
 
-with open ("config/selections.yaml") as file:
+with open ("config/selections.yml") as file:
   selections = yaml.full_load (file)
 
-with open ("config/hyperparams/wgan.yaml") as file:
+with open (f"config/hyperparams/{args.model.lower()}-wgan.yml") as file:
   hyperparams = yaml.full_load (file)
+  hyperparams = hyperparams["standard"] if sw_avail else hyperparams["base"]
 
 # +----------------------------+
 # |    Trainer construction    | 
 # +----------------------------+
 
-parser = argparser ("Model training")
-parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
-args = parser . parse_args()
-
 model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 
-rw_enabled = (args.reweighting == "yes")
-
-if rw_enabled: model_name += ".r"
-model_name += ".sw"   # standard WGAN
+if rw_enabled : model_name += ".r"    # reweighting enabled
+if sw_avail   : model_name += ".ww"   # WGAN with weights
+else          : model_name += ".bw"   # base WGAN
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -54,40 +77,43 @@ trainer = GanTrainer ( name = model_name ,
 # |    Optimization step    |
 # +-------------------------+
 
-hp = hyperparams[args.model][args.particle][args.sample]
+hp = hyperparams[args.model][args.particle]
 # TODO add OptunAPI update
 
 # +-------------------------+
 # |    Data for training    |
 # +-------------------------+
 
-data_dir  = config["data_dir"]
+if calib_sample:
+  data_dir = config["data_dir"]["data"]
+else:
+  data_dir = config["data_dir"]["simu"]
+
 file_list = datasets[args.model][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 
 trainer . feed_from_root_files ( root_files = file_list , 
-                                 X_vars = variables[args.model]["X_vars"][args.sample] , 
-                                 Y_vars = variables[args.model]["Y_vars"][args.sample] , 
-                                 w_var  = variables[args.model]["w_vars"][args.sample] , 
-                                 selections = selections[args.model][args.sample] , 
-                                 tree_names = None , 
+                                 X_vars = variables[args.model]["X_vars"][slot] , 
+                                 Y_vars = variables[args.model]["Y_vars"][slot] , 
+                                 w_var  = variables[args.model]["w_vars"][slot] if sw_avail else None , 
+                                 selections = selections[args.model][slot] , 
+                                 tree_names = None if calib_sample else f"make_tuple/tuple_{args.particle.lower()}" , 
                                  chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
-if args.model == "Muon":
-  trainer._Y_vars . append ( "probe_Brunel_MuonLL" )
-  trainer._datachunk["probe_Brunel_MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
-                                              trainer._datachunk["probe_Brunel_MuonBgLL"]
+if args.model == "Muon":   # Compute MuonLL to replace MuonMuLL
+  trainer._datachunk["MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
+                                 trainer._datachunk["probe_Brunel_MuonBgLL"]
+  trainer._Y_vars[-1] = "MuonLL"
+  columns = trainer.X_vars + trainer.Y_vars + trainer.w_var if trainer.w_var else trainer.X_vars + trainer.Y_vars
+  trainer._datachunk = trainer._datachunk[columns]
 
 # +--------------------------+
 # |    Data preprocessing    |
 # +--------------------------+
 
-X_preprocessing = variables[args.model]["X_preprocessing"][args.sample]
-Y_preprocessing = variables[args.model]["Y_preprocessing"][args.sample]
-
-if args.model == "Muon":
-  Y_preprocessing . append ( "quantile-highbin" )
+X_preprocessing = variables[args.model]["X_preprocessing"][slot]
+Y_preprocessing = variables[args.model]["Y_preprocessing"][slot]
 
 trainer . prepare_dataset ( X_preprocessing = X_preprocessing , 
                             Y_preprocessing = Y_preprocessing , 

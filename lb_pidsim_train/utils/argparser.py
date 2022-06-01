@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 MODELS = [ "Rich", "Muon", "GlobalPID", "GlobalMuonId" ]
 PARTICLES = [ "Muon", "Pion", "Kaon", "Proton" ]
-SAMPLES = [ "2016MagUp", "2016MagDown" ]
+SAMPLES = [ "2016-MagUp-data", "2016-MagDown-data", "2016-MagUp-simu", "2016-MagDown-simu" ]
 
 
 def argparser ( description = None, avoid_arguments = None ):   # TODO complete docstring
