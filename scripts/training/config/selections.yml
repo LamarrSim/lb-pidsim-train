@@ -3,7 +3,7 @@
 # +------------+
 Rich:
 
-  2016MagUp:
+  2016-MagUp:
     - probe_Brunel_P > 3000
     - probe_Brunel_P < 200000 
     - probe_Brunel_ETA > 1.8 
@@ -19,14 +19,14 @@ Rich:
     - nTracks_Brunel > 0
     - nTracks_Brunel < 1000 
 
-  2016MagDown:
+  2016-MagDown:
 
 # +------------+
 # |    MUON    |
 # +------------+
 Muon:
 
-  2016MagUp:
+  2016-MagUp:
     - probe_Brunel_P > 3000
     - probe_Brunel_P < 200000 
     - probe_Brunel_ETA > 1.8 
@@ -40,14 +40,14 @@ Muon:
     - nTracks_Brunel < 1000 
     - probe_Brunel_MuonUnbiased == 1
 
-  2016MagDown:
+  2016-MagDown:
 
 # +------------------+
 # |    GLOBAL PID    |
 # +------------------+
 GlobalPID:
 
-  2016MagUp:
+  2016-MagUp:
     - probe_Brunel_P > 3000
     - probe_Brunel_P < 200000 
     - probe_Brunel_ETA > 1.8 
@@ -71,14 +71,14 @@ GlobalPID:
     - nTracks_Brunel > 0
     - nTracks_Brunel < 1000 
 
-  2016MagDown:
+  2016-MagDown:
 
 # +----------------------+
 # |    GLOBAL MUON ID    |
 # +----------------------+
 GlobalMuonId:
 
-  2016MagUp:
+  2016-MagUp:
     - probe_Brunel_P > 3000
     - probe_Brunel_P < 200000 
     - probe_Brunel_ETA > 1.8 
@@ -109,19 +109,19 @@ GlobalMuonId:
     - nTracks_Brunel < 1000 
     - probe_Brunel_MuonUnbiased == 1
 
-  2016MagDown:
+  2016-MagDown:
 
 # +---------------+
 # |    IS MUON    |
 # +---------------+
 isMuon:
 
-  2016MagUp:
+  2016-MagUp:
     - probe_Brunel_ETA > 1.5
     - probe_Brunel_ETA < 5.5
     - nTracks_Brunel > 0
     - nTracks_Brunel < 1000
     - probe_Brunel_MuonUnbiased == 1
 
-  2016MagDown:
+  2016-MagDown:
       

@@ -6,7 +6,7 @@ isMuon:
   # ------
   Muon:
     # <-- 2016 Mag Up -->
-    2016MagUp:
+    2016-MagUp:
       chunk_size : 10000000   # 60 mln
       loss : deviance
       learning_rate : 0.402
@@ -16,12 +16,12 @@ isMuon:
       max_depth : 14
       validation_split : 0.5
     # <-- 2016 Mag Down -->
-    2016MagDown:
+    2016-MagDown:
   #  Pion
   # ------
   Pion:
     # <-- 2016 Mag Up -->
-    2016MagUp:
+    2016-MagUp:
       chunk_size : 20000000   # 150 mln
       loss : deviance
       learning_rate : 0.024
@@ -31,12 +31,12 @@ isMuon:
       max_depth : 10
       validation_split : 0.5
     # <-- 2016 Mag Down -->
-    2016MagDown:
+    2016-MagDown:
   #  Kaon
   # ------
   Kaon:
     # <-- 2016 Mag Up -->
-    2016MagUp:
+    2016-MagUp:
       chunk_size : 20000000   # 150 mln
       loss : deviance
       learning_rate : 0.129
@@ -46,12 +46,12 @@ isMuon:
       max_depth : 3
       validation_split : 0.5
     # <-- 2016 Mag Down -->
-    2016MagDown:
+    2016-MagDown:
   #  Proton
   # --------
   Proton:
     # <-- 2016 Mag Up -->
-    2016MagUp:
+    2016-MagUp:
       chunk_size : 50000000   # 105 mln
       loss : deviance
       learning_rate : 0.131
@@ -61,4 +61,4 @@ isMuon:
       max_depth : 7
       validation_split : 0.5
     # <-- 2016 Mag Down -->
-    2016MagDown:
+    2016-MagDown:
