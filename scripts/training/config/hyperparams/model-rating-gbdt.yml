@@ -1,0 +1,291 @@
+# +------------+
+# |    RICH    |
+# +------------+
+Rich:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 60 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 150 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 150 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 105 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+
+# +------------+
+# |    MUON    |
+# +------------+
+Muon:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 5000000   # 23 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size :   # 2 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size :   # 2 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size :   # 5 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+
+# +------------------+
+# |    GLOBAL PID    |
+# +------------------+
+GlobalPID:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 60 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 150 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 150 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 2500000   # 105 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+
+# +----------------------+
+# |    GLOBAL MUON ID    |
+# +----------------------+
+GlobalMuonId:
+  #  Muon
+  # ------
+  Muon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size : 5000000   # 23 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Pion
+  # ------
+  Pion:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size :   # 2 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Kaon
+  # ------
+  Kaon:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size :   # 2 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
+  #  Proton
+  # --------
+  Proton:
+    # <-- 2016 Mag Up -->
+    2016-MagUp:
+      chunk_size :   # 5 mln
+      loss : deviance
+      learning_rate : 0.05
+      n_estimators  : 500
+      criterion : squared_error
+      max_depth : 12
+      max_features : sqrt
+      validation_split : 0.2
+      inverse_transform : True
+      performance_metric : ks_test
+    # <-- 2016 Mag Down -->
+    2016-MagDown:
