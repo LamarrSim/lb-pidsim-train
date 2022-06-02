@@ -65,7 +65,7 @@ class WGAN_GP (GAN):   # TODO add class description
                        discriminator = discriminator , 
                        generator     = generator     ,
                        latent_dim    = latent_dim    )
-    self._loss_name = "Wasserstein distance"
+    self._loss_name = self._params.update ( {"loss_name" : "Wasserstein distance"} )
 
     ## Discriminator sequential model
     self._discriminator = Sequential ( name = "discriminator" )
@@ -103,7 +103,7 @@ class WGAN_GP (GAN):   # TODO add class description
 
     ## Data-type control
     try:
-      grad_penalty = float ( grad_penalty )
+      grad_penalty = self._params.get ( "grad_penalty", float(grad_penalty) )
     except:
       raise TypeError ("The loss gradient penalty should be a float.")
 

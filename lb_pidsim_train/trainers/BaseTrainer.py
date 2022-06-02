@@ -137,11 +137,13 @@ class BaseTrainer (DataHandler):   # TODO class description
     """
     super().prepare_dataset (verbose = verbose)
     self._dataset_prepared = False   # switch off dataset prepared flag
+    self._params.get ( "subsample_size", subsample_size )
 
     ## Preprocessed input array
     if X_preprocessing is not None:
       start = time()
       if X_vars_to_preprocess is not None:
+        self._params.get ( "X_preprocessing", X_preprocessing )
         X_preprocessing, _, X_cols_to_preprocess = pre_preprocessing_step ( transformers = X_preprocessing ,
                                                                             vars_to_transform = X_vars_to_preprocess ,
                                                                             all_vars = self.X_vars )
@@ -160,6 +162,7 @@ class BaseTrainer (DataHandler):   # TODO class description
                                  self._scaler_X.sklearn_transformer ,   # saved as Scikit-Learn class
                                  verbose = (verbose > 0) )
     else:
+      self._params.get ( "X_preprocessing", X_preprocessing )
       self._scaler_X = None
       self._X_scaled = self.X
 
@@ -167,6 +170,7 @@ class BaseTrainer (DataHandler):   # TODO class description
     if Y_preprocessing is not None:
       start = time()
       if Y_vars_to_preprocess is not None:
+        self._params.get ( "Y_preprocessing", Y_preprocessing )
         Y_preprocessing, _, Y_cols_to_preprocess = pre_preprocessing_step ( transformers = Y_preprocessing ,
                                                                             vars_to_transform = Y_vars_to_preprocess ,
                                                                             all_vars = self.Y_vars )
@@ -185,6 +189,7 @@ class BaseTrainer (DataHandler):   # TODO class description
                                  self._scaler_Y.sklearn_transformer ,   # saved as Scikit-Learn class 
                                  verbose = (verbose > 0) )
     else:
+      self._params.get ( "Y_preprocessing", Y_preprocessing )
       self._scaler_Y = None
       self._Y_scaled = self.Y
 

@@ -88,11 +88,11 @@ class CramerGAN (GAN):   # TODO add class description
                        discriminator = discriminator , 
                        generator     = generator     ,
                        latent_dim    = latent_dim    )
-    self._loss_name = "Energy distance"
+    self._loss_name = self._params.update ( {"loss_name" : "Energy distance"} )
 
     ## Data-type control
     try:
-      critic_dim = int ( critic_dim )
+      critic_dim = self._params.get ( "critic_dim", int(critic_dim) )
     except:
       raise TypeError ("The critic space dimension should be an integer.")
 
@@ -100,6 +100,7 @@ class CramerGAN (GAN):   # TODO add class description
 
     ## Discriminator sequential model
     self._discriminator = Sequential ( name = "discriminator" )
+    print (discriminator)
     for d_layer in discriminator:
       self._discriminator . add ( d_layer )
     self._discriminator . add ( Dense ( units = critic_dim, activation = "linear" , 
@@ -138,7 +139,7 @@ class CramerGAN (GAN):   # TODO add class description
 
     ## Data-type control
     try:
-      grad_penalty = float ( grad_penalty )
+      grad_penalty = self._params.get ( "grad_penalty", float(grad_penalty) )
     except:
       raise TypeError ("The loss gradient penalty should be a float.")
 

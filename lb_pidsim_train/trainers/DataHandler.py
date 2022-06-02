@@ -6,6 +6,7 @@ import pandas as pd
 
 from time import time
 from sklearn.utils import shuffle
+from lb_pidsim_train.utils.ParamSingleton import getInstance
 from lb_pidsim_train.utils import data_from_trees, nan_filter
 
 
@@ -16,6 +17,8 @@ NP_FLOAT = np.float32
 class DataHandler:   # TODO add class description
   """Handle the data-chunk for models training and assessing."""
   def __init__ (self) -> None:
+    self._params = getInstance()
+
     ## Switch off all flags
     self._datachunk_filled = False
     self._dataset_prepared = False
@@ -83,9 +86,9 @@ class DataHandler:   # TODO add class description
     if isinstance (tree_names, str):
       tree_names = [tree_names]
 
-    self._X_vars = X_vars
-    self._Y_vars = Y_vars
-    self._w_var  = w_var
+    self._X_vars = self._params.get ( "X_vars" , X_vars )
+    self._Y_vars = self._params.get ( "Y_vars" , Y_vars )
+    self._w_var  = self._params.get ( "w_var"  , w_var  )
 
     ## List of branch names
     branches = list()
@@ -126,7 +129,7 @@ class DataHandler:   # TODO add class description
     self._datachunk = data_from_trees ( trees = trees , 
                                         branches = branches ,
                                         cut = selections    ,
-                                        chunk_size = chunk_size )
+                                        chunk_size = self._params.get ("chunk_size", chunk_size) )
     self._datachunk_filled = True   # switch on datachunk-filled flag
     stop = time()
     if (verbose > 0): print ( f"[INFO] Data-chunk of {len(self.datachunk)} rows"
