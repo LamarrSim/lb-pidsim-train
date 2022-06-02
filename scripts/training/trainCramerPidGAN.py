@@ -145,7 +145,6 @@ for layer in range (g_num_layers):
   generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
   generator . append ( Dropout (rate = 0.1) )
 
-
 model = CramerGAN ( X_shape = len(trainer.X_vars) , 
                     Y_shape = len(trainer.Y_vars) , 
                     discriminator = discriminator , 

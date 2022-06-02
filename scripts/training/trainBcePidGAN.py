@@ -112,8 +112,8 @@ if args.model == "Muon":   # Compute MuonLL to replace MuonMuLL
 # |    Data preprocessing    |
 # +--------------------------+
 
-X_preprocessing = variables[args.model]["X_preprocessing"][slot]
-Y_preprocessing = variables[args.model]["Y_preprocessing"][slot]
+X_preprocessing = variables[args.model]["X_preprocessing"][args.sample]
+Y_preprocessing = variables[args.model]["Y_preprocessing"][args.sample]
 
 trainer . prepare_dataset ( X_preprocessing = X_preprocessing , 
                             Y_preprocessing = Y_preprocessing , 
