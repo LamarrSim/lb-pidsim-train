@@ -9,13 +9,13 @@ import matplotlib.gridspec as gridspec
 
 from time import time
 from sklearn.utils import shuffle
-from tensorflow.keras.models     import Sequential
-from tensorflow.keras.layers     import Dense, LeakyReLU
-from tensorflow.keras.optimizers import RMSprop
-from tensorflow.keras.losses     import MeanSquaredError
-from lb_pidsim_train.trainers    import TensorTrainer
-from lb_pidsim_train.utils       import PidsimColTransformer
-from lb_pidsim_train.metrics     import KS_test
+from tensorflow.keras.models       import Sequential
+from tensorflow.keras.layers       import Dense, LeakyReLU
+from tensorflow.keras.optimizers   import RMSprop
+from tensorflow.keras.losses       import MeanSquaredError
+from lb_pidsim_train.trainers      import TensorTrainer
+from lb_pidsim_train.preprocessing import LbColTransformer
+from lb_pidsim_train.metrics       import KS_test
 
 
 NP_FLOAT = np.float32
@@ -54,7 +54,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
           X = tf.cast ( tf.convert_to_tensor(self.X_scaled) , dtype = TF_FLOAT )
           self._w_X = reweighter(X) . numpy() . reshape(self._w_Y.shape) . astype(NP_FLOAT)
       else:
-        print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
+        print ( "[WARNING] No reweighting strategy available, since there aren't weights to reweight" )
 
     self._rw_enabled = enable_reweights
 
@@ -96,20 +96,20 @@ class GanTrainer (TensorTrainer):   # TODO class description
     rw_history = reweighter . fit ( dataset, epochs = num_epochs, verbose = 0 )
     stop = time()
     if (verbose > 0): 
-      print ( f"Reweighter training completed in {(stop-start)/60:.3f} min" )
+      print ( f"[INFO] Reweighter training completed in {(stop-start)/60:.3f} min" )
     if (verbose > 1):
       ks_test = KS_test ( x_obs = self.X_scaled , 
                           x_exp = self.X_scaled , 
                           w_obs = reweighter(self.X_scaled) . numpy() . flatten() , 
                           w_exp = self.w . flatten() )
-      print ( f"Worst reweighter performance: {max(ks_test):.4f} (K-S test)" )
+      print ( f"[INFO] Worst reweighter performance: {max(ks_test):.4f} (K-S test)" )
 
     ## Model saving
     if save_model:
       filename = f"{self._export_dir}/{self._export_name}/saved_reweighter"
       if not os.path.exists (filename): os.makedirs (filename)
       reweighter.save (filename, save_format = "tf")
-      if (verbose > 0): print ( f"Reweighter correctly exported to {filename}" )
+      if (verbose > 0): print ( f"[INFO] Reweighter correctly exported to {filename}" )
     return reweighter
 
   def load_model ( self , 
@@ -133,7 +133,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     start = time()
     X, Y, w = shuffle (X, Y, w)
     stop = time()
-    if verbose: print ( f"Shuffle-time: {stop-start:.3f} s" )
+    if verbose: print ( f"[INFO] Whole data-chunk shuffled in {stop-start:.3f} s" )
 
     self._X = X
     self._Y = Y
@@ -143,11 +143,11 @@ class GanTrainer (TensorTrainer):   # TODO class description
     file_X = f"{filepath}/transform_X.pkl"
     if os.path.exists (file_X):
       start = time()
-      self._scaler_X = PidsimColTransformer ( pickle.load (open (file_X, "rb")) )
-      if (verbose > 0): print (f"Transformer correctly loaded from {file_X}")
+      self._scaler_X = LbColTransformer ( pickle.load (open (file_X, "rb")) )
+      if (verbose > 0): print ( f"[INFO] Transformer correctly loaded from {file_X}" )
       self._X_scaled = self._scaler_X . transform ( self.X )
       stop = time()
-      if (verbose > 1): print (f"Preprocessing time for X: {stop-start:.3f} s")
+      if (verbose > 1): print ( f"[INFO] X-features preprocessed in {stop-start:.3f} s" )
       if save_transformer: 
         self._save_transformer ( "transform_X" , 
                                  self._scaler_X.sklearn_transformer ,   # saved as Scikit-Learn class
@@ -160,11 +160,11 @@ class GanTrainer (TensorTrainer):   # TODO class description
     file_Y = f"{filepath}/transform_Y.pkl"
     if os.path.exists (file_Y):
       start = time()
-      self._scaler_Y = PidsimColTransformer ( pickle.load (open (file_Y, "rb")) )
-      if (verbose > 0): print (f"Transformer correctly loaded from {file_Y}")
+      self._scaler_Y = LbColTransformer ( pickle.load (open (file_Y, "rb")) )
+      if (verbose > 0): print ( f"[INFO] Transformer correctly loaded from {file_Y}" )
       self._Y_scaled = self._scaler_Y . transform ( self.Y )
       stop = time()
-      if (verbose > 1): print (f"Preprocessing time for Y: {stop-start:.3f} s")
+      if (verbose > 1): print ( f"[INFO] Y-features preprocessed in {stop-start:.3f} s" )
       if save_transformer:
         self._save_transformer ( "transform_Y" , 
                                  self._scaler_Y.sklearn_transformer ,   # saved as Scikit-Learn class 
@@ -186,7 +186,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
           X = tf.cast ( tf.convert_to_tensor(self.X_scaled) , dtype = TF_FLOAT )
           self._w_X = reweighter(X) . numpy() . reshape(self._w_Y.shape) . astype(NP_FLOAT)
       else:
-        print ("Warning! No reweighting functions available, since there aren't weights to reweight.")
+        print ( "[WARNING] No reweighting strategy available, since there aren't weights to reweight" )
 
     self._rw_enabled = enable_reweights
 
@@ -226,8 +226,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
       try:
         fine_tuned_layers = int ( fine_tuned_layers )
       except:
-        raise TypeError (f"The number of layers to fine-tune should be an integer," 
-                         f" instead {type(fine_tuned_layers)} passed." )
+        raise TypeError ( f"The number of layers to fine-tune should be an integer," 
+                          f" instead {type(fine_tuned_layers)} passed." )
     else:
       fine_tuned_layers = num_layers
 
@@ -276,6 +276,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
     html_reports.Report : ...
       ...
     """
+    report.add_markdown ("---")
+    report.add_markdown ('<h2 align="center">Training history</h2>')
+
     n_epochs = len (history.history["mse"])
 
     ## Learning curves plots (train-set)
@@ -340,117 +343,129 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
     report.add_figure(); plt.clf(); plt.close()
 
+    report.add_markdown ("---")
+
     ## Validation plots
-    Y_ref  = self.Y
-    Y_gen  = self._scaler_Y . inverse_transform ( self.generate (self.X_scaled) )
+    Y_ref = self.Y
+    Y_gen = self._scaler_Y . inverse_transform ( self.generate (self.X_scaled) )
 
     for i, y_var in enumerate (self.Y_vars):
-      self._validation_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = False )
-      self._validation_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = True  )
+      report.add_markdown (f'<h2 align="center">{y_var}</h2>')
+      self._grid_val_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = False )
+      self._grid_val_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = True  )
+      self._1d_corr_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "p", x_label = y_var, log_scale = False )
+      self._1d_corr_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "eta", x_label = y_var, log_scale = False )
+      self._1d_corr_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "p", x_label = y_var, log_scale = True )
+      self._1d_corr_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "eta", x_label = y_var, log_scale = True )
+      report.add_markdown ("---")
     
-  def _validation_plot ( self , 
-                         report , 
-                         x_ref  , 
-                         x_gen  ,
-                         x_label = None ,
-                         log_scale = False ) -> None:
-      fig = plt.figure ( figsize = (28, 6), dpi = 200 )
-      gs = gridspec.GridSpec ( nrows = 2 , 
-                               ncols = 5 ,
-                               wspace = 0.25 ,
-                               hspace = 0.25 ,
-                               width_ratios  = [2, 2, 1, 1, 1] , 
-                               height_ratios = [1, 1] )
+  def _grid_val_plot ( self , 
+                       report , 
+                       x_ref  , 
+                       x_gen  ,
+                       x_label = None ,
+                       log_scale = False ) -> None:
+    fig = plt.figure ( figsize = (28, 6), dpi = 100 )
+    gs = gridspec.GridSpec ( nrows = 2 , 
+                             ncols = 5 ,
+                             wspace = 0.25 ,
+                             hspace = 0.25 ,
+                             width_ratios  = [2, 2, 1, 1, 1] , 
+                             height_ratios = [1, 1] )
 
-      ax0 = fig.add_subplot ( gs[0:,0] )
-      ax0 . set_xlabel (x_label, fontsize = 13)
-      ax0 . set_ylabel ("Candidates", fontsize = 13)
-      if self.w_var is not None:
-        ref_label = "Original (sWeighted)"
-        gen_label = "Generated (reweighted)" if self._rw_enabled else "Generated (sWeighted)"
-      else:
-        ref_label = "Original (no sWeights)"
-        gen_label = "Generated (no sWeights)"
-      h_ref, bins, _ = ax0 . hist (x_ref, bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
-      h_gen, _ , _ = ax0 . hist (x_gen, bins = bins, density = True, weights = self._w_X, histtype = "step", color = "deeppink", label = gen_label)
-      ax0 . legend (loc = "upper left", fontsize = 11)
-      y_max = max ( h_ref.max(), h_gen.max() )
-      if log_scale:
-        y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
-        y_max *= 20
-        ax0 . set_yscale ("log")
-      else:
-        y_min = 0.0
-        y_max += 0.2 * y_max
-      ax0 . set_ylim (bottom = y_min, top = y_max)
+    ax0 = fig.add_subplot ( gs[0:,0] )
+    ax0 . set_xlabel (x_label, fontsize = 12)
+    ax0 . set_ylabel ("Candidates", fontsize = 12)
+    if self.w_var is not None:
+      ref_label = "Original (sWeighted)"
+      gen_label = "Generated (reweighted)" if self._rw_enabled else "Generated (sWeighted)"
+    else:
+      ref_label = "Original (no sWeights)"
+      gen_label = "Generated (no sWeights)"
+    h_ref, bins, _ = ax0 . hist ( x_ref, bins = 100, weights = self._w_Y, 
+                                  density = True, color = "dodgerblue", label = ref_label )
+    h_gen, _ , _ = ax0 . hist ( x_gen, bins = bins, weights = self._w_X, histtype = "step", 
+                                density = True, color = "deeppink", label = gen_label )
+    ax0 . legend (loc = "upper left", fontsize = 10)
+    y_max = max ( h_ref.max(), h_gen.max() )
+    if log_scale:
+      y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
+      y_max *= 20
+      ax0 . set_yscale ("log")
+    else:
+      y_min = 0.0
+      y_max += 0.2 * y_max
+    ax0 . set_ylim (bottom = y_min, top = y_max)
 
-      ax1 = fig.add_subplot ( gs[0:,1] )
-      ax1 . set_xlabel (x_label, fontsize = 13)
-      ax1 . set_ylabel ("Candidates", fontsize = 13)
-      ref_label = "Original (sWeighted)" if self.w_var else "Original (no sWeights)"
-      gen_label = "Generated"
-      h_ref, bins, _ = ax1 . hist (x_ref, bins = 100, density = True, weights = self._w_Y, color = "dodgerblue", label = ref_label)
-      h_gen, _ , _ = ax1 . hist (x_gen, bins = bins, density = True, histtype = "step", color = "deeppink", label = gen_label)
-      ax1 . legend (loc = "upper left", fontsize = 11)
-      y_max = max ( h_ref.max(), h_gen.max() )
-      if log_scale:
-        y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
-        y_max *= 20
-        ax1 . set_yscale ("log")
-      else:
-        y_min = 0.0
-        y_max += 0.2 * y_max
-      ax1 . set_ylim (bottom = y_min, top = y_max)
+    ax1 = fig.add_subplot ( gs[0:,1] )
+    ax1 . set_xlabel (x_label, fontsize = 12)
+    ax1 . set_ylabel ("Candidates", fontsize = 12)
+    ref_label = "Original (sWeighted)" if self.w_var else "Original (no sWeights)"
+    gen_label = "Generated"
+    h_ref, bins, _ = ax1 . hist ( x_ref, bins = 100, weights = self._w_Y, 
+                                  density = True, color = "dodgerblue", label = ref_label )
+    h_gen, _ , _ = ax1 . hist ( x_gen, bins = bins, histtype = "step", 
+                                density = True, color = "deeppink", label = gen_label )
+    ax1 . legend (loc = "upper left", fontsize = 10)
+    y_max = max ( h_ref.max(), h_gen.max() )
+    if log_scale:
+      y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
+      y_max *= 20
+      ax1 . set_yscale ("log")
+    else:
+      y_min = 0.0
+      y_max += 0.2 * y_max
+    ax1 . set_ylim (bottom = y_min, top = y_max)
 
-      self._correlation_plot ( figure  = fig ,
-                               gs_list = [ gs[0,2], gs[1,2] ] ,
-                               x_ref = x_ref , 
-                               x_gen = x_gen , 
-                               y = self.X[:,0]/1e3 ,
-                               bins = 25 , 
-                               density = True , 
-                               w_ref = self._w_Y.flatten() ,
-                               w_gen = self._w_X.flatten() ,
-                               xlabel = x_label ,
-                               ylabel = "Momentum [Gev/$c$]" )
+    self._2d_corr_plot ( figure  = fig ,
+                         gs_list = [ gs[0,2], gs[1,2] ] ,
+                         x_ref = x_ref , 
+                         x_gen = x_gen , 
+                         y = self.X[:,0]/1e3 ,
+                         bins = 25 , 
+                         density = True , 
+                         w_ref = self._w_Y.flatten() ,
+                         w_gen = self._w_X.flatten() ,
+                         xlabel = x_label ,
+                         ylabel = "Momentum [Gev/$c$]" )
 
-      self._correlation_plot ( figure  = fig ,
-                               gs_list = [ gs[0,3], gs[1,3] ] ,
-                               x_ref = x_ref , 
-                               x_gen = x_gen , 
-                               y = self.X[:,1] ,
-                               bins = 25 , 
-                               density = True , 
-                               w_ref = self._w_Y.flatten() ,
-                               w_gen = self._w_X.flatten() ,
-                               xlabel = x_label ,
-                               ylabel = "Pseudorapidity" )
+    self._2d_corr_plot ( figure  = fig ,
+                         gs_list = [ gs[0,3], gs[1,3] ] ,
+                         x_ref = x_ref , 
+                         x_gen = x_gen , 
+                         y = self.X[:,1] ,
+                         bins = 25 , 
+                         density = True , 
+                         w_ref = self._w_Y.flatten() ,
+                         w_gen = self._w_X.flatten() ,
+                         xlabel = x_label ,
+                         ylabel = "Pseudorapidity" )
 
-      self._correlation_plot ( figure  = fig ,
-                               gs_list = [ gs[0,4], gs[1,4] ] ,
-                               x_ref = x_ref , 
-                               x_gen = x_gen , 
-                               y = self.X[:,2] ,
-                               bins = 25 , 
-                               density = True , 
-                               w_ref = self._w_Y.flatten() ,
-                               w_gen = self._w_X.flatten() ,
-                               xlabel = x_label ,
-                               ylabel = "$\mathtt{nTracks}$" )
+    self._2d_corr_plot ( figure  = fig ,
+                         gs_list = [ gs[0,4], gs[1,4] ] ,
+                         x_ref = x_ref , 
+                         x_gen = x_gen , 
+                         y = self.X[:,2] ,
+                         bins = 25 , 
+                         density = True , 
+                         w_ref = self._w_Y.flatten() ,
+                         w_gen = self._w_X.flatten() ,
+                         xlabel = x_label ,
+                         ylabel = "$\mathtt{nTracks}$" )
 
-      report.add_figure(options = "width=100%"); plt.clf(); plt.close()
-      report.add_markdown ("<br/>")
+    report.add_figure(options = "width=100%"); plt.clf(); plt.close()
+    # report.add_markdown ("<br/>")
 
-  def _correlation_plot ( self , 
-                          figure  ,
-                          gs_list , 
-                          x_ref , x_gen , y , 
-                          bins = 10 , 
-                          density = False , 
-                          w_ref   = None  ,
-                          w_gen   = None  ,
-                          xlabel  = None  ,
-                          ylabel  = None  ) -> None:
+  def _2d_corr_plot ( self , 
+                      figure  ,
+                      gs_list , 
+                      x_ref , x_gen , y , 
+                      bins = 10 , 
+                      density = False , 
+                      w_ref   = None  ,
+                      w_gen   = None  ,
+                      xlabel  = None  ,
+                      ylabel  = None  ) -> None:
     """Internal function"""
     if len(gs_list) != 2: raise ValueError ("It should be passed only 2 GridSpec positions.")
 
@@ -483,6 +498,69 @@ class GanTrainer (TensorTrainer):   # TODO class description
                      ha = "center", va = "center", size = 10,
                      xy = (0.8, 0.9), xycoords = "axes fraction", 
                      bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
+
+  def _1d_corr_plot ( self , 
+                      report ,
+                      x_ref  , 
+                      x_gen  ,
+                      corr_var = "p" ,
+                      x_label = None ,
+                      log_scale = False ) -> None:
+    """Internal function"""
+    if corr_var not in ["p", "eta"]:
+      raise ValueError ("error")   # TODO add error message
+
+    fig, ax = plt.subplots ( nrows = 2, ncols = 2, figsize = (14,8), dpi = 100 )
+    plt.subplots_adjust ( wspace = 0.25, hspace = 0.25 )
+
+    if self.w_var is not None:
+      ref_label = "Original (sWeighted)"
+      gen_label = "Generated (reweighted)" if self._rw_enabled else "Generated (sWeighted)"
+    else:
+      ref_label = "Original (no sWeights)"
+      gen_label = "Generated (no sWeights)"
+
+    if corr_var == "p":
+      cond = self._X[:,0]
+      bounds = [0.1e3, 5e3, 10e3, 25e3, 100e3]
+    else:
+      cond = self._X[:,1]
+      bounds = [1.8, 2.7, 3.5, 4.2, 5.5]
+
+    idx = 0
+    for i in range(2):
+      for j in range(2):
+        ax[i,j] . set_xlabel (x_label, fontsize = 12)
+        ax[i,j] . set_ylabel ("Candidates", fontsize = 12)
+
+        query = ( cond >= bounds[idx] ) & ( cond < bounds[idx+1] )
+        h_ref, bins, _ = ax[i,j] . hist ( x_ref[query], bins = 100, weights = self._w_Y[query], 
+                                          density = True, color = "dodgerblue", label = ref_label )
+        h_gen, _ , _ = ax[i,j] . hist ( x_gen[query], bins = bins, weights = self._w_X[query], histtype = "step", 
+                                        density = True, color = "deeppink", label = gen_label )
+
+        if corr_var == "p":
+          text = f"$p \in ({bounds[idx]/1e3:.1f}, {bounds[idx+1]/1e3:.1f})$ [GeV/$c$]"
+        else:
+          text = f"$\eta \in ({bounds[idx]:.1f}, {bounds[idx+1]:.1f})$"
+
+        ax[i,j] . annotate ( text, fontsize = 10, ha = "right", va = "top",
+                             xy = (0.95, 0.95), xycoords = "axes fraction" )
+        ax[i,j] . legend ( loc = "upper left", fontsize = 10 )
+
+        y_max = max ( h_ref.max(), h_gen.max() )
+        if log_scale:
+          y_min = min ( h_ref[h_ref>0].min(), h_gen[h_gen>0].min() )
+          y_max *= 20
+          ax[i,j] . set_yscale ("log")
+        else:
+          y_min = 0.0
+          y_max += 0.2 * y_max
+        ax[i,j] . set_ylim (bottom = y_min, top = y_max)
+
+        idx += 1
+
+    report.add_figure(options = "width=45%"); plt.clf(); plt.close()
 
   def generate (self, X) -> np.ndarray:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
