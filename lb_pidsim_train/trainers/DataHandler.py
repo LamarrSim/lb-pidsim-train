@@ -6,7 +6,7 @@ import pandas as pd
 
 from time import time
 from sklearn.utils import shuffle
-from lb_pidsim_train.utils.ParamSingleton import getInstance
+from lb_pidsim_train.utils.ParamHandler import getInstance, ParamHandler
 from lb_pidsim_train.utils import data_from_trees, nan_filter
 
 
@@ -190,6 +190,11 @@ class DataHandler:   # TODO add class description
     Y . astype ( NP_FLOAT )
     w . astype ( NP_FLOAT )
     return X, Y, w
+
+  @property
+  def params (self) -> ParamHandler:
+    """Handler for training details with singleton pattern."""
+    return self._params
 
   @property
   def X_vars (self) -> list:

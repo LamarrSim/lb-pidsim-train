@@ -6,7 +6,6 @@ import tensorflow as tf
 from datetime import datetime
 from html_reports import Report
 from lb_pidsim_train.trainers import BaseTrainer
-from lb_pidsim_train.utils import getModelSummary
 
 
 TF_FLOAT = tf.float32
@@ -255,9 +254,8 @@ class TensorTrainer (BaseTrainer):   # TODO class description
 
     ## Report setup
     report = Report()   # TODO add hyperparams to the report
-    self._params_report (report)
-    self._model_architecture (report, model.discriminator)
-    self._model_architecture (report, model.generator)
+    self._report_params (report)
+    self._report_architecture (report, model)
     self._training_plots (report, history)    
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
@@ -309,7 +307,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     dataset = dataset.prefetch ( tf.data.AUTOTUNE )
     return dataset
 
-  def _params_report (self, report) -> None:
+  def _report_params (self, report) -> None:
     report.add_markdown ("---")
     report.add_markdown ('<h2 align="center">Hyperparameters and other details</h2>')
     params_dict = self._params.get_dict()
@@ -318,12 +316,8 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       text += f"**{k}** : {params_dict[k]}  \n"
     report.add_markdown (text)
 
-  def _model_architecture (self, report, model) -> str:
-    report.add_markdown ("---")
-    report.add_markdown (f'<h2 align="center">{model.name[0].upper()}{model.name[1:]} architecture</h2>')
-    html_table, num_params = getModelSummary (model)
-    report.add_markdown (html_table)
-    report.add_markdown (f"**Total params** : {num_params}")
+  def _report_architecture (self, report, model) -> str:
+    raise NotImplementedError ("error")   # TODO insert error message
 
   def _training_plots (self, report, history) -> None:
     raise NotImplementedError ("error")   # TODO insert error message

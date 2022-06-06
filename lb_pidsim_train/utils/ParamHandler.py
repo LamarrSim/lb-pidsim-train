@@ -1,16 +1,16 @@
 import json
 
 
-class ParamSingleton:
+class ParamHandler:
   def __init__ ( self, **kwargs ) -> None:
     self._params = dict (**kwargs) 
     self._used_keys = set()
 
-  def update ( self, new_dict ) -> None:
-    # for key in kwargs.keys():
-    #   if key in self._used_keys: 
-    #     raise KeyError ( f"The parameter {key} was already used and is now read-only" )
-    self._params.update ( new_dict )
+  def update ( self, **kwargs ) -> None:
+    for key in kwargs.keys():
+      if key in self._used_keys: 
+        raise KeyError ( f"The parameter {key} was already used and is now read-only" )
+    self._params.update ( kwargs )
 
   def get ( self, key, default ) -> dict:
     if key not in self._params.keys(): self._params [ key ] = default
@@ -37,7 +37,7 @@ class ParamSingleton:
 
 __PARAMETERS__ = None 
 
-def getInstance() -> ParamSingleton:
+def getInstance() -> ParamHandler:
   global __PARAMETERS__
-  if __PARAMETERS__ is None: __PARAMETERS__ = ParamSingleton()
+  if __PARAMETERS__ is None: __PARAMETERS__ = ParamHandler()
   return __PARAMETERS__

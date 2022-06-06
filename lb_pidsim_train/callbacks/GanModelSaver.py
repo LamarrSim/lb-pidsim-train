@@ -48,4 +48,4 @@ class GanModelSaver (Callback):
       self._verbose_message ( model = "discriminator", verbose = self._verbose )
 
   def _verbose_message (self, model, verbose = 1) -> None:
-    print (f"[INFO] Trained {model} correctly exported to {self._filename}/saved_{model}")
+    if verbose > 0: print (f"[INFO] Trained {model} correctly exported to {self._filename}/saved_{model}")

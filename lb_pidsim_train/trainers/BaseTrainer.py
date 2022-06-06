@@ -92,7 +92,7 @@ class BaseTrainer (DataHandler):   # TODO class description
                         Y_preprocessing = None ,
                         X_vars_to_preprocess = None ,
                         Y_vars_to_preprocess = None ,
-                        subsample_size = 500000 ,
+                        subsample_size = None ,
                         save_transformer = True ,
                         verbose = 0 ) -> None:   # TODO fix the attribute types inserted within the docstring
     """Split the data-chunk into X, Y and w, and perform preprocessing.
@@ -119,7 +119,7 @@ class BaseTrainer (DataHandler):   # TODO class description
 
     subsample_size : `int`, optional
       Data-chunk subsample size used to compute the preprocessing transformer 
-      parameters (`500000`, by default).
+      parameters (`None`, by default).
 
     save_transformer : `bool`, optional
       Boolean flag to save and export the transformers, if preprocessing 
@@ -149,7 +149,7 @@ class BaseTrainer (DataHandler):   # TODO class description
                                                                             all_vars = self.X_vars )
       else:
         X_cols_to_preprocess = None
-      self._scaler_X = preprocessor ( data = self.X[:subsample_size] ,
+      self._scaler_X = preprocessor ( data = self.X[:subsample_size] if subsample_size else self.X ,
                                       weights = self._w if self.w_var else None , 
                                       strategies = X_preprocessing , 
                                       cols_to_transform = X_cols_to_preprocess )
@@ -176,7 +176,7 @@ class BaseTrainer (DataHandler):   # TODO class description
                                                                             all_vars = self.Y_vars )
       else:
         Y_cols_to_preprocess = None
-      self._scaler_Y = preprocessor ( data = self.Y[:subsample_size] ,
+      self._scaler_Y = preprocessor ( data = self.Y[:subsample_size] if subsample_size else self.Y ,
                                       weights = self._w if self.w_var else None , 
                                       strategies = Y_preprocessing , 
                                       cols_to_transform = Y_cols_to_preprocess )
