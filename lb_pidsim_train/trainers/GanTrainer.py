@@ -16,6 +16,7 @@ from tensorflow.keras.losses       import MeanSquaredError
 from lb_pidsim_train.trainers      import TensorTrainer
 from lb_pidsim_train.preprocessing import LbColTransformer
 from lb_pidsim_train.metrics       import KS_test
+from lb_pidsim_train.utils         import getModelSummary
 
 
 NP_FLOAT = np.float32
@@ -93,7 +94,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
     ## Model training
     start = time()
-    rw_history = reweighter . fit ( dataset, epochs = num_epochs, verbose = 0 )
+    reweighter.fit ( dataset, epochs = num_epochs, verbose = 0 )
     stop = time()
     if (verbose > 0): 
       print ( f"[INFO] Reweighter training completed in {(stop-start)/60:.3f} min" )
@@ -260,6 +261,25 @@ class GanTrainer (TensorTrainer):   # TODO class description
                           scheduler = scheduler , 
                           verbose = verbose )
 
+  def _report_architecture (self, report, model) -> str:
+    ## Discriminator architecture
+    report.add_markdown ("---")
+    report.add_markdown (f'<h2 align="center">Discriminator architecture</h2>')
+    html_table, num_params = getModelSummary (model.discriminator)
+    report.add_markdown (html_table)
+    report.add_markdown (f"**Total params** : {num_params}")
+
+    ## Generator architecture
+    report.add_markdown ("---")
+    report.add_markdown (f'<h2 align="center">Generator architecture</h2>')
+    html_table, num_params = getModelSummary (model.generator)
+    report.add_markdown (html_table)
+    report.add_markdown (f"**Total params** : {num_params}")
+
+  # +----------------------+
+  # |    Training plots    |
+  # +----------------------+
+
   def _training_plots (self, report, history) -> None:   # TODO complete docstring
     """short description
     
@@ -289,13 +309,13 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
     plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
-    y_bottom = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
-    y_top    = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
-    y_bottom -= 0.2 * np.abs (y_top)
-    y_top    += 0.2 * np.abs (y_top)
-    plt.ylim (bottom = y_bottom, top = y_top)
+    y_min = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
+    y_max = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
+    y_min -= 0.2 * np.abs (y_max)
+    y_max += 0.2 * np.abs (y_max)
+    plt.ylim (bottom = y_min, top = y_max)
 
-    report.add_figure(); plt.clf(); plt.close()
+    report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 
     ## Metric curves plots
     plt.figure (figsize = (8,5), dpi = 100)
@@ -306,13 +326,13 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if self._validation_split != 0.0:
       plt.plot (history.history["val_mse"], linewidth = 1.5, color = "orangered", label = "validation set")
     plt.legend (loc = "upper right", fontsize = 10)
-    y_bottom = min ( min(history.history["mse"][int(n_epochs/10):]), min(history.history["val_mse"][int(n_epochs/10):]) )
-    y_top    = max ( max(history.history["mse"][int(n_epochs/10):]), max(history.history["val_mse"][int(n_epochs/10):]) )
-    y_bottom -= 0.2 * np.abs (y_top)
-    y_top    += 0.2 * np.abs (y_top)
-    plt.ylim (bottom = y_bottom, top = y_top)
+    y_min = min ( min(history.history["mse"][int(n_epochs/10):]), min(history.history["val_mse"][int(n_epochs/10):]) )
+    y_max = max ( max(history.history["mse"][int(n_epochs/10):]), max(history.history["val_mse"][int(n_epochs/10):]) )
+    y_min -= 0.2 * np.abs (y_max)
+    y_max += 0.2 * np.abs (y_max)
+    plt.ylim (bottom = y_min, top = y_max)
 
-    report.add_figure(); plt.clf(); plt.close()
+    report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 
     ## Learning curves plots (val-set)
     plt.figure (figsize = (8,5), dpi = 100)
@@ -323,13 +343,13 @@ class GanTrainer (TensorTrainer):   # TODO class description
       plt.plot (history.history["val_d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
       plt.plot (history.history["val_g_loss"], linewidth = 1.5, color = "coral", label = "generator")
       plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
-      y_bottom = min ( min(history.history["val_d_loss"][int(n_epochs/10):]), min(history.history["val_g_loss"][int(n_epochs/10):]) )
-      y_top    = max ( max(history.history["val_d_loss"][int(n_epochs/10):]), max(history.history["val_g_loss"][int(n_epochs/10):]) )
-      y_bottom -= 0.2 * np.abs (y_top)
-      y_top    += 0.2 * np.abs (y_top)
-      plt.ylim (bottom = y_bottom, top = y_top)
+      y_min = min ( min(history.history["val_d_loss"][int(n_epochs/10):]), min(history.history["val_g_loss"][int(n_epochs/10):]) )
+      y_max = max ( max(history.history["val_d_loss"][int(n_epochs/10):]), max(history.history["val_g_loss"][int(n_epochs/10):]) )
+      y_min -= 0.2 * np.abs (y_max)
+      y_max += 0.2 * np.abs (y_max)
+      plt.ylim (bottom = y_min, top = y_max)
 
-    report.add_figure(); plt.clf(); plt.close()
+    report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 
     ## Learning rate scheduling plots
     plt.figure (figsize = (8,5), dpi = 100)
@@ -341,7 +361,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.yscale ("log")
     plt.legend (title = "Adversarial players:", loc = "lower left", fontsize = 10)
 
-    report.add_figure(); plt.clf(); plt.close()
+    report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 
     report.add_markdown ("---")
 
@@ -382,10 +402,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
     else:
       ref_label = "Original (no sWeights)"
       gen_label = "Generated (no sWeights)"
-    h_ref, bins, _ = ax0 . hist ( x_ref, bins = 100, weights = self._w_Y, 
-                                  density = True, color = "dodgerblue", label = ref_label )
-    h_gen, _ , _ = ax0 . hist ( x_gen, bins = bins, weights = self._w_X, histtype = "step", 
-                                density = True, color = "deeppink", label = gen_label )
+    h_ref, bins, _ = ax0 . hist ( x_ref, bins = 75, weights = self._w_Y, 
+                                  color = "dodgerblue", label = ref_label )
+    h_gen, _ , _ = ax0 . hist ( x_gen, bins = bins, weights = self._w_X, histtype = "step", lw = 1.5, 
+                                color = "deeppink", label = gen_label )
     ax0 . legend (loc = "upper left", fontsize = 10)
     y_max = max ( h_ref.max(), h_gen.max() )
     if log_scale:
@@ -402,10 +422,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
     ax1 . set_ylabel ("Candidates", fontsize = 12)
     ref_label = "Original (sWeighted)" if self.w_var else "Original (no sWeights)"
     gen_label = "Generated"
-    h_ref, bins, _ = ax1 . hist ( x_ref, bins = 100, weights = self._w_Y, 
-                                  density = True, color = "dodgerblue", label = ref_label )
-    h_gen, _ , _ = ax1 . hist ( x_gen, bins = bins, histtype = "step", 
-                                density = True, color = "deeppink", label = gen_label )
+    h_ref, bins, _ = ax1 . hist ( x_ref, bins = 75, weights = self._w_Y, 
+                                  color = "dodgerblue", label = ref_label )
+    h_gen, _ , _ = ax1 . hist ( x_gen, bins = bins, histtype = "step", lw = 1.5, 
+                                color = "deeppink", label = gen_label )
     ax1 . legend (loc = "upper left", fontsize = 10)
     y_max = max ( h_ref.max(), h_gen.max() )
     if log_scale:
@@ -423,7 +443,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
                          x_gen = x_gen , 
                          y = self.X[:,0]/1e3 ,
                          bins = 25 , 
-                         density = True , 
+                         density = False , 
                          w_ref = self._w_Y.flatten() ,
                          w_gen = self._w_X.flatten() ,
                          xlabel = x_label ,
@@ -435,7 +455,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
                          x_gen = x_gen , 
                          y = self.X[:,1] ,
                          bins = 25 , 
-                         density = True , 
+                         density = False , 
                          w_ref = self._w_Y.flatten() ,
                          w_gen = self._w_X.flatten() ,
                          xlabel = x_label ,
@@ -447,7 +467,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
                          x_gen = x_gen , 
                          y = self.X[:,2] ,
                          bins = 25 , 
-                         density = True , 
+                         density = False , 
                          w_ref = self._w_Y.flatten() ,
                          w_gen = self._w_X.flatten() ,
                          xlabel = x_label ,
@@ -534,10 +554,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
         ax[i,j] . set_ylabel ("Candidates", fontsize = 12)
 
         query = ( cond >= bounds[idx] ) & ( cond < bounds[idx+1] )
-        h_ref, bins, _ = ax[i,j] . hist ( x_ref[query], bins = 100, weights = self._w_Y[query], 
-                                          density = True, color = "dodgerblue", label = ref_label )
-        h_gen, _ , _ = ax[i,j] . hist ( x_gen[query], bins = bins, weights = self._w_X[query], histtype = "step", 
-                                        density = True, color = "deeppink", label = gen_label )
+        h_ref, bins, _ = ax[i,j] . hist ( x_ref[query], bins = 75, weights = self._w_Y[query], 
+                                          color = "dodgerblue", label = ref_label )
+        h_gen, _ , _ = ax[i,j] . hist ( x_gen[query], bins = bins, weights = self._w_X[query], 
+                                        histtype = "step", lw = 1.5, color = "deeppink", label = gen_label )
 
         if corr_var == "p":
           text = f"$p \in ({bounds[idx]/1e3:.1f}, {bounds[idx+1]/1e3:.1f})$ [GeV/$c$]"
