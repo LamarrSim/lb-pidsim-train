@@ -63,7 +63,8 @@ class BceGAN (GAN):   # TODO add class description
                        discriminator = discriminator , 
                        generator     = generator     ,
                        latent_dim    = latent_dim    )
-    self._loss_name = self._params.update ( {"loss_name" : "Binary cross entropy"} )
+    self._loss_name = "Binary cross entropy"
+    self._params.update ( {"loss_name" : f"{self._loss_name}"} )
 
   def compile ( self , 
                 d_optimizer , 

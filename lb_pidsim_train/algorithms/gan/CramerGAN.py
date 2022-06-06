@@ -88,7 +88,8 @@ class CramerGAN (GAN):   # TODO add class description
                        discriminator = discriminator , 
                        generator     = generator     ,
                        latent_dim    = latent_dim    )
-    self._loss_name = self._params.update ( {"loss_name" : "Energy distance"} )
+    self._loss_name = "Energy distance"
+    self._params.update ( {"loss_name" : f"{self._loss_name}"} )
 
     ## Data-type control
     try:
@@ -100,7 +101,6 @@ class CramerGAN (GAN):   # TODO add class description
 
     ## Discriminator sequential model
     self._discriminator = Sequential ( name = "discriminator" )
-    print (discriminator)
     for d_layer in discriminator:
       self._discriminator . add ( d_layer )
     self._discriminator . add ( Dense ( units = critic_dim, activation = "linear" , 

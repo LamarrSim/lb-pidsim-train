@@ -65,7 +65,8 @@ class WGAN_GP (GAN):   # TODO add class description
                        discriminator = discriminator , 
                        generator     = generator     ,
                        latent_dim    = latent_dim    )
-    self._loss_name = self._params.update ( {"loss_name" : "Wasserstein distance"} )
+    self._loss_name = "Wasserstein distance"
+    self._params.update ( {"loss_name" : f"{self._loss_name}"} )
 
     ## Discriminator sequential model
     self._discriminator = Sequential ( name = "discriminator" )

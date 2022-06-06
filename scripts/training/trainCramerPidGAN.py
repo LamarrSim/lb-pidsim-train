@@ -126,44 +126,50 @@ trainer . prepare_dataset ( X_preprocessing = X_preprocessing ,
 # |    Model construction    |
 # +--------------------------+
 
-d_num_layers  = hp["d_num_layers"]
-d_num_nodes   = hp["d_num_nodes"]
-d_alpha_leaky = hp["d_alpha_leaky"]
+trainer.params.get ("model", "Cramér GAN")
+
+d_num_layers  = trainer.params.get ( "d_num_layers"  , hp["d_num_layers"]  ) 
+d_num_nodes   = trainer.params.get ( "d_num_nodes"   , hp["d_num_nodes"]   )
+d_alpha_leaky = trainer.params.get ( "d_alpha_leaky" , hp["d_alpha_leaky"] )
 
 discriminator = list()
 for layer in range (d_num_layers):
   discriminator . append ( Dense (d_num_nodes, kernel_initializer = "glorot_uniform") )
   discriminator . append ( LeakyReLU (alpha = d_alpha_leaky) )
 
-g_num_layers  = hp["g_num_layers"]
-g_num_nodes   = hp["g_num_nodes"]
-g_alpha_leaky = hp["g_alpha_leaky"]
+g_num_layers   = trainer.params.get ( "g_num_layers"   , hp["g_num_layers"]  )
+g_num_nodes    = trainer.params.get ( "g_num_nodes"    , hp["g_num_nodes"]   )
+g_alpha_leaky  = trainer.params.get ( "g_alpha_leaky"  , hp["g_alpha_leaky"] )
+g_dropout_rate = trainer.params.get ( "g_dropout_rate" , 0.1 )
 
 generator = list()
 for layer in range (g_num_layers):
   generator . append ( Dense (g_num_nodes, kernel_initializer = "glorot_uniform") )
   generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
-  generator . append ( Dropout (rate = 0.1) )
+  generator . append ( Dropout (rate = g_dropout_rate) )
 
 model = CramerGAN ( X_shape = len(trainer.X_vars) , 
                     Y_shape = len(trainer.Y_vars) , 
                     discriminator = discriminator , 
                     generator = generator , 
-                    latent_dim = hp["latent_dim"] , 
-                    critic_dim = hp["critic_dim"] )
+                    latent_dim = trainer.params.get ( "latent_dim" , hp["latent_dim"] ) , 
+                    critic_dim = trainer.params.get ( "critic_dim" , hp["critic_dim"] ) )
 
 # +---------------------------+
 # |    Model configuration    |
 # +---------------------------+
 
-d_opt = tf.optimizers.RMSprop ( learning_rate = hp["d_lr"] )
-g_opt = tf.optimizers.RMSprop ( learning_rate = hp["g_lr"] )
+trainer.params.get ("d_optimizer", "RMSprop")
+trainer.params.get ("g_optimizer", "RMSprop")
+
+d_opt = tf.optimizers.RMSprop ( learning_rate = trainer.params.get ( "d_lr0" , hp["d_lr"] ) )
+g_opt = tf.optimizers.RMSprop ( learning_rate = trainer.params.get ( "g_lr0" , hp["g_lr"] ) )
 
 model . compile ( d_optimizer = d_opt , 
                   g_optimizer = g_opt , 
-                  d_updt_per_batch = hp["d_updt_per_batch"] , 
-                  g_updt_per_batch = hp["g_updt_per_batch"] ,
-                  grad_penalty = hp["grad_penalty"] )
+                  d_updt_per_batch = trainer.params.get ( "d_updt_per_batch" , hp["d_updt_per_batch"] ) , 
+                  g_updt_per_batch = trainer.params.get ( "g_updt_per_batch" , hp["g_updt_per_batch"] ) ,
+                  grad_penalty     = trainer.params.get ( "grad_penalty"     , hp["grad_penalty"]     ) )
 
 model . summary()
 
@@ -173,11 +179,11 @@ model . summary()
 
 model_saver  = GanModelSaver ( name = model_name , 
                                dirname = config["model_dir"] , 
-                               model_to_save = "gen" if sw_avail else "all",
+                               model_to_save = "all" ,
                                verbose = 1 )
 
-lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"] , 
-                                   step = hp["lr_sched_step"] )
+lr_scheduler = GanExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
+                                   step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
 
 # +--------------------+
 # |    Run training    |

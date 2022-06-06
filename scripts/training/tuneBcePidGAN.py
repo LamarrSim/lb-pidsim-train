@@ -124,38 +124,52 @@ trainer . load_model ( filepath = "{}/{}" . format ( config["model_dir"], templa
 # |    Model construction    |
 # +--------------------------+
 
-discriminator = trainer . extract_model ( player = "disc" , 
-                                          fine_tuned_layers = hp["fine_tuned_d_layers"] )
+trainer.params.get ("model", "Binary cross-entropy GAN")
 
-for layer in range ( hp["add_d_num_layers"] ):
-  discriminator . append ( Dense ( hp["add_d_num_nodes"], kernel_initializer = "glorot_uniform" ) )
-  discriminator . append ( LeakyReLU ( alpha = hp["add_d_alpha_leaky"] ) )
+fine_tuned_d_layers = trainer.params.get ( "fine_tuned_d_layers" , hp["fine_tuned_d_layers"] )
+add_d_num_layers    = trainer.params.get ( "add_d_num_layers"    , hp["add_d_num_layers"]    )
+add_d_num_nodes     = trainer.params.get ( "add_d_num_nodes"     , hp["add_d_num_nodes"]     )
+add_d_alpha_leaky   = trainer.params.get ( "add_d_alpha_leaky"   , hp["add_d_alpha_leaky"]   )
+
+discriminator = trainer . extract_model ( player = "disc" , 
+                                          fine_tuned_layers = fine_tuned_d_layers )
+
+for layer in range (add_d_num_layers):
+  discriminator . append ( Dense (add_d_num_nodes, kernel_initializer = "glorot_uniform") )
+  discriminator . append ( LeakyReLU (alpha = add_d_alpha_leaky) )
+
+fine_tuned_g_layers = trainer.params.get ( "fine_tuned_g_layers" , hp["fine_tuned_g_layers"] )
+add_g_num_layers    = trainer.params.get ( "add_g_num_layers"    , hp["add_g_num_layers"]    )
+add_g_num_nodes     = trainer.params.get ( "add_g_num_nodes"     , hp["add_g_num_nodes"]     )
+add_g_alpha_leaky   = trainer.params.get ( "add_g_alpha_leaky"   , hp["add_g_alpha_leaky"]   )
 
 generator = trainer . extract_model ( player = "gen" ,
-                                      fine_tuned_layers = hp["fine_tuned_g_layers"] )
+                                      fine_tuned_layers = fine_tuned_g_layers )
 
-for layer in range ( hp["add_g_num_layers"] ):
-  generator . append ( Dense ( hp["add_g_num_nodes"], kernel_initializer = "glorot_uniform" ) )
-  generator . append ( LeakyReLU ( alpha = hp["add_g_alpha_leaky"] ) )
-  # generator . append ( Dropout (rate = 0.2) )
+for layer in range (add_g_num_layers):
+  generator . append ( Dense (add_g_num_nodes, kernel_initializer = "glorot_uniform") )
+  generator . append ( LeakyReLU (alpha = add_g_alpha_leaky) )
 
 model = BceGAN ( X_shape = len(trainer.X_vars) , 
                  Y_shape = len(trainer.Y_vars) , 
                  discriminator = discriminator , 
                  generator  = generator , 
-                 latent_dim = hp["latent_dim"] )
+                 latent_dim = trainer.params.get ( "latent_dim" , hp["latent_dim"] ) )
 
 # +---------------------------+
 # |    Model configuration    |
 # +---------------------------+
 
-d_opt = tf.optimizers.RMSprop ( learning_rate = hp["d_lr"] )
-g_opt = tf.optimizers.RMSprop ( learning_rate = hp["g_lr"] )
+trainer.params.get ("d_optimizer", "RMSprop")
+trainer.params.get ("g_optimizer", "RMSprop")
+
+d_opt = tf.optimizers.RMSprop ( learning_rate = trainer.params.get ( "d_lr0" , hp["d_lr"] ) )
+g_opt = tf.optimizers.RMSprop ( learning_rate = trainer.params.get ( "g_lr0" , hp["g_lr"] ) )
 
 model . compile ( d_optimizer = d_opt , 
                   g_optimizer = g_opt , 
-                  d_updt_per_batch = hp["d_updt_per_batch"] , 
-                  g_updt_per_batch = hp["g_updt_per_batch"] )
+                  d_updt_per_batch = trainer.params.get ( "d_updt_per_batch" , hp["d_updt_per_batch"] ) , 
+                  g_updt_per_batch = trainer.params.get ( "g_updt_per_batch" , hp["g_updt_per_batch"] ) )
 
 model . summary()
 
@@ -168,8 +182,8 @@ model_saver  = GanModelSaver ( name = model_name ,
                                model_to_save = "all" ,
                                verbose = 1 )
 
-lr_scheduler = GanExpLrScheduler ( factor = hp["lr_sched_factor"] , 
-                                   step = hp["lr_sched_step"] )
+lr_scheduler = GanExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
+                                   step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
 
 # +--------------------+
 # |    Run training    |

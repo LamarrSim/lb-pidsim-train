@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
 
-from lb_pidsim_train.utils.ParamSingleton import getInstance
+from lb_pidsim_train.utils.ParamHandler import getInstance
 
 
 d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
