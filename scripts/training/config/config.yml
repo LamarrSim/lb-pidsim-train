@@ -3,11 +3,11 @@
 # +----------------------+
 
 data_dir : 
-  data   : /pclhcb06/landerli/TurCal
-  simu   : /home/mabarbet/PythonFastSim/data
+  data   : /data
+  simu   : /data
 
-model_dir : /home/mabarbet/PythonFastSim/trainings/pidsim/models
+model_dir : /models
 
-class_dir : /home/mabarbet/PythonFastSim/trainings/pidsim/models
+class_dir : /models
 
-report_dir : /home/mabarbet/PythonFastSim/trainings/pidsim/reports
+report_dir : /reports
