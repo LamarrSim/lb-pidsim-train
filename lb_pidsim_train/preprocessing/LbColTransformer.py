@@ -2,6 +2,7 @@
 
 import numpy as np
 from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import QuantileTransformer
 
 STRATEGIES = ["pass_through", "minmax", "standard", "simple_quantile", "weighted_quantile"]
 
@@ -35,6 +36,7 @@ class LbColTransformer:   # TODO add docstring
           scaler . fit ( X = X[:,cols], sample_weight = sample_weight )
         else:
           scaler . fit ( X = X[:,cols] )
+        print (type(scaler))
         transformers . append ( scaler )   # fitted transformers
 
       self._col_transformer . _update_fitted_transformers (transformers)
@@ -71,4 +73,10 @@ class LbColTransformer:   # TODO add docstring
 
   @property
   def sklearn_transformer (self) -> ColumnTransformer:
+    for i, transf in enumerate (self._col_transformer.transformers_):
+      if transf[0] == "weighted_quantile":
+        downcasted_scaler = QuantileTransformer()   # downcasting to QuantileTransformer
+        for k, v in transf[1].__dict__.items():
+          downcasted_scaler.__dict__[k] = v
+        self._col_transformer.transformers_[i][1] = downcasted_scaler
     return self._col_transformer
