@@ -1,3 +1,6 @@
+### Runs with:
+###   snakemake all all --config 'slot="2016-MagUp-data"'
+
 import os
 import yaml
 
@@ -9,18 +12,13 @@ import yaml
 DebugMode = False
 
 STEPS = ["Rich", "Muon", "GlobalMuonId", "GlobalPID"] 
-SLOTS = ["2016MagUp"]
 PARTS = ["Muon", "Pion", "Kaon", "Proton"]
 
-with open ("../../training/config/config.yaml") as file:
-  config = yaml.full_load (file)
-
-DIR = os.path.join ( config["model_dir"], "latest_models" )
+with open ("../../training/config/config.yml") as file:
+  PATH = yaml.full_load (file) ["model_dir"]
 
 CCFLAGS = ["-Ofast", "--shared", "-fPIC"]
-
-if DebugMode:
-  CCFLAGS.append ( "-DDEBUG" )
+if DebugMode: CCFLAGS.append ("-DDEBUG")
 
 # +-----------------------+
 # |    Rule: GAN MODEL    |
@@ -28,9 +26,9 @@ if DebugMode:
 
 rule ganmodel:
   input: 
-    model = os.path.join ( DIR, "{step}_{part}_{slot}_latest/saved_model"     ) ,
-    tX    = os.path.join ( DIR, "{step}_{part}_{slot}_latest/transform_X.pkl" ) ,
-    tY    = os.path.join ( DIR, "{step}_{part}_{slot}_latest/transform_Y.pkl" )
+    model = os.path.join ( PATH, "latest_models/{step}_{part}_{slot}_latest/saved_generator" ) ,
+    tX    = os.path.join ( PATH, "latest_models/{step}_{part}_{slot}_latest/transform_X.pkl" ) ,
+    tY    = os.path.join ( PATH, "latest_models/{step}_{part}_{slot}_latest/transform_Y.pkl" )
 
   output:
     model = temp ( "/tmp/{step}_{part}_{slot}_latest.C"    ) ,
@@ -48,7 +46,7 @@ rule ganmodel:
 
 rule ismuoneff:
   input:
-    model = os.path.join ( DIR, "isMuon_{part}_{slot}_latest/pipeline.pkl" ) ,
+    model = os.path.join ( PATH, "latest_models/isMuon_{part}_{slot}_latest/pipeline.pkl" ) ,
 
   output:
     model = temp ( "/tmp/isMuon_{part}_{slot}_latest.C" ) ,
@@ -62,14 +60,14 @@ rule ismuoneff:
 
 rule pipeline:
   input:
-    model  = expand ( "/tmp/{step}_{part}_{slot}_latest.C"    , step = STEPS , part = PARTS , slot = SLOTS , allow_missing = True ) , 
-    tX     = expand ( "/tmp/{step}_{part}_{slot}_latest_tX.C" , step = STEPS , part = PARTS , slot = SLOTS , allow_missing = True ) , 
-    tY     = expand ( "/tmp/{step}_{part}_{slot}_latest_tY.C" , step = STEPS , part = PARTS , slot = SLOTS , allow_missing = True ) , 
-    ismuon = expand ( "/tmp/isMuon_{part}_{slot}_latest.C"    ,                part = PARTS , slot = SLOTS , allow_missing = True ) , 
+    model  = expand ( "/tmp/{step}_{part}_{slot}_latest.C"    , step = STEPS , part = PARTS , slot = config["slot"] , allow_missing = True ) , 
+    tX     = expand ( "/tmp/{step}_{part}_{slot}_latest_tX.C" , step = STEPS , part = PARTS , slot = config["slot"] , allow_missing = True ) , 
+    tY     = expand ( "/tmp/{step}_{part}_{slot}_latest_tY.C" , step = STEPS , part = PARTS , slot = config["slot"] , allow_missing = True ) , 
+    ismuon = expand ( "/tmp/isMuon_{part}_{slot}_latest.C"    ,                part = PARTS , slot = config["slot"] , allow_missing = True ) , 
     pipe = "../cpipelines/pipeline.C"
 
   output:
-    shared_object = os.path.join ( DIR, "CompiledModel_{slot}_latest.so" )
+    shared_object = os.path.join ( PATH, "latest_models/CompiledModel_{slot}_latest.so" )
 
   params:
     flags = CCFLAGS
@@ -83,7 +81,7 @@ rule pipeline:
 
 rule test:
   input:
-    shared_object = os.path.join ( DIR, "CompiledModel_{slot}_latest.so" )
+    shared_object = os.path.join ( PATH, "latest_models/CompiledModel_{slot}_latest.so" )
 
   output:
     temp ( ".tested_{part}_{slot}_latest" )
@@ -97,7 +95,7 @@ rule test:
 
 rule all:
   input:
-    expand ( ".tested_{part}_{slot}_latest", part = PARTS, slot = SLOTS )
+    expand ( ".tested_{part}_{slot}_latest", part = PARTS, slot = config["slot"] )
 
   output:
     ".compiled_models"
