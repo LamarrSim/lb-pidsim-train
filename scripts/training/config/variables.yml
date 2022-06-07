@@ -22,8 +22,8 @@ Rich:
       - weighted-quantile-10
       - pass-through
     2016-MagUp-simu:
-      - simple-quantile-10000
-      - simple-quantile-10000
+      - simple-quantile-50000
+      - simple-quantile-50000
       - simple-quantile-10
       - pass-through
     2016-MagDown-data:
