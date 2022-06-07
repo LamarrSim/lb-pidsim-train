@@ -6,8 +6,6 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
 
-from lb_pidsim_train.utils.ParamHandler import getInstance
-
 
 d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
 """Metric instance to track the discriminator loss score."""
@@ -73,9 +71,7 @@ class GAN (tf.keras.Model):   # TODO add class description
                  generator     , 
                  latent_dim = 64 ) -> None:
     super().__init__()
-    self._params = getInstance()
-
-    self._loss_name = self._params.get ( "loss_name", "Loss function" )
+    self._loss_name = "Loss function"
 
     ## Feature space dimension
     if isinstance ( X_shape, (tuple, list, np.ndarray, tf.Tensor) ):
@@ -88,7 +84,7 @@ class GAN (tf.keras.Model):   # TODO add class description
 
     ## Data-type control
     try:
-      latent_dim = self._params.get ( "latent_dim", int(latent_dim) )
+      latent_dim = int ( latent_dim )
     except:
       raise TypeError ("The latent space dimension should be an integer.")
 
@@ -141,16 +137,13 @@ class GAN (tf.keras.Model):   # TODO add class description
     self._d_lr0 = float ( d_optimizer.learning_rate )
     self._g_lr0 = float ( g_optimizer.learning_rate )
 
-    self._params.get ( "d_lr0", f"{self._d_lr0:.1e}" )
-    self._params.get ( "g_lr0", f"{self._g_lr0:.1e}" )
-
     ## Data-type control
     try:
-      d_updt_per_batch = self._params.get ( "d_updt_per_batch", int(d_updt_per_batch) )
+      d_updt_per_batch = int ( d_updt_per_batch )
     except:
       raise TypeError ("The number of discriminator updates per batch should be an integer.")
     try:
-      g_updt_per_batch = self._params.get ( "g_updt_per_batch", int(g_updt_per_batch) )
+      g_updt_per_batch = int ( g_updt_per_batch )
     except:
       raise TypeError ("The number of generator updates per batch should be an integer.")
 

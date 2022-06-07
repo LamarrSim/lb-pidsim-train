@@ -89,11 +89,10 @@ class CramerGAN (GAN):   # TODO add class description
                        generator     = generator     ,
                        latent_dim    = latent_dim    )
     self._loss_name = "Energy distance"
-    self._params.update ( {"loss_name" : f"{self._loss_name}"} )
 
     ## Data-type control
     try:
-      critic_dim = self._params.get ( "critic_dim", int(critic_dim) )
+      critic_dim = int ( critic_dim )
     except:
       raise TypeError ("The critic space dimension should be an integer.")
 
@@ -139,7 +138,7 @@ class CramerGAN (GAN):   # TODO add class description
 
     ## Data-type control
     try:
-      grad_penalty = self._params.get ( "grad_penalty", float(grad_penalty) )
+      grad_penalty = float ( grad_penalty )
     except:
       raise TypeError ("The loss gradient penalty should be a float.")
 
