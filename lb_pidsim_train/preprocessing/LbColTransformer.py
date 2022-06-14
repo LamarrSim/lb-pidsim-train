@@ -30,13 +30,11 @@ class LbColTransformer:   # TODO add docstring
       self._col_transformer . _validate_transformers()
       self._col_transformer . _validate_column_callables (X)
 
-      for transf in self._col_transformer.transformers:
-        name, scaler, cols = transf
-        if name in ["standard", "weighted_quantile"]:   # sample_weight supported
+      for key, scaler, cols in self._col_transformer.transformers:
+        if key in ["standard", "weighted_quantile"]:   # sample_weight supported
           scaler . fit ( X = X[:,cols], sample_weight = sample_weight )
         else:
           scaler . fit ( X = X[:,cols] )
-        print (type(scaler))
         transformers . append ( scaler )   # fitted transformers
 
       self._col_transformer . _update_fitted_transformers (transformers)
@@ -49,27 +47,23 @@ class LbColTransformer:   # TODO add docstring
       return self . fit (X, y = y, sample_weight = sample_weight) . transform (X)
 
   def transform (self, X):
-    # return self._col_transformer.transform (X)
     return self._transform (X, inverse = False)
 
   def inverse_transform (self, X):
     return self._transform (X, inverse = True)
 
   def _transform (self, X, inverse = False):
-    X_tr = np.empty (shape = X.shape)   # initial array
-
-    ## Transformers: ( (name, fitted_transformer, column) , ... )
-    for transf in self._col_transformer.transformers_:
-      name, scaler, cols = transf
-      if name == "pass_through":
-        X_tr[:,cols] = X[:,cols]
+    X_tr = []
+    for key, scaler, cols in self._col_transformer.transformers_:
+      if key == "pass_through":
+        X_tr . append ( X[:,cols] )
       else:
         if inverse:
-          X_tr[:,cols] = scaler . inverse_transform (X[:,cols]) 
+          X_tr . append ( scaler . inverse_transform (X[:,cols]) )
         else:
-          X_tr[:,cols] = scaler . transform (X[:,cols])      
+          X_tr . append ( scaler . transform (X[:,cols]) )
 
-    return X_tr
+    return np.concatenate ( X_tr, axis = 1 )
 
   @property
   def sklearn_transformer (self) -> ColumnTransformer:

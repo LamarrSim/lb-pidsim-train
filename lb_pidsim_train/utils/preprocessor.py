@@ -146,7 +146,7 @@ def preprocessor ( data ,
 
   if len(cols_to_ignore) > 0:
     final_scaler = LbColTransformer ( transformers + \
-                                        [ ( "pass_through", FunctionTransformer(), cols_to_ignore ) ] 
+                                        [ ( "pass_through", "passthrough", cols_to_ignore ) ] 
                                       )
   else:
     final_scaler = LbColTransformer ( transformers )
