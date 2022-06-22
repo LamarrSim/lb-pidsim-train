@@ -47,23 +47,28 @@ class LbColTransformer:   # TODO add docstring
       return self . fit (X, y = y, sample_weight = sample_weight) . transform (X)
 
   def transform (self, X):
-    return self._transform (X, inverse = False)
-
-  def inverse_transform (self, X):
-    return self._transform (X, inverse = True)
-
-  def _transform (self, X, inverse = False):
     X_tr = []
     for key, scaler, cols in self._col_transformer.transformers_:
       if key == "pass_through":
         X_tr . append ( X[:,cols] )
       else:
-        if inverse:
-          X_tr . append ( scaler . inverse_transform (X[:,cols]) )
-        else:
-          X_tr . append ( scaler . transform (X[:,cols]) )
-
+        X_tr . append ( scaler . transform (X[:,cols]) )
     return np.concatenate ( X_tr, axis = 1 )
+
+  def inverse_transform (self, X):
+    perm_indices = []
+    for _, _, cols in self._col_transformer.transformers_: 
+      perm_indices += list(cols)
+    X_perm = X[:, perm_indices]
+
+    X_tr = np.zeros_like (X_perm)
+    for key, scaler, cols in self._col_transformer.transformers_:
+      if key == "pass_through":
+        X_tr[:,cols] = X_perm[:,cols]
+      else:
+        X_tr[:,cols] = scaler . inverse_transform (X_perm[:,cols])
+
+    return X_tr
 
   @property
   def sklearn_transformer (self) -> ColumnTransformer:
