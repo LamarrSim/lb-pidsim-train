@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from lb_pidsim_train.utils      import argparser
 from lb_pidsim_train.trainers   import GanTrainer
-from lb_pidsim_train.algorithms import WGAN_GP
+from lb_pidsim_train.algorithms import WGAN_ALP
 from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
 from tensorflow.keras.layers    import Dense, LeakyReLU, Dropout
 
@@ -77,7 +77,7 @@ trainer = GanTrainer ( name = model_name ,
 # |    Optimization step    |
 # +-------------------------+
 
-hp = hyperparams[args.model][args.particle]
+hp = hyperparams[args.particle][args.sample]
 # TODO add OptunAPI update
 
 # +-------------------------+
@@ -148,11 +148,11 @@ for layer in range (g_num_layers):
   generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
   generator . append ( Dropout (rate = g_dropout_rate) )
 
-model = WGAN_GP ( X_shape = len(trainer.X_vars) , 
-                  Y_shape = len(trainer.Y_vars) , 
-                  discriminator = discriminator , 
-                  generator = generator , 
-                  latent_dim = trainer.params.get ( "latent_dim" , hp["latent_dim"] ) )
+model = WGAN_ALP ( X_shape = len(trainer.X_vars) , 
+                   Y_shape = len(trainer.Y_vars) , 
+                   discriminator = discriminator , 
+                   generator = generator , 
+                   latent_dim = trainer.params.get ( "latent_dim" , hp["latent_dim"] ) )
 
 # +---------------------------+
 # |    Model configuration    |
@@ -168,7 +168,8 @@ model . compile ( d_optimizer = d_opt ,
                   g_optimizer = g_opt , 
                   d_updt_per_batch = trainer.params.get ( "d_updt_per_batch" , hp["d_updt_per_batch"] ) , 
                   g_updt_per_batch = trainer.params.get ( "g_updt_per_batch" , hp["g_updt_per_batch"] ) ,
-                  grad_penalty     = trainer.params.get ( "grad_penalty"     , hp["grad_penalty"]     ) )
+                  v_adv_dir_updt = trainer.params.get ( "v_adv_dir_updt" , hp["v_adv_dir_updt"] ) ,
+                  adv_lp_penalty = trainer.params.get ( "adv_lp_penalty" , hp["adv_lp_penalty"] ) )
 
 model . summary()
 

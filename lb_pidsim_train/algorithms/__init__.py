@@ -1,1 +1,1 @@
-from .gan import GAN, BceGAN, WGAN_GP, CramerGAN
+from .gan import GAN, BceGAN, WGAN_GP, CramerGAN, WGAN_ALP
