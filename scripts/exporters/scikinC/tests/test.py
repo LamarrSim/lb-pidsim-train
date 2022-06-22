@@ -58,6 +58,7 @@ class FullPipe:
   def predict (self, X, random):
     richdll = self.rich.predict ( X[:,:4], random[:, 0o000:0o100] )
     muondll = self.muon.predict ( X[:,:4], random[:, 0o100:0o200] )
+    muondll = np.where ( np.c_[X[:,4]], np.c_[muondll[:,0], muondll[:,0] - muondll[:,1]], -1000 )   # Muon error code
 
     gpidX = np.concatenate( [X[:,:4], richdll, X[:,-1:], muondll], axis = 1 )
     gpid = self.gpid.predict ( gpidX, random[:, 0o200:0o300] )
