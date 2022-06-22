@@ -490,10 +490,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
     if len(gs_list) != 2: raise ValueError ("It should be passed only 2 GridSpec positions.")
 
     ## Binning definition
-    x_min = min ( x_ref.min() , x_gen.min() )
-    x_max = max ( x_ref.max() , x_gen.max() )
-    x_min -= 0.1 * ( x_max - x_min )
-    x_max += 0.1 * ( x_max - x_min )
+    x_min = min ( x_ref.mean() - 3 * x_ref.std() , x_gen.mean() - 3 * x_gen.std() )
+    x_max = max ( x_ref.mean() + 3 * x_ref.std() , x_gen.mean() + 3 * x_gen.std() )
     y_min = y.min() - 0.1 * ( y.max() - y.min() )
     y_max = y.max() + 0.1 * ( y.max() - y.min() )
     binning = [ np.linspace ( x_min, x_max, bins + 1 ) ,
