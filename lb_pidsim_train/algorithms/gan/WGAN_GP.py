@@ -6,13 +6,6 @@ from tensorflow.keras.models import Sequential
 from lb_pidsim_train.algorithms.gan import GAN
 
 
-d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
-"""Metric instance to track the discriminator loss score."""
-
-g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
-"""Metric instance to track the generator loss score."""
-
-
 class WGAN_GP (GAN):   # TODO add class description
   """Keras model class to build and train WGAN-GP system.
   
@@ -107,6 +100,10 @@ class WGAN_GP (GAN):   # TODO add class description
     except:
       raise TypeError ("The loss gradient penalty should be a float.")
 
+    ## data-value control
+    if grad_penalty <= 0:
+      raise ValueError ("The loss gradient penalty should be greater than 0.")
+
     self._grad_penalty = grad_penalty
 
   def _compute_d_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
@@ -132,25 +129,20 @@ class WGAN_GP (GAN):   # TODO add class description
     ## Standard WGAN loss
     D_gen = self._discriminator ( XY_gen )
     D_ref = self._discriminator ( XY_ref )
-    d_loss = tf.clip_by_value ( w_gen * D_gen - w_ref * D_ref, -10.0, 10.0 )
-    d_loss = tf.reduce_mean ( d_loss )
+    d_loss = tf.reduce_mean ( w_gen * D_gen - w_ref * D_ref , axis = None )
     
     ## Gradient penalty
-    epsilon = tf.random.uniform (
-                                  shape  = (tf.shape(XY_ref)[0], 1) ,
-                                  minval = 0.0 ,
-                                  maxval = 1.0 ,
-                                )
+    alpha = tf.random.uniform ( shape  = (tf.shape(XY_ref)[0], 1) ,
+                                minval = 0.0 ,
+                                maxval = 1.0 ,
+                                dtype  = XY_ref.dtype )
     differences  = XY_gen - XY_ref
-    interpolates = XY_ref + epsilon * differences
+    interpolates = XY_ref + alpha * differences
     D_int = self._discriminator ( interpolates )
-    grad = tf.gradients ( D_int , interpolates )
-    grad = tf.concat  ( grad , axis = 1 )
-    grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
-    slopes  = tf.norm ( grad , ord = 2 , axis = 1 )
-    gp_term = tf.square ( slopes - 1.0 )   # two-sided penalty
-    gp_term = self._grad_penalty * tf.reduce_mean (gp_term)
-    d_loss += gp_term
+    grad = tf.gradients ( D_int , [interpolates] ) [0]
+    slopes  = tf.norm ( grad , axis = 1 )
+    gp_term = tf.reduce_mean ( tf.square (slopes - 1.0) , axis = None )   # two-sided penalty
+    d_loss += self._grad_penalty * gp_term   # gradient penalty
     return d_loss
 
   def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
@@ -176,8 +168,8 @@ class WGAN_GP (GAN):   # TODO add class description
     ## Standard WGAN loss
     D_gen = self._discriminator ( XY_gen )
     D_ref = self._discriminator ( XY_ref )
-    g_loss = tf.clip_by_value ( w_ref * D_ref - w_gen * D_gen, -10.0, 10.0 )
-    return tf.reduce_mean (g_loss)
+    g_loss = w_ref * D_ref - w_gen * D_gen
+    return tf.reduce_mean (g_loss, axis = None)
 
   def _compute_threshold (self, ref_sample) -> tf.Tensor:
     """Return the threshold for loss values.
@@ -194,7 +186,7 @@ class WGAN_GP (GAN):   # TODO add class description
     """
     _, w_ref = ref_sample
     th_loss = tf.zeros_like (w_ref)
-    return tf.reduce_sum (th_loss)
+    return tf.reduce_sum (th_loss, axis = None)
 
   @property
   def discriminator (self) -> tf.keras.Sequential:
@@ -205,3 +197,8 @@ class WGAN_GP (GAN):   # TODO add class description
   def generator (self) -> tf.keras.Sequential:
     """The generator of the WGAN-GP system."""
     return self._generator
+
+  @property
+  def grad_penalty (self) -> float:
+    """Gradient penalty coefficient."""
+    return self._grad_penalty

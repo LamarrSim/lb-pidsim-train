@@ -4,13 +4,6 @@ import tensorflow as tf
 from lb_pidsim_train.algorithms.gan import GAN
 
 
-d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
-"""Metric instance to track the discriminator loss score."""
-
-g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
-"""Metric instance to track the generator loss score."""
-
-
 class BceGAN (GAN):   # TODO add class description
   """Keras model class to build and train BceGAN system.
   
@@ -91,6 +84,9 @@ class BceGAN (GAN):   # TODO add class description
                       d_updt_per_batch = d_updt_per_batch , 
                       g_updt_per_batch = g_updt_per_batch )
 
+    self._k_gen = 0.1
+    self._k_ref = 0.9
+
   def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
     """Return the generator loss.
     
@@ -118,12 +114,10 @@ class BceGAN (GAN):   # TODO add class description
     D_ref = self._discriminator ( XY_ref + rnd_ref )
 
     ## Loss computation
-    k_gen = 0.1
-    k_ref = 0.9
-    g_loss = w_gen * k_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1. ) ) + \
-             w_gen * (1 - k_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1. ) ) + \
-             w_ref * k_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1. ) ) + \
-             w_ref * (1 - k_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1. ) ) 
+    g_loss = w_gen * self._k_gen       * tf.math.log ( tf.clip_by_value ( D_gen     , 1e-12 , 1.0 ) ) + \
+             w_gen * (1 - self._k_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1.0 ) ) + \
+             w_ref * self._k_ref       * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1.0 ) ) + \
+             w_ref * (1 - self._k_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref , 1e-12 , 1.0 ) ) 
     return tf.reduce_mean (g_loss)
 
   def _compute_threshold (self, ref_sample) -> tf.Tensor:   # TODO complete docstring
@@ -152,12 +146,10 @@ class BceGAN (GAN):   # TODO add class description
     w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
 
     ## Threshold loss computation
-    k_gen = 0.1
-    k_ref = 0.9
-    th_loss = w_ref_1 * k_gen       * tf.math.log ( tf.clip_by_value ( D_ref_1     , 1e-12 , 1. ) ) + \
-              w_ref_1 * (1 - k_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_1 , 1e-12 , 1. ) ) + \
-              w_ref_2 * k_ref       * tf.math.log ( tf.clip_by_value ( D_ref_2     , 1e-12 , 1. ) ) + \
-              w_ref_2 * (1 - k_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1. ) ) 
+    th_loss = w_ref_1 * self._k_gen       * tf.math.log ( tf.clip_by_value ( D_ref_1     , 1e-12 , 1.0 ) ) + \
+              w_ref_1 * (1 - self._k_gen) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_1 , 1e-12 , 1.0 ) ) + \
+              w_ref_2 * self._k_ref       * tf.math.log ( tf.clip_by_value ( D_ref_2     , 1e-12 , 1.0 ) ) + \
+              w_ref_2 * (1 - self._k_ref) * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1.0 ) ) 
     return tf.reduce_mean (th_loss)
 
   @property
@@ -169,4 +161,42 @@ class BceGAN (GAN):   # TODO add class description
   def generator (self) -> tf.keras.Sequential:
     """The generator of the BceGAN system."""
     return self._generator
+
+  @property
+  def k_gen (self) -> float:
+    """Smoothness weight of the BCE for the reference dataset."""
+    return self._k_gen
+
+  @k_gen.setter
+  def k_gen (self, k) -> None:
+    ## Data-type control
+    try:
+      k_gen = float (k_gen)
+    except: 
+      raise TypeError ("The smoothness weight should be a float.")
+
+    ## Data-value control
+    if (k_gen < 0.0) or (k_gen > 1.0):
+      raise ValueError ("The smoothness weight should be between 0 and 1.")
+
+    self._k_gen = k
+
+  @property
+  def k_ref (self) -> float:
+    """Smoothness weight of the BCE for the generated dataset."""
+    return self._k_ref
+
+  @k_ref.setter
+  def k_ref (self, k) -> None:
+    ## Data-type control
+    try:
+      k_ref = float (k_ref)
+    except: 
+      raise TypeError ("The smoothness weight should be a float.")
+
+    ## Data-value control
+    if (k_ref < 0.0) or (k_ref > 1.0):
+      raise ValueError ("The smoothness weight should be between 0 and 1.")
+
+    self._k_ref = k
     

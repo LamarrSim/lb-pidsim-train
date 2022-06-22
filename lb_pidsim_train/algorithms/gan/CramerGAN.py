@@ -6,13 +6,6 @@ from tensorflow.keras.models        import Sequential
 from lb_pidsim_train.algorithms.gan import GAN
 
 
-d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
-"""Metric instance to track the discriminator loss score."""
-
-g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
-"""Metric instance to track the generator loss score."""
-
-
 class Critic:
   """Critic function."""
   def __init__ (self, h):
@@ -142,6 +135,10 @@ class CramerGAN (GAN):   # TODO add class description
     except:
       raise TypeError ("The loss gradient penalty should be a float.")
 
+    ## Data-value control
+    if grad_penalty <= 0:
+      raise ValueError ("The loss gradient penalty should be greater than 0.")
+
     self._grad_penalty = grad_penalty
   
   def _compute_d_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
@@ -176,24 +173,20 @@ class CramerGAN (GAN):   # TODO add class description
     ## Discriminator loss computation
     d_loss = w_gen_1 * w_gen_2 * self._critic ( XY_gen_1, XY_gen_2 ) - \
              w_ref_1 * w_gen_2 * self._critic ( XY_ref_1, XY_gen_2 )
-    d_loss = tf.reduce_mean (d_loss)
+    d_loss = tf.reduce_mean (d_loss, axis = None)
 
     ## Gradient penalty
-    epsilon = tf.random.uniform (
-                                  shape  = (tf.shape(XY_ref_1)[0], 1) , 
-                                  minval = 0.0 , 
-                                  maxval = 1.0 ,
-                                )
+    alpha = tf.random.uniform ( shape  = (tf.shape(XY_ref_1)[0], 1) ,
+                                minval = 0.0 ,
+                                maxval = 1.0 ,
+                                dtype  = XY_ref_1.dtype )
     differences  = XY_gen_1 - XY_ref_1
-    interpolates = XY_ref_1 + epsilon * differences
+    interpolates = XY_ref_1 + alpha * differences
     critic_int = self._critic ( interpolates , XY_gen_2 )
-    grad = tf.gradients ( critic_int , interpolates )
-    grad = tf.concat  ( grad , axis = 1 )
-    grad = tf.reshape ( grad , shape = (tf.shape(grad)[0], -1) )
+    grad = tf.gradients ( critic_int , [interpolates] ) [0]
     slopes  = tf.norm ( grad , axis = 1 )
-    gp_term = tf.square ( slopes - 1.0 )   # two-sided penalty
-    gp_term = self._grad_penalty * tf.reduce_mean (gp_term)   # gradient penalty
-    d_loss += gp_term
+    gp_term = tf.reduce_mean ( tf.square (slopes - 1.0) , axis = None )   # two-sided penalty
+    d_loss += self._grad_penalty * gp_term   # gradient penalty
     return d_loss
 
   def _compute_g_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
@@ -228,7 +221,7 @@ class CramerGAN (GAN):   # TODO add class description
     ## Generator loss computation
     g_loss = w_ref_1 * w_gen_2 * self._critic ( XY_ref_1, XY_gen_2 ) - \
              w_gen_1 * w_gen_2 * self._critic ( XY_gen_1, XY_gen_2 )
-    return tf.reduce_mean (g_loss)
+    return tf.reduce_mean (g_loss, axis = None)
 
   def _compute_threshold (self, ref_sample) -> tf.Tensor:
     """Return the threshold for loss values.
@@ -245,7 +238,7 @@ class CramerGAN (GAN):   # TODO add class description
     """
     _, w_ref = ref_sample
     th_loss = tf.zeros_like (w_ref)
-    return tf.reduce_sum (th_loss)
+    return tf.reduce_sum (th_loss, axis = None)
 
   @property
   def discriminator (self) -> tf.keras.Sequential:
@@ -261,3 +254,8 @@ class CramerGAN (GAN):   # TODO add class description
   def critic_dim (self) -> int:
     """The dimension of the critic space."""
     return self._critic_dim
+
+  @property
+  def grad_penalty (self) -> float:
+    """Gradient penalty coefficient."""
+    return self._grad_penalty

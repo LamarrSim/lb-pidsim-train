@@ -131,12 +131,6 @@ class GAN (tf.keras.Model):   # TODO add class description
     self._discriminator . build ( input_shape = (None, self._X_shape + self._Y_shape) )
     self._generator . build ( input_shape = (None, self._X_shape + self._latent_dim) )
 
-    self._d_optimizer = d_optimizer
-    self._g_optimizer = g_optimizer
-
-    self._d_lr0 = float ( d_optimizer.learning_rate )
-    self._g_lr0 = float ( g_optimizer.learning_rate )
-
     ## Data-type control
     try:
       d_updt_per_batch = int ( d_updt_per_batch )
@@ -148,11 +142,15 @@ class GAN (tf.keras.Model):   # TODO add class description
       raise TypeError ("The number of generator updates per batch should be an integer.")
 
     ## Data-value control
-    if d_updt_per_batch == 0:
+    if d_updt_per_batch <= 0:
       raise ValueError ("The number of discriminator updates per batch should be greater than 0.")
-    if g_updt_per_batch == 0:
+    if g_updt_per_batch <= 0:
       raise ValueError ("The number of generator updates per batch should be greater than 0.")
 
+    self._d_optimizer = d_optimizer
+    self._g_optimizer = g_optimizer
+    self._d_lr0 = float ( d_optimizer.learning_rate )
+    self._g_lr0 = float ( g_optimizer.learning_rate )
     self._d_updt_per_batch = d_updt_per_batch
     self._g_updt_per_batch = g_updt_per_batch
 
@@ -367,8 +365,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     D_ref = self._discriminator ( XY_ref + rnd_ref )
 
     ## Loss computation
-    g_loss = w_gen * tf.math.log ( tf.clip_by_value (1 - D_gen, 1e-12, 1.) ) + \
-             w_ref * tf.math.log ( tf.clip_by_value (D_ref, 1e-12, 1.) )
+    g_loss = w_gen * tf.math.log ( tf.clip_by_value ( 1 - D_gen , 1e-12 , 1.0 ) ) + \
+             w_ref * tf.math.log ( tf.clip_by_value ( D_ref     , 1e-12 , 1.0 ) )
     return tf.reduce_mean (g_loss)
 
   def _compute_threshold (self, ref_sample) -> tf.Tensor:   # TODO complete docstring
@@ -397,8 +395,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     w_ref_1, w_ref_2 = w_ref[:batch_size], w_ref[batch_size:batch_size*2]
 
     ## Threshold loss computation
-    th_loss = w_ref_1 * tf.math.log ( tf.clip_by_value (D_ref_1, 1e-12, 1.) ) + \
-              w_ref_2 * tf.math.log ( tf.clip_by_value (1 - D_ref_2, 1e-12, 1.) )
+    th_loss = w_ref_1 * tf.math.log ( tf.clip_by_value ( D_ref_1     , 1e-12 , 1.0 ) ) + \
+              w_ref_2 * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1.0 ) )
     return tf.reduce_mean (th_loss)
 
   def generate (self, X) -> tf.Tensor:   # TODO complete docstring
@@ -463,6 +461,16 @@ class GAN (tf.keras.Model):   # TODO add class description
   def g_lr0 (self) -> float:
     """Initial value for generator learning rate."""
     return self._g_lr0
+
+  @property
+  def g_updt_per_batch (self) -> int:
+    """Number of generator updates per batch."""
+    return self._g_updt_per_batch
+
+  @property
+  def d_updt_per_batch (self) -> int:
+    """Number of discriminator updates per batch."""
+    return self._d_updt_per_batch
 
   @property
   def metrics (self) -> list:
