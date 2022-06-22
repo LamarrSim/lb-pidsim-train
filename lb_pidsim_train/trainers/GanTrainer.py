@@ -418,13 +418,14 @@ class GanTrainer (TensorTrainer):   # TODO class description
       y_min = 0.0
       y_max += 0.2 * y_max
     ax0 . set_ylim (bottom = y_min, top = y_max)
+    ax0 . set_xlim (left = bin_min, right = bin_max)
 
     ax1 = fig.add_subplot ( gs[0:,1] )
     ax1 . set_xlabel (x_label, fontsize = 12)
     ax1 . set_ylabel ("Candidates", fontsize = 12)
     ref_label = "Original (sWeighted)" if self.w_var else "Original (no sWeights)"
     gen_label = "Generated"
-    h_ref, bins, _ = ax0 . hist ( x_ref, bins = np.linspace (bin_min, bin_max, 75), 
+    h_ref, bins, _ = ax1 . hist ( x_ref, bins = np.linspace (bin_min, bin_max, 75), 
                                   weights = self._w_Y, color = "dodgerblue", label = ref_label )
     h_gen, _ , _ = ax1 . hist ( x_gen, bins = bins, histtype = "step", lw = 1.5, 
                                 color = "deeppink", label = gen_label )
@@ -438,6 +439,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
       y_min = 0.0
       y_max += 0.2 * y_max
     ax1 . set_ylim (bottom = y_min, top = y_max)
+    ax1 . set_xlim (left = bin_min, right = bin_max)
 
     self._2d_corr_plot ( figure  = fig ,
                          gs_list = [ gs[0,2], gs[1,2] ] ,
@@ -579,6 +581,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
           y_min = 0.0
           y_max += 0.2 * y_max
         ax[i,j] . set_ylim (bottom = y_min, top = y_max)
+        ax[i,j] . set_xlim (left = bin_min, right = bin_max)
 
         idx += 1
 
