@@ -402,8 +402,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
     else:
       ref_label = "Original (no sWeights)"
       gen_label = "Generated (no sWeights)"
-    h_ref, bins, _ = ax0 . hist ( x_ref, bins = 75, weights = self._w_Y, 
-                                  color = "dodgerblue", label = ref_label )
+    bin_min = min ( x_ref.mean() - 3 * x_ref.std() , x_gen.mean() - 3 * x_gen.std() )
+    bin_max = max ( x_ref.mean() + 3 * x_ref.std() , x_gen.mean() + 3 * x_gen.std() )
+    h_ref, bins, _ = ax0 . hist ( x_ref, bins = np.linspace (bin_min, bin_max, 75), 
+                                  weights = self._w_Y, color = "dodgerblue", label = ref_label )
     h_gen, _ , _ = ax0 . hist ( x_gen, bins = bins, weights = self._w_X, histtype = "step", lw = 1.5, 
                                 color = "deeppink", label = gen_label )
     ax0 . legend (loc = "upper left", fontsize = 10)
@@ -422,8 +424,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
     ax1 . set_ylabel ("Candidates", fontsize = 12)
     ref_label = "Original (sWeighted)" if self.w_var else "Original (no sWeights)"
     gen_label = "Generated"
-    h_ref, bins, _ = ax1 . hist ( x_ref, bins = 75, weights = self._w_Y, 
-                                  color = "dodgerblue", label = ref_label )
+    h_ref, bins, _ = ax0 . hist ( x_ref, bins = np.linspace (bin_min, bin_max, 75), 
+                                  weights = self._w_Y, color = "dodgerblue", label = ref_label )
     h_gen, _ , _ = ax1 . hist ( x_gen, bins = bins, histtype = "step", lw = 1.5, 
                                 color = "deeppink", label = gen_label )
     ax1 . legend (loc = "upper left", fontsize = 10)
@@ -552,8 +554,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
         ax[i,j] . set_ylabel ("Candidates", fontsize = 12)
 
         query = ( cond >= bounds[idx] ) & ( cond < bounds[idx+1] )
-        h_ref, bins, _ = ax[i,j] . hist ( x_ref[query], bins = 75, weights = self._w_Y[query], 
-                                          color = "dodgerblue", label = ref_label )
+        bin_min = min ( x_ref[query].mean() - 3 * x_ref[query].std() , x_gen[query].mean() - 3 * x_gen[query].std() )
+        bin_max = max ( x_ref[query].mean() + 3 * x_ref[query].std() , x_gen[query].mean() + 3 * x_gen[query].std() )
+        h_ref, bins, _ = ax[i,j] . hist ( x_ref[query], bins = np.linspace (bin_min, bin_max, 75), 
+                                          weights = self._w_Y[query], color = "dodgerblue", label = ref_label )
         h_gen, _ , _ = ax[i,j] . hist ( x_gen[query], bins = bins, weights = self._w_X[query], 
                                         histtype = "step", lw = 1.5, color = "deeppink", label = gen_label )
 
