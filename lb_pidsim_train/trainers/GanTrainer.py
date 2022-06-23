@@ -255,7 +255,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
                     scheduler = None , 
                     verbose = 0 ) -> None:
     super().train_model ( model = model , 
-                          batch_size = 2 * batch_size , 
+                          batch_size = 2 * batch_size if model._loss_name == "Energy distance" else batch_size , 
                           num_epochs = num_epochs , 
                           validation_split = validation_split , 
                           scheduler = scheduler , 
