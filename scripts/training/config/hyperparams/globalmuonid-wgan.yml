@@ -17,15 +17,16 @@ standard:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00003
-      g_lr : 0.00003
-      d_updt_per_batch : 5
+      d_lr : 0.00002
+      g_lr : 0.00002
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.90
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 200
+      num_epochs : 100
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -46,14 +47,15 @@ standard:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00003
-      g_lr : 0.00003
-      d_updt_per_batch : 5
+      d_lr : 0.00002
+      g_lr : 0.00002
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.90
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
       lr_sched_step : 10
-      batch_size : 512
+      batch_size : 256
       num_epochs : 200
       validation_split : 0.2
 
@@ -77,13 +79,14 @@ standard:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.895
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 256
-      num_epochs : 100
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -105,11 +108,12 @@ standard:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.895
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -136,15 +140,16 @@ base:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00003
-      g_lr : 0.00003
-      d_updt_per_batch : 5
+      d_lr : 0.00002
+      g_lr : 0.00002
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.90
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 200
+      num_epochs : 100
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
@@ -171,14 +176,15 @@ base:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00003
-      g_lr : 0.00003
-      d_updt_per_batch : 5
+      d_lr : 0.00002
+      g_lr : 0.00002
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.90
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
       lr_sched_step : 10
-      batch_size : 512
+      batch_size : 256
       num_epochs : 200
       validation_split : 0.2
 
@@ -208,11 +214,12 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.895
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 256
       num_epochs : 100
       validation_split : 0.2
@@ -242,11 +249,12 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.895
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -285,7 +293,8 @@ tuning:
       g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      grad_penalty : 0.05   # 0.1
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
@@ -322,7 +331,8 @@ tuning:
       g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      grad_penalty : 0.1
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
@@ -359,7 +369,8 @@ tuning:
       g_lr : 0.00002
       d_updt_per_batch : 3
       g_updt_per_batch : 1
-      grad_penalty : 1.0
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
@@ -395,7 +406,8 @@ tuning:
       g_lr : 0.00002
       d_updt_per_batch : 3
       g_updt_per_batch : 1
-      grad_penalty : 1.0
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512

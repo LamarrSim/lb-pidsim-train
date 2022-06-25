@@ -17,16 +17,16 @@ standard:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00005
+      d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 3
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      v_adv_dir_updt : 1
+      v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 150
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -47,16 +47,16 @@ standard:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00002
+      d_lr : 0.00003
       g_lr : 0.00002
-      d_updt_per_batch : 1
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      v_adv_dir_updt : 2
+      v_adv_dir_updt :  2
       adv_lp_penalty : 100.0
-      lr_sched_factor : 0.95
+      lr_sched_factor : 0.90 #95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -77,16 +77,16 @@ standard:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00002
+      d_lr : 0.00004
       g_lr : 0.00002
-      d_updt_per_batch : 1
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
       v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
-      lr_sched_factor : 0.95
+      lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -106,16 +106,16 @@ standard:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00002
+      d_lr : 0.00003
       g_lr : 0.00002
-      d_updt_per_batch : 3
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
       v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -164,14 +164,14 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 5
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      v_adv_dir_updt : 1
+      v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -217,16 +217,16 @@ base:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00002
+      d_lr : 0.00005
       g_lr : 0.00002
-      d_updt_per_batch : 5
+      d_updt_per_batch : 3
       g_updt_per_batch : 1
-      v_adv_dir_updt : 1
+      v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
-      lr_sched_factor : 0.95
-      lr_sched_step : 10
+      lr_sched_factor : 0.90
+      lr_sched_step : 15
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -274,14 +274,14 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 5
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      v_adv_dir_updt : 1
+      v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -328,14 +328,14 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 5
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      v_adv_dir_updt : 1
+      v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 100
+      num_epochs : 250
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->

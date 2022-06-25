@@ -19,11 +19,12 @@ standard:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -48,11 +49,12 @@ standard:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -77,11 +79,12 @@ standard:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -105,11 +108,12 @@ standard:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -138,11 +142,12 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -173,11 +178,12 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -208,11 +214,12 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -242,11 +249,12 @@ base:
       latent_dim : 64
       d_lr : 0.00002
       g_lr : 0.00002
-      d_updt_per_batch : 10
+      d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
-      lr_sched_factor : 0.900
-      lr_sched_step : 4
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
+      lr_sched_factor : 0.95
+      lr_sched_step : 10
       batch_size : 512
       num_epochs : 100
       validation_split : 0.2
@@ -285,7 +293,8 @@ tuning:
       g_lr : 0.00001
       d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 15
       batch_size : 512
@@ -322,7 +331,8 @@ tuning:
       g_lr : 0.00001
       d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 1.0
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 15
       batch_size : 512
@@ -359,7 +369,8 @@ tuning:
       g_lr : 0.00002
       d_updt_per_batch : 5
       g_updt_per_batch : 1
-      grad_penalty : 0.1
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
@@ -395,7 +406,8 @@ tuning:
       g_lr : 0.00001
       d_updt_per_batch : 2
       g_updt_per_batch : 1
-      grad_penalty : 0.1
+      v_adv_dir_updt : 2
+      adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
