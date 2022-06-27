@@ -373,6 +373,8 @@ class GanTrainer (TensorTrainer):   # TODO class description
       report.add_markdown (f'<h2 align="center">{y_var}</h2>')
       self._grid_val_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = False )
       self._grid_val_plot ( report, Y_ref[:,i], Y_gen[:,i], x_label = y_var, log_scale = True  )
+      self._cut_eff_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "p", cut_name = y_var )
+      self._cut_eff_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "eta", cut_name = y_var )
       self._1d_corr_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "p", x_label = y_var, log_scale = False )
       self._1d_corr_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "eta", x_label = y_var, log_scale = False )
       self._1d_corr_plot  ( report, Y_ref[:,i], Y_gen[:,i], corr_var = "p", x_label = y_var, log_scale = True )
@@ -441,55 +443,54 @@ class GanTrainer (TensorTrainer):   # TODO class description
     ax1 . set_ylim (bottom = y_min, top = y_max)
     ax1 . set_xlim (left = bin_min, right = bin_max)
 
-    self._2d_corr_plot ( figure  = fig ,
-                         gs_list = [ gs[0,2], gs[1,2] ] ,
-                         x_ref = x_ref , 
-                         x_gen = x_gen , 
-                         y = self.X[:,0]/1e3 ,
-                         bins = 25 , 
-                         density = False , 
-                         w_ref = self._w_Y.flatten() ,
-                         w_gen = self._w_X.flatten() ,
-                         xlabel = x_label ,
-                         ylabel = "Momentum [Gev/$c$]" )
+    self._grid_2d_corr_plot ( figure  = fig ,
+                              gs_list = [ gs[0,2], gs[1,2] ] ,
+                              x_ref = x_ref , 
+                              x_gen = x_gen , 
+                              y = self.X[:,0]/1e3 ,
+                              bins = 25 , 
+                              density = False , 
+                              w_ref = self._w_Y.flatten() ,
+                              w_gen = self._w_X.flatten() ,
+                              xlabel = x_label ,
+                              ylabel = "Momentum [Gev/$c$]" )
 
-    self._2d_corr_plot ( figure  = fig ,
-                         gs_list = [ gs[0,3], gs[1,3] ] ,
-                         x_ref = x_ref , 
-                         x_gen = x_gen , 
-                         y = self.X[:,1] ,
-                         bins = 25 , 
-                         density = False , 
-                         w_ref = self._w_Y.flatten() ,
-                         w_gen = self._w_X.flatten() ,
-                         xlabel = x_label ,
-                         ylabel = "Pseudorapidity" )
+    self._grid_2d_corr_plot ( figure  = fig ,
+                              gs_list = [ gs[0,3], gs[1,3] ] ,
+                              x_ref = x_ref , 
+                              x_gen = x_gen , 
+                              y = self.X[:,1] ,
+                              bins = 25 , 
+                              density = False , 
+                              w_ref = self._w_Y.flatten() ,
+                              w_gen = self._w_X.flatten() ,
+                              xlabel = x_label ,
+                              ylabel = "Pseudorapidity" )
 
-    self._2d_corr_plot ( figure  = fig ,
-                         gs_list = [ gs[0,4], gs[1,4] ] ,
-                         x_ref = x_ref , 
-                         x_gen = x_gen , 
-                         y = self.X[:,2] ,
-                         bins = 25 , 
-                         density = False , 
-                         w_ref = self._w_Y.flatten() ,
-                         w_gen = self._w_X.flatten() ,
-                         xlabel = x_label ,
-                         ylabel = "$\mathtt{nTracks}$" )
+    self._grid_2d_corr_plot ( figure  = fig ,
+                              gs_list = [ gs[0,4], gs[1,4] ] ,
+                              x_ref = x_ref , 
+                              x_gen = x_gen , 
+                              y = self.X[:,2] ,
+                              bins = 25 , 
+                              density = False , 
+                              w_ref = self._w_Y.flatten() ,
+                              w_gen = self._w_X.flatten() ,
+                              xlabel = x_label ,
+                              ylabel = "$\mathtt{nTracks}$" )
 
     report.add_figure(options = "width=100%"); plt.clf(); plt.close()
-    # report.add_markdown ("<br/>")
 
-  def _2d_corr_plot ( self , 
-                      figure  ,
-                      gs_list , 
-                      x_ref , x_gen , y , 
-                      bins = 10 , 
-                      density = False , 
-                      w_ref   = None  ,
-                      w_gen   = None  ,
-                      xlabel  = None  ,
-                      ylabel  = None  ) -> None:
+  def _grid_2d_corr_plot ( self , 
+                           figure  ,
+                           gs_list , 
+                           x_ref , x_gen , y , 
+                           bins = 10 , 
+                           density = False , 
+                           w_ref   = None  ,
+                           w_gen   = None  ,
+                           xlabel  = None  ,
+                           ylabel  = None  ) -> None:
     """Internal function"""
     if len(gs_list) != 2: raise ValueError ("It should be passed only 2 GridSpec positions.")
 
@@ -521,6 +522,63 @@ class GanTrainer (TensorTrainer):   # TODO class description
                      xy = (0.8, 0.9), xycoords = "axes fraction", 
                      bbox = dict (boxstyle = "round", fc = "deeppink", alpha = 1.0, ec = "1.0") )
 
+  def _cut_eff_plot ( self ,
+                      report ,
+                      x_ref  , x_gen ,
+                      corr_var = "p" ,
+                      cut_name = None ) -> None:
+    """Internal function"""
+    if corr_var not in ["p", "eta"]:
+      raise ValueError ("error")   # TODO add error message
+
+    fig, ax = plt.subplots ( nrows = 1, ncols = 3, figsize = (21,4), dpi = 100 )
+
+    if corr_var == "p":
+      var  = self.X[:,0]/1e3
+      bins = np.linspace (0, 100, num = 25)
+      x_label = "Momentum [GeV/$c$]"
+    else:
+      var  = self.X[:,1]
+      bins = np.linspace (1.8, 5.5, num = 25)
+      x_label = "Pseudorapidity"
+
+    for i, (pctl, sel) in enumerate ( zip ( [25, 50, 75], ["Loose", "Mild", "Tight"] ) ):
+      ax[i].set_title  (f"{cut_name} > $Q_{i+1}$", fontsize = 14)
+      ax[i].set_xlabel (x_label, fontsize = 12)
+      ax[i].set_ylabel (f"{sel} selection efficiency", fontsize = 12)
+
+      query_ref = ( x_ref > np.percentile (x_ref, pctl, axis = None) )
+      query_gen = ( x_gen > np.percentile (x_gen, pctl, axis = None) )
+
+      h_all, bin_edges = np.histogram ( var            , bins = bins , weights = self._w_Y            . flatten() )
+      h_ref, _         = np.histogram ( var[query_ref] , bins = bins , weights = self._w_Y[query_ref] . flatten() )
+      h_gen, _         = np.histogram ( var[query_gen] , bins = bins , weights = self._w_X[query_gen] . flatten() )
+
+      h_all = np.where ( h_all > 0.0 , h_all , 1e-12 )
+      h_ref = np.where ( h_ref > 0.0 , h_ref , 1e-12 )
+      h_gen = np.where ( h_gen > 0.0 , h_gen , 1e-12 )
+
+      bin_centers = ( bin_edges[1:] + bin_edges[:-1] ) / 2.0
+      eff_ref = np.clip ( h_ref / h_all , 0.0 , 1.0 )
+      eff_gen = np.clip ( h_gen / h_all , 0.0 , 1.0 )
+
+      h_all_err = np.sqrt(h_all) / h_all
+      h_ref_err = np.sqrt(h_ref) / h_ref
+      h_gen_err = np.sqrt(h_gen) / h_gen
+
+      eff_ref_err = eff_ref * np.sqrt ( h_all_err**2 + h_ref_err**2 )
+      eff_gen_err = eff_gen * np.sqrt ( h_all_err**2 + h_gen_err**2 )
+
+      ax[i].errorbar ( bin_centers, eff_ref, yerr = eff_ref_err, marker = "o", markersize = 5, capsize = 3, elinewidth = 2, 
+                       mec = "dodgerblue", mfc = "w", color = "dodgerblue", label = "Data sample", zorder = 0 )
+      ax[i].errorbar ( bin_centers, eff_gen, yerr = eff_gen_err, marker = "o", markersize = 5, capsize = 3, elinewidth = 1, 
+                       mec = "deeppink", mfc = "w", color = "deeppink", label = "Trained model", zorder = 1 )
+
+      ax[i].legend (loc = "lower center", fontsize = 10)
+      ax[i].set_ylim (-0.1, 1.1)
+
+    report.add_figure(options = "width=100%"); plt.clf(); plt.close()
+
   def _1d_corr_plot ( self , 
                       report ,
                       x_ref  , 
@@ -543,10 +601,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
       gen_label = "Generated (no sWeights)"
 
     if corr_var == "p":
-      cond = self._X[:,0]
+      cond = self.X[:,0]
       bounds = [0.1e3, 5e3, 10e3, 25e3, 100e3]
     else:
-      cond = self._X[:,1]
+      cond = self.X[:,1]
       bounds = [1.8, 2.7, 3.5, 4.2, 5.5]
 
     idx = 0

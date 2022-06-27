@@ -99,8 +99,8 @@ class ScikitTrainer (BaseTrainer):
     self._eff_hist1d (report, bins = 25, validation = False)
     self._report_score (report, validation = False)
 
-    filename = f"{self._report_dir}/{self._report_name}"
-    report . write_report ( filename = f"{filename}.html" )
+    filename = f"{self._report_dir}/{self._report_name}.html"
+    report . write_report ( filename = f"{filename}" )
     if (verbose > 0):
       print ( f"[INFO] Training report correctly exported to {filename}" )
 
@@ -172,29 +172,26 @@ class ScikitTrainer (BaseTrainer):
   
       query = (X[:,1] > eta_limits[i]) & (X[:,1] <= eta_limits[i+1])   # NumPy query
 
-      ## TurboCalib
-      h_all, bins_all = np.histogram ( X[:,0][query]/1e3, bins = p_bins, weights = w[query] )
-      h_all = np.where ( h_all > 0, h_all, 0 ) . astype (np.int32)   # ensure positive entries
+      h_all  , bins_edges = np.histogram ( X[:,0][query]/1e3                , bins = p_bins , weights = w[query]                 )   # TurboCalib
+      h_true , _          = np.histogram ( X[:,0][query][Y[query] == 1]/1e3 , bins = p_bins , weights = w[query][Y[query] == 1]  )   # true efficiency
+      h_pred , _          = np.histogram ( X[:,0][query]/1e3                , bins = p_bins , weights = w[query] * probas[query] )   # pred efficiency
 
-      bin_centers = ( bins_all[1:] + bins_all[:-1] ) / 2
+      h_all  = np.where ( h_all  > 0.0 , h_all  , 1e-12 )
+      h_true = np.where ( h_true > 0.0 , h_true , 1e-12 )
+      h_pred = np.where ( h_pred > 0.0 , h_pred , 1e-12 )
+
+      bin_centers = ( bins_edges[1:] + bins_edges[:-1] ) / 2.0
+
       ax[0].errorbar ( bin_centers, h_all, yerr = 0.0, color = "red", drawstyle = "steps-mid", zorder = 2 )
       custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "red") )
       custom_labels  . append ( "TurboCalib" )
-  
-      ## Entries (efficiency parameterization)
-      h_pred, _ = np.histogram ( X[:,0][query]/1e3, bins = bins_all, weights = w[query] * probas[query] )
-      h_pred = np.where ( h_pred > 0, h_pred, 0 ) . astype (np.int32)   # ensure positive entries
-
+        
       ax[0].errorbar ( bin_centers, h_pred, yerr = 0.0, color = "royalblue", drawstyle = "steps-mid", zorder = 1 )
       custom_handles . append ( Patch (facecolor = "white", alpha = 0.8, edgecolor = "royalblue") )
-      custom_labels  . append ( f"isMuon model" )
+      custom_labels  . append ( "isMuon model" )
   
-      ## Entries (efficiency correction)
-      h_true, _ = np.histogram ( X[:,0][query][Y[query] == 1]/1e3, bins = bins_all, weights = w[query][Y[query] == 1] )
-      h_true = np.where ( h_true > 0, h_true, 0 ) . astype (np.int32)   # ensure positive entries
-
       ax[0].errorbar ( bin_centers, h_true, yerr = h_true**0.5, fmt = '.', color = "black", 
-                       barsabove = True, capsize = 2, label = f"isMuon passed", zorder = 0 )
+                       barsabove = True, capsize = 2, label = "isMuon passed", zorder = 0 )
       handles, labels = ax[0].get_legend_handles_labels()
       custom_handles . append ( handles[-1] )
       custom_labels  . append ( labels[-1] )
@@ -213,32 +210,15 @@ class ScikitTrainer (BaseTrainer):
       ax[1].set_xlabel ("Momentum [GeV/$c$]", fontsize = 12)
       ax[1].set_ylabel ("isMuon efficiency", fontsize = 12)
 
-      ## Efficiency parameterization
-      eff_pred = 99. * np.ones_like(h_true) . astype (np.float32)
-      eff_pred[h_all>0] = h_pred[h_all>0] / h_all[h_all>0]
-      eff_pred[eff_pred>1] = 1   # constrain efficiency to 1.0
+      eff_true = np.clip ( h_true / h_all , 0.0 , 1.0 )
+      eff_pred = np.clip ( h_pred / h_all , 0.0 , 1.0 )
 
-      h_all_err = np.zeros_like(h_all) . astype (np.float32)
-      h_all_err[h_all>0] = np.sqrt(h_all[h_all>0]) / h_all[h_all>0]
-
-      h_pred_err = np.zeros_like(h_pred) . astype (np.float32)
-      h_pred_err[h_all>0] = np.sqrt(h_pred[h_all>0]) / h_pred[h_all>0]
-      h_pred_err[h_pred==0] = 0.0
+      h_all_err  = np.sqrt(h_all)  / h_all
+      h_true_err = np.sqrt(h_true) / h_true
+      h_pred_err = np.sqrt(h_pred) / h_pred
       
-      eff_pred_err = np.zeros_like(eff_pred) . astype (np.float32)
-      eff_pred_err[h_all>0] = eff_pred[h_all>0] * np.sqrt( h_pred_err[h_all>0]**2 + h_all_err[h_all>0]**2 )
-      
-      ## Efficiency correction
-      eff_true = 99. * np.ones_like(h_true) . astype (np.float32)
-      eff_true[h_all>0] = h_true[h_all>0] / h_all[h_all>0]
-      eff_true[eff_true>1] = 1   # constrain efficiency to 1.0
-
-      h_true_err = np.zeros_like(h_true) . astype (np.float32)
-      h_true_err[h_all>0] = np.sqrt(h_true[h_all>0]) / h_true[h_all>0]
-      h_true_err[h_true==0] = 0.0
-
-      eff_true_err = np.zeros_like(eff_true) . astype (np.float32)
-      eff_true_err[h_all>0] = eff_true[h_all>0] * np.sqrt( h_true_err[h_all>0]**2 + h_all_err[h_all>0]**2 )
+      eff_true_err = eff_true * np.sqrt ( h_all_err**2 + h_true_err**2 )
+      eff_pred_err = eff_pred * np.sqrt ( h_all_err**2 + h_pred_err**2 )
 
       ax[1].errorbar ( bin_centers, eff_true, yerr = eff_true_err, marker = "o", markersize = 5, capsize = 3, elinewidth = 2, 
                        mec = "coral", mfc = "w", color = "coral", label = f"Data sample", zorder = 0 )
@@ -246,6 +226,7 @@ class ScikitTrainer (BaseTrainer):
                        mec = "forestgreen", mfc = "w", color = "forestgreen", label = f"Trained model", zorder = 1 )
 
       ax[1].legend (loc = "upper right", fontsize = 10)
+      ax[1].set_ylim (-0.1, 1.1)
 
       report.add_figure (options = "width=100%"); plt.clf(); plt.close()
 
