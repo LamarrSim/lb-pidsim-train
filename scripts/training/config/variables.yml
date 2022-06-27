@@ -19,22 +19,22 @@ Rich:
     2016-MagUp-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
     2016-MagUp-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
     2016-MagDown-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
     2016-MagDown-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
 
   Y_vars:
@@ -96,22 +96,22 @@ Muon:
     2016-MagUp-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
     2016-MagUp-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
     2016-MagDown-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
     2016-MagDown-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
 
   Y_vars:
@@ -175,7 +175,7 @@ GlobalPID:
     2016-MagUp-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
       - weighted-quantile-10000
       - weighted-quantile-10000
@@ -187,7 +187,7 @@ GlobalPID:
     2016-MagUp-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
       - simple-quantile-10000
       - simple-quantile-10000
@@ -199,7 +199,7 @@ GlobalPID:
     2016-MagDown-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
       - weighted-quantile-10000
       - weighted-quantile-10000
@@ -211,7 +211,7 @@ GlobalPID:
     2016-MagDown-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
       - simple-quantile-10000
       - simple-quantile-10000
@@ -310,7 +310,7 @@ GlobalMuonId:
     2016-MagUp-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
       - weighted-quantile-10000
       - weighted-quantile-10000
@@ -321,7 +321,7 @@ GlobalMuonId:
     2016-MagUp-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
       - simple-quantile-10000
       - simple-quantile-10000
@@ -332,7 +332,7 @@ GlobalMuonId:
     2016-MagDown-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10
+      - weighted-quantile-100
       - pass-through
       - weighted-quantile-10000
       - weighted-quantile-10000
@@ -343,7 +343,7 @@ GlobalMuonId:
     2016-MagDown-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
       - simple-quantile-10000
       - simple-quantile-10000
@@ -399,22 +399,22 @@ isMuon:
     2016-MagUp-data:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
     2016-MagUp-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
     2016-MagDown-data:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
     2016-MagDown-simu:
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10
+      - simple-quantile-100
       - pass-through
 
   Y_vars:
