@@ -142,7 +142,7 @@ FLOAT_T* gan_pipe ( mlfun tX,
                     const FLOAT_T *random, 
                     unsigned short nIn, 
                     unsigned short nOut, 
-                    unsigned short nRandom)
+                    unsigned short nRandom )
 {
   unsigned short i; 
   FLOAT_T buf_input[BUFFERSIZE]; 
@@ -174,12 +174,11 @@ FLOAT_T* gan_pipe ( mlfun tX,
 
 
 extern "C"
-FLOAT_T *GenericPipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *random,
-                    mlfun richTx,  mlfun richModel,  mlfun richTy, 
-                    mlfun muonTx,  mlfun muonModel,  mlfun muonTy, 
-                    mlfun gpidTx,  mlfun gpidModel,  mlfun gpidTy, 
-                    mlfun gmuidTx, mlfun gmuidModel, mlfun gmuidTy 
-                  )
+FLOAT_T *GenericPipe ( FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *random ,
+                       mlfun richTx,  mlfun richModel,  mlfun richTy  , 
+                       mlfun muonTx,  mlfun muonModel,  mlfun muonTy  , 
+                       mlfun gpidTx,  mlfun gpidModel,  mlfun gpidTy  , 
+                       mlfun gmuidTx, mlfun gmuidModel, mlfun gmuidTy )
 {
   short i, j;
   float isMuon;
@@ -306,12 +305,11 @@ FLOAT_T *muon_pipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *random
     printf ( "rnd [%d]: %.2f\n", i, random[i]);
 #endif 
 
-  return GenericPipe (output, input, random,
-      RichMuon_tX, RichMuon, RichMuon_tY_inverse,
-      MuonMuon_tX, MuonMuon, MuonMuon_tY_inverse,
-      GlobalPIDMuon_tX, GlobalPIDMuon, GlobalPIDMuon_tY_inverse,
-      GlobalMuonIdMuon_tX, GlobalMuonIdMuon, GlobalMuonIdMuon_tY_inverse
-      ); 
+  return GenericPipe ( output , input , random ,
+                       RichMuon_tX         , RichMuon         , RichMuon_tY_inverse         ,
+                       MuonMuon_tX         , MuonMuon         , MuonMuon_tY_inverse         ,
+                       GlobalPIDMuon_tX    , GlobalPIDMuon    , GlobalPIDMuon_tY_inverse    ,
+                       GlobalMuonIdMuon_tX , GlobalMuonIdMuon , GlobalMuonIdMuon_tY_inverse ); 
 }
 
 
@@ -329,12 +327,11 @@ FLOAT_T *pion_pipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *random
     printf ( "rnd [%d]: %.2f\n", i, random[i]);
 #endif 
 
-  return GenericPipe (output, input, random,
-      RichPion_tX, RichPion, RichPion_tY_inverse,
-      MuonPion_tX, MuonPion, MuonPion_tY_inverse,
-      GlobalPIDPion_tX, GlobalPIDPion, GlobalPIDPion_tY_inverse,
-      GlobalMuonIdPion_tX, GlobalMuonIdPion, GlobalMuonIdPion_tY_inverse
-      ); 
+  return GenericPipe ( output , input , random ,
+                       RichPion_tX         , RichPion         , RichPion_tY_inverse         ,
+                       MuonPion_tX         , MuonPion         , MuonPion_tY_inverse         ,
+                       GlobalPIDPion_tX    , GlobalPIDPion    , GlobalPIDPion_tY_inverse    ,
+                       GlobalMuonIdPion_tX , GlobalMuonIdPion , GlobalMuonIdPion_tY_inverse ); 
 }
 
 
@@ -352,12 +349,11 @@ FLOAT_T *kaon_pipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *random
     printf ( "rnd [%d]: %.2f\n", i, random[i]);
 #endif 
 
-  return GenericPipe (output, input, random,
-      RichKaon_tX, RichKaon, RichKaon_tY_inverse,
-      MuonKaon_tX, MuonKaon, MuonKaon_tY_inverse,
-      GlobalPIDKaon_tX, GlobalPIDKaon, GlobalPIDKaon_tY_inverse,
-      GlobalMuonIdKaon_tX, GlobalMuonIdKaon, GlobalMuonIdKaon_tY_inverse
-      ); 
+  return GenericPipe ( output , input , random ,
+      RichKaon_tX         , RichKaon         , RichKaon_tY_inverse         ,
+      MuonKaon_tX         , MuonKaon         , MuonKaon_tY_inverse         ,
+      GlobalPIDKaon_tX    , GlobalPIDKaon    , GlobalPIDKaon_tY_inverse    ,
+      GlobalMuonIdKaon_tX , GlobalMuonIdKaon , GlobalMuonIdKaon_tY_inverse ); 
 }
 
 
@@ -375,10 +371,9 @@ FLOAT_T *proton_pipe (FLOAT_T* output, const FLOAT_T *input, const FLOAT_T *rand
     printf ( "rnd [%d]: %.2f\n", i, random[i]);
 #endif 
 
-  return GenericPipe (output, input, random,
-      RichProton_tX, RichProton, RichProton_tY_inverse,
-      MuonProton_tX, MuonProton, MuonProton_tY_inverse,
-      GlobalPIDProton_tX, GlobalPIDProton, GlobalPIDProton_tY_inverse,
-      GlobalMuonIdProton_tX, GlobalMuonIdProton, GlobalMuonIdProton_tY_inverse
-      ); 
+  return GenericPipe ( output , input , random ,
+      RichProton_tX         , RichProton         , RichProton_tY_inverse         ,
+      MuonProton_tX         , MuonProton         , MuonProton_tY_inverse         ,
+      GlobalPIDProton_tX    , GlobalPIDProton    , GlobalPIDProton_tY_inverse    ,
+      GlobalMuonIdProton_tX , GlobalMuonIdProton , GlobalMuonIdProton_tY_inverse ); 
 }

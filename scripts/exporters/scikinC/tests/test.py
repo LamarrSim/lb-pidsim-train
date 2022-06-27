@@ -74,9 +74,9 @@ ismuon_pipe = isMuonPipe (args.particle, args.slot)
 pipe = FullPipe (args.particle, args.slot)
 
 n = 10000
-p = np.random.normal (30e3, 0.3e3, n)
+p = np.random.normal (50e3, 0.5e3, n)
 eta = np.random.uniform (2, 5, (n,2)) . mean (axis = -1)
-nTracks = np.random.uniform (20, 150, (n,2)) . mean (axis = -1) . astype (np.int32)
+nTracks = np.random.uniform (20, 200, (n,2)) . mean (axis = -1) . astype (np.int32)
 charge = np.random.choice ([-1., 1.], n)
 
 ismuon_eff = ismuon_pipe.predict (np.c_[p, eta, nTracks, charge]) 
@@ -131,9 +131,9 @@ for data_row, rnd_row, pyout_row, ismuoneff_row in progress_bar ( zip (data, rnd
   #   print ( np.c_ [out_f, pyout_row, relerr, relerr < 1e-3] ) 
   #   raise Exception ("C and Python implementation were found inconsistent")
 
-  errors.append (relerr)   # debug
+  errors.append (np.concatenate ([np.array([abserr]), relerr], axis = 0))   # debug
 
-df = pd.DataFrame (errors, columns = [f"Rich_{i}" for i in range(4)] + [f"Muon_{i}" for i in range(2)] + [f"GlobalPID_{i}" for i in range(7)] + [f"GlobalMuonId_{i}" for i in range(2)])
+df = pd.DataFrame (errors, columns = ["isMuon"] + [f"Rich_{i}" for i in range(4)] + [f"Muon_{i}" for i in range(2)] + [f"GlobalPID_{i}" for i in range(7)] + [f"GlobalMuonId_{i}" for i in range(2)])
 print (df.describe())   # debug
 
 print ("SUCCESS")
