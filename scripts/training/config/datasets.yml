@@ -2,41 +2,52 @@
 # |    RICH    |
 # +------------+
 Rich:
-  #  Muon
-  # ------
+
+  #  RICH : Muon
+  # -------------
   Muon:
     2016-MagUp-data:
       - PIDCalib16_U_Jpsi_MuMTuple.root 
       - PIDCalib16_U_Jpsi_MuPTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_muon.root
+      - PIDSim16_U_incl_b_Mu.root
+      - PIDSim16_U_Bd_JpsiX_Mu.root
+      - PIDSim16_U_Bu_JpsiX_Mu.root
     2016-MagDown-data:
       - PIDCalib16_D_Jpsi_MuMTuple.root
       - PIDCalib16_D_Jpsi_MuPTuple.root
-  #  Pion
-  # ------
+
+  #  RICH : Pion
+  # -------------
   Pion:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_PiPTuple.root
       - PIDCalib16_U_DSt_PiMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_pion.root
+      - PIDSim16_U_incl_b_Pi.root
+      - PIDSim16_U_Bd_JpsiX_Pi.root
+      - PIDSim16_U_Bu_JpsiX_Pi.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_PiPTuple.root
       - PIDCalib16_D_DSt_PiMTuple.root
-  #  Kaon
-  # ------
+
+  #  RICH : Kaon
+  # -------------
   Kaon:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_KPTuple.root
       - PIDCalib16_U_DSt_KMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_kaon.root
+      - PIDSim16_U_incl_b_K.root
+      - PIDSim16_U_Bd_JpsiX_K.root
+      - PIDSim16_U_Bu_JpsiX_K.root
+      - PIDSim16_U_Lb_etacpK_K.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_KPTuple.root
       - PIDCalib16_D_DSt_KMTuple.root
-  #  Proton
-  # --------
+
+  #  RICH : Proton
+  # ---------------
   Proton:
     2016-MagUp-data:
       - PIDCalib16_U_Lam0LL_PTuple.root
@@ -46,7 +57,10 @@ Rich:
       - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
       - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_proton.root
+      - PIDSim16_U_incl_b_P.root
+      - PIDSim16_U_Bd_JpsiX_P.root
+      - PIDSim16_U_Bu_JpsiX_P.root
+      - PIDSim16_U_Lb_etacpK_P.root
     2016-MagDown-data:
       - PIDCalib16_D_Lam0LL_PTuple.root
       - PIDCalib16_D_Lam0LL_PbarTuple.root
@@ -54,95 +68,122 @@ Rich:
       - PIDCalib16_D_Lam0LL_HPT_PbarTuple.root
       - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
       - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
+
 
 # +------------+
 # |    MUON    |
 # +------------+
 Muon:
-  #  Muon
-  # ------
+
+  #  MUON : Muon
+  # -------------
   Muon:
     2016-MagUp-data:
       - PIDCalib16_U_Jpsi_MuMTuple.root 
       - PIDCalib16_U_Jpsi_MuPTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_muon.root
+      - PIDSim16_U_incl_b_Mu.root
+      - PIDSim16_U_Bd_JpsiX_Mu.root
+      - PIDSim16_U_Bu_JpsiX_Mu.root
     2016-MagDown-data:
       - PIDCalib16_D_Jpsi_MuMTuple.root
       - PIDCalib16_D_Jpsi_MuPTuple.root
-  #  Pion
-  # ------
+
+  #  MUON : Pion
+  # -------------
   Pion:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_PiPTuple.root
       - PIDCalib16_U_DSt_PiMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_pion.root
+      - PIDSim16_U_incl_b_Pi.root
+      - PIDSim16_U_Bd_JpsiX_Pi.root
+      - PIDSim16_U_Bu_JpsiX_Pi.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_PiPTuple.root
       - PIDCalib16_D_DSt_PiMTuple.root
-  #  Kaon
-  # ------
+
+  #  MUON : Kaon
+  # -------------
   Kaon:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_KPTuple.root
       - PIDCalib16_U_DSt_KMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_kaon.root
+      - PIDSim16_U_incl_b_K.root
+      - PIDSim16_U_Bd_JpsiX_K.root
+      - PIDSim16_U_Bu_JpsiX_K.root
+      - PIDSim16_U_Lb_etacpK_K.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_KPTuple.root
       - PIDCalib16_D_DSt_KMTuple.root
-  #  Proton
-  # --------
+
+  #  MUON : Proton
+  # ---------------
   Proton:
     2016-MagUp-data:
       - PIDCalib16_U_Lam0LL_P_isMuonTuple.root
       - PIDCalib16_U_Lam0LL_Pbar_isMuonTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_proton.root
+      - PIDSim16_U_incl_b_P.root
+      - PIDSim16_U_Bd_JpsiX_P.root
+      - PIDSim16_U_Bu_JpsiX_P.root
+      - PIDSim16_U_Lb_etacpK_P.root
     2016-MagDown-data:
       - PIDCalib16_D_Lam0LL_P_isMuonTuple.root
       - PIDCalib16_D_Lam0LL_Pbar_isMuonTuple.root
+
 
 # +------------------+
 # |    GLOBAL PID    |
 # +------------------+
 GlobalPID:
-  #  Muon
-  # ------
+
+  #  GLOBAL PID : Muon
+  # -------------------
   Muon:
     2016-MagUp-data:
       - PIDCalib16_U_Jpsi_MuMTuple.root 
       - PIDCalib16_U_Jpsi_MuPTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_muon.root
+      - PIDSim16_U_incl_b_Mu.root
+      - PIDSim16_U_Bd_JpsiX_Mu.root
+      - PIDSim16_U_Bu_JpsiX_Mu.root
     2016-MagDown-data:
       - PIDCalib16_D_Jpsi_MuMTuple.root
       - PIDCalib16_D_Jpsi_MuPTuple.root
-  #  Pion
-  # ------
+
+  #  GLOBAL PID : Pion
+  # -------------------
   Pion:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_PiPTuple.root
       - PIDCalib16_U_DSt_PiMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_pion.root
+      - PIDSim16_U_incl_b_Pi.root
+      - PIDSim16_U_Bd_JpsiX_Pi.root
+      - PIDSim16_U_Bu_JpsiX_Pi.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_PiPTuple.root
       - PIDCalib16_D_DSt_PiMTuple.root
-  #  Kaon
-  # ------
+
+  #  GLOBAL PID : Kaon
+  # -------------------
   Kaon:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_KPTuple.root
       - PIDCalib16_U_DSt_KMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_kaon.root
+      - PIDSim16_U_incl_b_K.root
+      - PIDSim16_U_Bd_JpsiX_K.root
+      - PIDSim16_U_Bu_JpsiX_K.root
+      - PIDSim16_U_Lb_etacpK_K.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_KPTuple.root
       - PIDCalib16_D_DSt_KMTuple.root
-  #  Proton
-  # --------
+
+  #  GLOBAL PID : Proton
+  # ---------------------
   Proton:
     2016-MagUp-data:
       - PIDCalib16_U_Lam0LL_PTuple.root
@@ -152,7 +193,10 @@ GlobalPID:
       - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
       - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_proton.root
+      - PIDSim16_U_incl_b_P.root
+      - PIDSim16_U_Bd_JpsiX_P.root
+      - PIDSim16_U_Bu_JpsiX_P.root
+      - PIDSim16_U_Lb_etacpK_P.root
     2016-MagDown-data:
       - PIDCalib16_D_Lam0LL_PTuple.root
       - PIDCalib16_D_Lam0LL_PbarTuple.root
@@ -161,94 +205,121 @@ GlobalPID:
       - PIDCalib16_D_Lam0LL_VHPT_PTuple.root
       - PIDCalib16_D_Lam0LL_VHPT_PbarTuple.root
 
+
 # +----------------------+
 # |    GLOBAL MUON ID    |
 # +----------------------+
 GlobalMuonId:
-  #  Muon
-  # ------
+
+  #  GLOBAL MUON ID : Muon
+  # -----------------------
   Muon:
     2016-MagUp-data:
       - PIDCalib16_U_Jpsi_MuMTuple.root 
       - PIDCalib16_U_Jpsi_MuPTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_muon.root
+      - PIDSim16_U_incl_b_Mu.root
+      - PIDSim16_U_Bd_JpsiX_Mu.root
+      - PIDSim16_U_Bu_JpsiX_Mu.root
     2016-MagDown-data:
       - PIDCalib16_D_Jpsi_MuMTuple.root
       - PIDCalib16_D_Jpsi_MuPTuple.root
-  #  Pion
-  # ------
+
+  #  GLOBAL MUON ID : Pion
+  # -----------------------
   Pion:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_PiPTuple.root
       - PIDCalib16_U_DSt_PiMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_pion.root
+      - PIDSim16_U_incl_b_Pi.root
+      - PIDSim16_U_Bd_JpsiX_Pi.root
+      - PIDSim16_U_Bu_JpsiX_Pi.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_PiPTuple.root
       - PIDCalib16_D_DSt_PiMTuple.root
-  #  Kaon
-  # ------
+
+  #  GLOBAL MUON ID : Kaon
+  # -----------------------
   Kaon:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_KPTuple.root
       - PIDCalib16_U_DSt_KMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_kaon.root
+      - PIDSim16_U_incl_b_K.root
+      - PIDSim16_U_Bd_JpsiX_K.root
+      - PIDSim16_U_Bu_JpsiX_K.root
+      - PIDSim16_U_Lb_etacpK_K.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_KPTuple.root
       - PIDCalib16_D_DSt_KMTuple.root
-  #  Proton
-  # --------
+
+  #  GLOBAL MUON ID : Proton
+  # -------------------------
   Proton:
     2016-MagUp-data:
       - PIDCalib16_U_Lam0LL_P_isMuonTuple.root
       - PIDCalib16_U_Lam0LL_Pbar_isMuonTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_proton.root
+      - PIDSim16_U_incl_b_P.root
+      - PIDSim16_U_Bd_JpsiX_P.root
+      - PIDSim16_U_Bu_JpsiX_P.root
+      - PIDSim16_U_Lb_etacpK_P.root
     2016-MagDown-data:
       - PIDCalib16_D_Lam0LL_P_isMuonTuple.root
       - PIDCalib16_D_Lam0LL_Pbar_isMuonTuple.root
+
 
 # +---------------+
 # |    IS MUON    |
 # +---------------+
 isMuon:
-  #  Muon
-  # ------
+
+  #  IS MUON : Muon
+  # ----------------
   Muon:
     2016-MagUp-data:
       - PIDCalib16_U_Jpsi_MuMTuple.root 
       - PIDCalib16_U_Jpsi_MuPTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_muon.root
+      - PIDSim16_U_incl_b_Mu.root
+      - PIDSim16_U_Bd_JpsiX_Mu.root
+      - PIDSim16_U_Bu_JpsiX_Mu.root
     2016-MagDown-data:
       - PIDCalib16_D_Jpsi_MuMTuple.root
       - PIDCalib16_D_Jpsi_MuPTuple.root
-  #  Pion
-  # ------
+
+  #  IS MUON : Pion
+  # ----------------
   Pion:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_PiPTuple.root
       - PIDCalib16_U_DSt_PiMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_pion.root
+      - PIDSim16_U_incl_b_Pi.root
+      - PIDSim16_U_Bd_JpsiX_Pi.root
+      - PIDSim16_U_Bu_JpsiX_Pi.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_PiPTuple.root
       - PIDCalib16_D_DSt_PiMTuple.root
-  #  Kaon
-  # ------
+
+  #  IS MUON : Kaon
+  # ----------------
   Kaon:
     2016-MagUp-data:
       - PIDCalib16_U_DSt_KPTuple.root
       - PIDCalib16_U_DSt_KMTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_kaon.root
+      - PIDSim16_U_incl_b_K.root
+      - PIDSim16_U_Bd_JpsiX_K.root
+      - PIDSim16_U_Bu_JpsiX_K.root
+      - PIDSim16_U_Lb_etacpK_K.root
     2016-MagDown-data:
       - PIDCalib16_D_DSt_KPTuple.root
       - PIDCalib16_D_DSt_KMTuple.root
-  #  Proton
-  # --------
+
+  #  IS MUON : Proton
+  # ------------------
   Proton:
     2016-MagUp-data:
       - PIDCalib16_U_Lam0LL_PTuple.root
@@ -258,7 +329,10 @@ isMuon:
       - PIDCalib16_U_Lam0LL_VHPT_PTuple.root
       - PIDCalib16_U_Lam0LL_VHPT_PbarTuple.root
     2016-MagUp-simu:
-      - PIDsimu2016_U_proton.root
+      - PIDSim16_U_incl_b_P.root
+      - PIDSim16_U_Bd_JpsiX_P.root
+      - PIDSim16_U_Bu_JpsiX_P.root
+      - PIDSim16_U_Lb_etacpK_P.root
     2016-MagDown-data:
       - PIDCalib16_D_Lam0LL_PTuple.root
       - PIDCalib16_D_Lam0LL_PbarTuple.root
