@@ -97,7 +97,7 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  Y_vars = variables[args.model]["Y_vars"][slot] , 
                                  w_var  = variables[args.model]["w_vars"][slot] if sw_avail else None , 
                                  selections = selections[args.model][slot] , 
-                                 tree_names = None if calib_sample else f"make_tuple/tuple_{args.particle.lower()}" , 
+                                 tree_names = None if calib_sample else "make_tuple" , 
                                  chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
