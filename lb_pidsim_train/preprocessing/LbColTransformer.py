@@ -47,7 +47,7 @@ class LbColTransformer:   # TODO add docstring
       return self . fit (X, y = y, sample_weight = sample_weight) . transform (X)
 
   def transform (self, X):
-    X_tr = []
+    X_tr = list()
     for key, scaler, cols in self._col_transformer.transformers_:
       if key == "pass_through":
         X_tr . append ( X[:,cols] )
@@ -56,10 +56,13 @@ class LbColTransformer:   # TODO add docstring
     return np.concatenate ( X_tr, axis = 1 )
 
   def inverse_transform (self, X):
-    perm_indices = []
+    perm_indices = list()
     for _, _, cols in self._col_transformer.transformers_: 
       perm_indices += list(cols)
-    X_perm = X[:, perm_indices]
+
+    X_perm = np.zeros_like (X)
+    for i, j in enumerate(perm_indices):
+      X_perm[:,j] = X[:,i]
 
     X_tr = np.zeros_like (X_perm)
     for key, scaler, cols in self._col_transformer.transformers_:

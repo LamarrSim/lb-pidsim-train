@@ -18,9 +18,9 @@ def preprocessor ( data ,
   data : `np.ndarray`
     Array to preprocess according to a specific strategy.
 
-  strategies : {'quantile-highbin', 'quantile-lowbin', 'standard', 'minmax'}, list of strategies
-    Strategy to use for preprocessing (`'quantile-highbin'`, by default).
-    The `'quantile-*'` strategies rely on the Scikit-Learn's 
+  strategies : {'minmax', 'standard', 'simple-quantile', 'weighted-quantile'}, list of strategies
+    Strategy to use for preprocessing (`'standard'`, by default).
+    The `'*-quantile'` strategies rely on the Scikit-Learn's 
     `QuantileTransformer`, `'standard'` implements `StandardScaler`,
     while `'minmax'` stands for `MinMaxScaler`.
 
@@ -50,41 +50,41 @@ def preprocessor ( data ,
   --------
   >>> import numpy as np
   >>> a = np.random.uniform ( -5, 5, size = (1000,2) )
-  >>> b = np.random.exponential ( 2, size = 1000 )
+  >>> b = np.random.exponential ( 2, size = (1000,2) )
   >>> c = np.where ( a[:,0] < 0, -1, 1 )
   >>> data = np.c_ [a, b, c]
   >>> print (data)
-  [[ 3.73251479  1.80495666  1.74969503  1.        ]
-   [ 0.06708618 -0.43481269  2.85217265  1.        ]
-   [ 1.02627701 -2.477204    2.94474338  1.        ]
+  [[-1.07596365  3.13736563  0.91456348  6.88416941 -1.        ]
+   [-1.85459971  4.2439101   1.90906239  2.97599951 -1.        ]
+   [-1.31761994 -2.83872989  1.07036459  1.97196161 -1.        ]
    ...
-   [-4.11890958  2.12049264  2.40337247 -1.        ]
-   [ 2.8872164  -4.50525599  1.35950868  1.        ]
-   [ 4.76668602 -1.1865085   0.65532981  1.        ]]
+   [-1.84121035 -3.86157199  2.7373931   0.67573819 -1.        ]
+   [ 2.79119745 -0.48778006  0.27411022  1.01966811  1.        ]
+   [ 3.09058781 -4.26678205  1.43145045  1.70428456  1.        ]]
   >>> w = np.random.normal ( size = 1000 )
   >>> from lb_pidsim_train.utils import preprocessor
-  >>> scaler = preprocessor ( data, weights = w, strategies = ["standard","minmax"], cols_to_transform = [(0,1),2] )
+  >>> scaler = preprocessor ( data, weights = w, strategies = ["standard","minmax"], cols_to_transform = [(0,2),3] )
   >>> data_scaled = scaler . transform (data)
   >>> print (data_scaled)
-  [[ 1.12664787  0.7559853   0.14892489  1.        ]
-   [-0.06086264  0.18719734  0.24302712  1.        ]
-   [ 0.24989207 -0.3314666   0.25092852  1.        ]
+  [[20.29739155 -2.20668287  0.44542308  3.13736563 -1.        ]
+   [19.5187555  -1.88849891  0.19237571  4.2439101  -1.        ]
+   [20.05573526 -2.15683524  0.12736596 -2.83872989 -1.        ]
    ...
-   [-1.41702434  0.83611546  0.20471968 -1.        ]
-   [ 0.85279157 -0.84648909  0.11562044  1.        ]
-   [ 1.46169442 -0.00369532  0.05551509  1.        ]]
+   [19.53214486 -1.62347948  0.04343769 -3.86157199 -1.        ]
+   [24.16455265 -2.41159204  0.06570657 -0.48778006  1.        ]
+   [24.46394302 -2.04130799  0.11003432 -4.26678205  1.        ]]
   >>> data_inv_tr = scaler . inverse_transform (data_scaled)
   >>> print (data_inv_tr)
-  [[ 3.73251479  1.80495666  1.74969503  1.        ]
-   [ 0.06708618 -0.43481269  2.85217265  1.        ]
-   [ 1.02627701 -2.477204    2.94474338  1.        ]
+  [[-1.07596365  3.13736563  0.91456348  6.88416941 -1.        ]
+   [-1.85459971  4.2439101   1.90906239  2.97599951 -1.        ]
+   [-1.31761994 -2.83872989  1.07036459  1.97196161 -1.        ]
    ...
-   [-4.11890958  2.12049264  2.40337247 -1.        ]
-   [ 2.8872164  -4.50525599  1.35950868  1.        ]
-   [ 4.76668602 -1.1865085   0.65532981  1.        ]]
+   [-1.84121035 -3.86157199  2.7373931   0.67573819 -1.        ]
+   [ 2.79119745 -0.48778006  0.27411022  1.01966811  1.        ]
+   [ 3.09058781 -4.26678205  1.43145045  1.70428456  1.        ]]
   >>> err = np.max (abs (data_inv_tr - data) / (1 + abs (data)))
   >>> print (err)
-  2.329972186166122e-16
+  1.7370222821991345e-15
   """
   ## List data-type promotion
   if isinstance (strategies, str):
@@ -159,7 +159,7 @@ def preprocessor ( data ,
 if __name__ == "__main__":
   ## Dataset
   a = np.random.uniform ( -5, 5, size = (1000,2) )
-  b = np.random.exponential ( 2, size = 1000 )
+  b = np.random.exponential ( 2, size = (1000,2) )
   c = np.where (a[:,0] < 0, -1, 1)
   w = np.random.normal ( size = 1000 )
   data = np.c_ [a, b, c]
@@ -170,7 +170,7 @@ if __name__ == "__main__":
   # print (w, "\n")
 
   ## Dataset after preprocessing
-  scaler = preprocessor ( data, weights = w, strategies = ["standard","minmax"], cols_to_transform = [(0,1),2] )
+  scaler = preprocessor ( data, weights = w, strategies = ["standard","minmax"], cols_to_transform = [(0,2),3] )
   data_scaled = scaler . transform (data)
   print ("\t\t\t\t\t+--------------------+")
   print ("\t\t\t\t\t|   FIT_TRANSFORM    |")
