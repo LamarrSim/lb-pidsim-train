@@ -13,17 +13,17 @@ standard:
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
-      g_num_layers  : 5
+      g_num_layers  : 7
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
       d_lr : 0.00002
-      g_lr : 0.00002
-      d_updt_per_batch : 2
+      g_lr : 0.00004
+      d_updt_per_batch : 4
       g_updt_per_batch : 1
-      v_adv_dir_updt : 2
-      adv_lp_penalty : 100.0
-      lr_sched_factor : 0.95
+      v_adv_dir_updt : 1
+      adv_lp_penalty : 50.0
+      lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
       num_epochs : 250
@@ -43,15 +43,15 @@ standard:
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
-      g_num_layers  : 7 #5
+      g_num_layers  : 7
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00003
-      g_lr : 0.00002
-      d_updt_per_batch : 2
+      d_lr : 0.00002 #3
+      g_lr : 0.00004 #2
+      d_updt_per_batch : 4 #2
       g_updt_per_batch : 1
-      v_adv_dir_updt :  2
+      v_adv_dir_updt : 1 #2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.90
       lr_sched_step : 10
@@ -77,11 +77,11 @@ standard:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00002 #4
-      g_lr : 0.00004 #2
-      d_updt_per_batch : 2
+      d_lr : 0.00002
+      g_lr : 0.00004
+      d_updt_per_batch : 4 #2
       g_updt_per_batch : 1
-      v_adv_dir_updt : 2
+      v_adv_dir_updt : 1 #2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.90
       lr_sched_step : 10
@@ -154,7 +154,7 @@ base:
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : 2000000
+      chunk_size : 5000000   # 18 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -163,15 +163,15 @@ base:
       g_alpha_leaky : 0.05
       latent_dim : 64
       d_lr : 0.00002
-      g_lr : 0.00002
-      d_updt_per_batch : 2
+      g_lr : 0.00003
+      d_updt_per_batch : 3
       g_updt_per_batch : 1
       v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
-      lr_sched_factor : 0.95
+      lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -209,7 +209,7 @@ base:
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : 2000000
+      chunk_size : 5000000   # 150 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -218,15 +218,15 @@ base:
       g_alpha_leaky : 0.05
       latent_dim : 64
       d_lr : 0.00005
-      g_lr : 0.00002
+      g_lr : 0.00003
       d_updt_per_batch : 3
       g_updt_per_batch : 1
       v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.90
-      lr_sched_step : 15
+      lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -264,7 +264,7 @@ base:
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : 2000000
+      chunk_size : 5000000   # 40 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -272,16 +272,16 @@ base:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00002
-      g_lr : 0.00002
-      d_updt_per_batch : 2
+      d_lr : 0.00001
+      g_lr : 0.00003
+      d_updt_per_batch : 3
       g_updt_per_batch : 1
       v_adv_dir_updt : 2
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -318,7 +318,7 @@ base:
     
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : 2000000
+      chunk_size : 5000000   # 30 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -327,15 +327,15 @@ base:
       g_alpha_leaky : 0.05
       latent_dim : 64
       d_lr : 0.00002
-      g_lr : 0.00002
-      d_updt_per_batch : 2
+      g_lr : 0.00003
+      d_updt_per_batch : 3
       g_updt_per_batch : 1
-      v_adv_dir_updt : 2
+      v_adv_dir_updt : 1
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->

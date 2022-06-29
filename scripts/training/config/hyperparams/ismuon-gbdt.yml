@@ -6,7 +6,7 @@ Muon:
   # <---- | Calib samples | 2016 Mag Up | ---->
   2016-MagUp-data:
     chunk_size : 10000000   # 60 mln
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.402
     n_estimators  : 75
     criterion : squared_error
@@ -17,7 +17,7 @@ Muon:
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:
     chunk_size : null   # 175k
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.402
     n_estimators  : 75
     criterion : squared_error
@@ -39,7 +39,7 @@ Pion:
   # <---- | Calib samples | 2016 Mag Up | ---->
   2016-MagUp-data:
     chunk_size : 20000000   # 150 mln
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.024
     n_estimators  : 142
     criterion : squared_error
@@ -50,7 +50,7 @@ Pion:
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:
     chunk_size : null   # 7 mln
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.024
     n_estimators  : 142
     criterion : squared_error
@@ -72,7 +72,7 @@ Kaon:
   # <---- | Calib samples | 2016 Mag Up | ---->
   2016-MagUp-data:
     chunk_size : 20000000   # 150 mln
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.129
     n_estimators  : 149
     criterion : friedman_mse
@@ -83,7 +83,7 @@ Kaon:
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:
     chunk_size : null   # 1.5 mln
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.129
     n_estimators  : 149
     criterion : friedman_mse
@@ -105,7 +105,7 @@ Proton:
   # <---- | Calib samples | 2016 Mag Up | ---->
   2016-MagUp-data:
     chunk_size : 50000000   # 105 mln
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.131
     n_estimators  : 115
     criterion : friedman_mse
@@ -116,7 +116,7 @@ Proton:
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:   
     chunk_size : null   # 1.5 mln
-    loss : deviance
+    loss : log_loss
     learning_rate : 0.131
     n_estimators  : 115
     criterion : friedman_mse
