@@ -17,8 +17,8 @@ Rich:
 
   X_preprocessing:
     2016-MagUp-data:
-      - weighted-quantile-10000
-      - weighted-quantile-10000
+      - weighted-quantile-50000
+      - weighted-quantile-50000
       - weighted-quantile-100
       - pass-through
     2016-MagUp-simu:
@@ -51,8 +51,8 @@ Rich:
 
   Y_preprocessing:
     2016-MagUp-data:
-      - weighted-quantile-10000
-      - weighted-quantile-10000
+      - weighted-quantile-50000
+      - weighted-quantile-50000
       - weighted-quantile-10000
       - weighted-quantile-10000
     2016-MagUp-simu:
@@ -249,7 +249,7 @@ GlobalPID:
       - weighted-quantile-10000
       - weighted-quantile-10000
     2016-MagUp-simu:
-      - simple-quantile-10000
+      - simple-quantile-50000
       - simple-quantile-10000
       - simple-quantile-10000
       - simple-quantile-10000
@@ -319,8 +319,8 @@ GlobalMuonId:
       - weighted-quantile-10000
       - weighted-quantile-10000
     2016-MagUp-simu:
-      - simple-quantile-10000
-      - simple-quantile-10000
+      - simple-quantile-50000
+      - simple-quantile-50000
       - simple-quantile-100
       - pass-through
       - simple-quantile-10000

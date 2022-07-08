@@ -154,7 +154,7 @@ base:
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : null   # 175k
+      chunk_size : 5000000   # 18 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -209,7 +209,7 @@ base:
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : null   # 7 mln
+      chunk_size : 5000000   # 150 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -264,7 +264,7 @@ base:
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : null   # 2 mln
+      chunk_size : 5000000   # 40 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -318,7 +318,7 @@ base:
     
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : null   # 2 mln
+      chunk_size : 5000000   # 30 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05

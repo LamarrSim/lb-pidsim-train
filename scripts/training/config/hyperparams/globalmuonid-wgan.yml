@@ -225,8 +225,8 @@ base:
       adv_lp_penalty : 100.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
-      batch_size : 1024
-      num_epochs : 200
+      batch_size : 256
+      num_epochs : 100
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->

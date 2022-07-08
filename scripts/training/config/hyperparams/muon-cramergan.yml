@@ -39,7 +39,7 @@ standard:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size :   # 2 mln
+      chunk_size : null   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -69,7 +69,7 @@ standard:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size :   # 2 mln
+      chunk_size : null   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -98,7 +98,7 @@ standard:
   Proton:
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size :   # 5 mln
+      chunk_size : null   # 5 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -154,7 +154,7 @@ base:
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size :
+      chunk_size : 6000000   # 16 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -187,7 +187,7 @@ base:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size :   # 2 mln
+      chunk_size : null   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -203,13 +203,13 @@ base:
       grad_penalty : 1.0
       lr_sched_factor : 0.95
       lr_sched_step : 10
-      batch_size : 512
+      batch_size : 256
       num_epochs : 150
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size :
+      chunk_size : null   # 8 mln 
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -242,7 +242,7 @@ base:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size :   # 2 mln
+      chunk_size : null   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -258,13 +258,13 @@ base:
       grad_penalty : 10.0
       lr_sched_factor : 0.95
       lr_sched_step : 5
-      batch_size : 512
-      num_epochs : 150
+      batch_size : 256
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size :
+      chunk_size : null   # 1.5 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -280,8 +280,8 @@ base:
       grad_penalty : 10.0
       lr_sched_factor : 0.95
       lr_sched_step : 5
-      batch_size : 512
-      num_epochs : 150
+      batch_size : 256
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
