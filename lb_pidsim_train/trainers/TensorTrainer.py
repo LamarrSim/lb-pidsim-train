@@ -254,6 +254,8 @@ class TensorTrainer (BaseTrainer):   # TODO class description
 
     ## Report setup
     report = Report()   # TODO add hyperparams to the report
+    date , hour = str ( datetime.now() ) . split (" ")
+    report.add_markdown (f"Report generated on **{date}** at {hour}")
     self._report_params (report)
     self._report_architecture (report, model)
     self._training_plots (report, history)    
