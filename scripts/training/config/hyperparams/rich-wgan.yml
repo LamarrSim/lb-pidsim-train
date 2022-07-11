@@ -217,7 +217,7 @@ base:
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00005
+      d_lr : 0.00003
       g_lr : 0.00003
       d_updt_per_batch : 3
       g_updt_per_batch : 1

@@ -17,13 +17,13 @@ Rich:
 
   X_preprocessing:
     2016-MagUp-data:
-      - weighted-quantile-50000
-      - weighted-quantile-50000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
       - weighted-quantile-100
       - pass-through
     2016-MagUp-simu:
-      - simple-quantile-50000
-      - simple-quantile-50000
+      - simple-quantile-10000
+      - simple-quantile-10000
       - simple-quantile-100
       - pass-through
     2016-MagDown-data:
@@ -51,13 +51,13 @@ Rich:
 
   Y_preprocessing:
     2016-MagUp-data:
-      - weighted-quantile-50000
-      - weighted-quantile-50000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
       - weighted-quantile-10000
       - weighted-quantile-10000
     2016-MagUp-simu:
-      - simple-quantile-50000
-      - simple-quantile-50000
+      - simple-quantile-10000
+      - simple-quantile-10000
       - simple-quantile-10000
       - simple-quantile-10000
     2016-MagDown-data:
@@ -241,37 +241,37 @@ GlobalPID:
     
   Y_preprocessing:
     2016-MagUp-data:
-      - weighted-quantile-50000
       - weighted-quantile-10000
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10000
-      - weighted-quantile-10000
-      - weighted-quantile-10000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
     2016-MagUp-simu:
-      - simple-quantile-50000
       - simple-quantile-10000
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10000
-      - simple-quantile-10000
-      - simple-quantile-10000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
     2016-MagDown-data:
       - weighted-quantile-10000
       - weighted-quantile-10000
       - weighted-quantile-10000
-      - weighted-quantile-10000
-      - weighted-quantile-10000
-      - weighted-quantile-10000
-      - weighted-quantile-10000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
     2016-MagDown-simu:
       - simple-quantile-10000
       - simple-quantile-10000
       - simple-quantile-10000
-      - simple-quantile-10000
-      - simple-quantile-10000
-      - simple-quantile-10000
-      - simple-quantile-10000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
 
   w_vars:
     2016-MagUp: probe_sWeight
@@ -308,8 +308,8 @@ GlobalMuonId:
 
   X_preprocessing:
     2016-MagUp-data:
-      - weighted-quantile-50000
-      - weighted-quantile-50000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
       - weighted-quantile-100
       - pass-through
       - weighted-quantile-10000
@@ -319,8 +319,8 @@ GlobalMuonId:
       - weighted-quantile-10000
       - weighted-quantile-10000
     2016-MagUp-simu:
-      - simple-quantile-50000
-      - simple-quantile-50000
+      - simple-quantile-10000
+      - simple-quantile-10000
       - simple-quantile-100
       - pass-through
       - simple-quantile-10000
