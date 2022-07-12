@@ -574,7 +574,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax[i].errorbar ( bin_centers, eff_gen, yerr = eff_gen_err, marker = "o", markersize = 5, capsize = 3, elinewidth = 1, 
                        mec = "deeppink", mfc = "w", color = "deeppink", label = "Trained model", zorder = 1 )
 
-      ax[i].legend (loc = "lower center", fontsize = 10)
+      ax[i].legend (fontsize = 10)
       ax[i].set_ylim (-0.1, 1.1)
 
     report.add_figure(options = "width=100%"); plt.clf(); plt.close()

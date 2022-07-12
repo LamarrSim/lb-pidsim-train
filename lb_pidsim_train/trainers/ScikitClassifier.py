@@ -169,11 +169,11 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
     model . fit (train_feats, train_labels, sample_weight = train_w)
     self._model_trained = True   # switch on model trained flag
     stop  = datetime.now()
-    if (verbose > 0): 
-      timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
-      timestamp = timestamp . split (":")   # [HH, MM, SS]
-      timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
-      print ( f"[INFO] Classifier training completed in {timestamp}" )
+
+    timestamp = str(stop-start) . split (".") [0]   # HH:MM:SS
+    timestamp = timestamp . split (":")   # [HH, MM, SS]
+    timestamp = f"{timestamp[0]}h {timestamp[1]}min {timestamp[2]}s"
+    if (verbose > 0): print ( f"[INFO] Classifier training completed in {timestamp}" )
 
     self._model  = model
     self._save_model ( "saved_model", model, verbose = (verbose > 0) )
@@ -203,6 +203,9 @@ class ScikitClassifier (BaseTrainer):   # TODO class description
 
     ## Report setup
     report = Report()   # TODO add hyperparams to the report
+    date , hour = str ( datetime.now() ) . split (" ")
+    report.add_markdown (f"Report generated on **{date}** at {hour}")
+    report.add_markdown (f"Classifier training completed in **{timestamp}**")
     self._proba_plots (result, report, bins = 100, strategy = performance_metric)
     filename = f"{self._report_dir}/{self._report_name}"
     report . write_report ( filename = f"{filename}.html" )
