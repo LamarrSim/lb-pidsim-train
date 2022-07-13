@@ -16,7 +16,7 @@ Muon:
 
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:
-    chunk_size : null   # 175k
+    chunk_size : 10000000   # 18 mln
     loss : log_loss
     learning_rate : 0.402
     n_estimators  : 75
@@ -49,7 +49,7 @@ Pion:
 
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:
-    chunk_size : null   # 7 mln
+    chunk_size : 20000000   # 150 mln
     loss : log_loss
     learning_rate : 0.024
     n_estimators  : 142
@@ -82,7 +82,7 @@ Kaon:
 
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:
-    chunk_size : null   # 1.5 mln
+    chunk_size : 20000000   # 40 mln
     loss : log_loss
     learning_rate : 0.129
     n_estimators  : 149
@@ -115,7 +115,7 @@ Proton:
 
   # <---- | Simu samples | 2016 Mag Up | ---->
   2016-MagUp-simu:   
-    chunk_size : null   # 1.5 mln
+    chunk_size : null   # 30 mln
     loss : log_loss
     learning_rate : 0.131
     n_estimators  : 115
