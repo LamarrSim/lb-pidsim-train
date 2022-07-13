@@ -363,16 +363,16 @@ GlobalMuonId:
   Y_preprocessing:
     2016-MagUp-data:
       - weighted-quantile-10000
-      - weighted-quantile-10000
+      - weighted-quantile-1000
     2016-MagUp-simu:
       - simple-quantile-10000
-      - simple-quantile-10000
+      - simple-quantile-1000
     2016-MagDown-data:
       - weighted-quantile-10000
-      - weighted-quantile-10000
+      - weighted-quantile-1000
     2016-MagDown-simu:
       - simple-quantile-10000
-      - simple-quantile-10000
+      - simple-quantile-1000
 
   w_vars:
     2016-MagUp: probe_sWeight
