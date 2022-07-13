@@ -140,7 +140,7 @@ for layer in range (d_num_layers):
 g_num_layers   = trainer.params.get ( "g_num_layers"   , hp["g_num_layers"]  )
 g_num_nodes    = trainer.params.get ( "g_num_nodes"    , hp["g_num_nodes"]   )
 g_alpha_leaky  = trainer.params.get ( "g_alpha_leaky"  , hp["g_alpha_leaky"] )
-g_dropout_rate = trainer.params.get ( "g_dropout_rate" , 0.0 )
+g_dropout_rate = trainer.params.get ( "g_dropout_rate" , 0.1 )
 
 generator = list()
 for layer in range (g_num_layers):
