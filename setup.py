@@ -13,7 +13,7 @@ with open (ver_file) as file:
 ## Load README
 def readme():
   readme_path = path.join (this_directory, "README.md")
-  with open (readme_path, encoding = 'utf-8') as file:
+  with open (readme_path, encoding = "utf-8") as file:
     return file.read()
 
 ## Load requirements
@@ -23,39 +23,38 @@ def requirements():
     return file.read() . splitlines()
 
 setup (
-        name = 'lb-pidsim-train',
+        name = "lb-pidsim-train",
         version = __version__,
-        description  = 'Training pipeline for the parameterization of the LHCb PID system',
+        description  = "Training pipeline for the parameterization of the LHCb PID system",
         long_description = readme(),
-        long_description_content_type = 'text/markdown',
-        url = 'https://github.com/mbarbetti/lb-pidsim-train',
-        author = 'Matteo Barbetti',
-        author_email = 'matteo.barbetti@fi.infn.it',
+        long_description_content_type = "text/markdown",
+        url = "https://github.com/mbarbetti/lb-pidsim-train",
+        author = "Matteo Barbetti",
+        author_email = "matteo.barbetti@fi.infn.it",
         maintainer = "Matteo Barbetti, Lucio Anderlini",
         maintainer_email = "matteo.barbetti@fi.infn.it, lucio.anderlini@fi.infn.it",
-        license = 'GPLv3',
+        license = "GPLv3",
         keywords = [],
         packages = find_packages(),
-        package_data = {'data': ['Zmumu.root']},
+        package_data = {"data": ["Zmumu.root"]},
         include_package_data = True,
         install_requires = requirements(),
-        python_requires  = '>=3.6, <4',
+        python_requires  = ">=3.7, <3.10",
         classifiers = [
-                        'Development Status :: 4 - Beta',
-                        'Intended Audience :: Science/Research',
-                        'Intended Audience :: Developers',
-                        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-                        'Programming Language :: Python :: 3',
-                        'Programming Language :: Python :: 3.6',
-                        'Programming Language :: Python :: 3.7',
-                        'Programming Language :: Python :: 3.8',
-                        'Programming Language :: Python :: 3.9',
-                        'Programming Language :: Python :: 3 :: Only',
-                        'Topic :: Scientific/Engineering',
-                        'Topic :: Scientific/Engineering :: Physics',
-                        'Topic :: Scientific/Engineering :: Artificial Intelligence',
-                        'Topic :: Software Development',
-                        'Topic :: Software Development :: Libraries',
-                        'Topic :: Software Development :: Libraries :: Python Modules',
+                        "Development Status :: 4 - Beta",
+                        "Intended Audience :: Science/Research",
+                        "Intended Audience :: Developers",
+                        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+                        "Programming Language :: Python :: 3",
+                        "Programming Language :: Python :: 3.7",
+                        "Programming Language :: Python :: 3.8",
+                        "Programming Language :: Python :: 3.9",
+                        "Programming Language :: Python :: 3 :: Only",
+                        "Topic :: Scientific/Engineering",
+                        "Topic :: Scientific/Engineering :: Physics",
+                        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+                        "Topic :: Software Development",
+                        "Topic :: Software Development :: Libraries",
+                        "Topic :: Software Development :: Libraries :: Python Modules",
                       ],
   )
