@@ -13,6 +13,9 @@ d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
 g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
 """Metric instance to track the generator loss score."""
 
+c_loss_tracker = tf.keras.metrics.Mean ( name = "c_loss" )
+"""Metric instance to track the classifier loss score."""
+
 mse_tracker = tf.keras.metrics.MeanSquaredError ( name = "mse" )
 """Metric instance to track the mean square error."""
 
@@ -69,6 +72,7 @@ class GAN (tf.keras.Model):   # TODO add class description
                  Y_shape ,
                  discriminator ,
                  generator     , 
+                 classifier = None ,
                  latent_dim = 64 ) -> None:
     super().__init__()
     self._loss_name = "Loss function"
@@ -83,10 +87,13 @@ class GAN (tf.keras.Model):   # TODO add class description
     self._Y_shape = Y_shape
 
     ## Data-type control
-    try:
-      latent_dim = int ( latent_dim )
-    except:
-      raise TypeError ("The latent space dimension should be an integer.")
+    if not isinstance (latent_dim, int):
+      if isinstance (latent_dim, float): latent_dim = int (latent_dim)
+      else: raise TypeError ("The latent space dimension should be an integer.")
+
+    ## Data-value control
+    if latent_dim <= 0:
+      raise ValueError ("The latent space dimension should be greater than 0.")
 
     self._latent_dim = latent_dim
 
@@ -104,9 +111,20 @@ class GAN (tf.keras.Model):   # TODO add class description
     self._generator . add ( Dense ( units = Y_shape, activation = "linear" ,
                                     kernel_initializer = "glorot_normal" ) )
 
+    ## Classifier sequential model
+    if classifier is not None:
+      self._classifier = Sequential ( name = "classifier" )
+      for c_layer in classifier:
+        self._classifier . add ( c_layer )
+      self._classifier . add ( Dense ( units = 1, activation = "sigmoid" ,
+                                      kernel_initializer = "glorot_normal" ) )
+    else:
+      self._classifier = None
+
   def compile ( self , 
                 d_optimizer ,
                 g_optimizer , 
+                c_optimizer = None ,
                 d_updt_per_batch = 1 ,
                 g_updt_per_batch = 1 ) -> None:   # TODO complete docstring
     """Configure the models for GAN training.
@@ -130,34 +148,41 @@ class GAN (tf.keras.Model):   # TODO add class description
     ## Build discriminator and generator models
     self._discriminator . build ( input_shape = (None, self._X_shape + self._Y_shape) )
     self._generator . build ( input_shape = (None, self._X_shape + self._latent_dim) )
+    if self._classifier is not None:
+      self._classifier . build ( input_shape = (None, self._X_shape + self._Y_shape) )
 
     ## Data-type control
-    try:
-      d_updt_per_batch = int ( d_updt_per_batch )
-    except:
-      raise TypeError ("The number of discriminator updates per batch should be an integer.")
-    try:
-      g_updt_per_batch = int ( g_updt_per_batch )
-    except:
-      raise TypeError ("The number of generator updates per batch should be an integer.")
+    if not isinstance (d_updt_per_batch, int):
+      if isinstance (d_updt_per_batch, float): d_updt_per_batch = int (d_updt_per_batch)
+      else: raise TypeError ("The number of discriminator updates per batch should be an integer.")
+
+    if not isinstance (g_updt_per_batch, int):
+      if isinstance (g_updt_per_batch, float): g_updt_per_batch = int (g_updt_per_batch)
+      else: raise TypeError ("The number of generator updates per batch should be an integer.")
 
     ## Data-value control
     if d_updt_per_batch <= 0:
       raise ValueError ("The number of discriminator updates per batch should be greater than 0.")
+
     if g_updt_per_batch <= 0:
       raise ValueError ("The number of generator updates per batch should be greater than 0.")
 
     self._d_optimizer = d_optimizer
     self._g_optimizer = g_optimizer
+    self._c_optimizer = c_optimizer
     self._d_lr0 = float ( d_optimizer.learning_rate )
     self._g_lr0 = float ( g_optimizer.learning_rate )
+    self._c_lr0 = float ( c_optimizer.learning_rate ) if (self._c_optimizer is not None) else None
     self._d_updt_per_batch = d_updt_per_batch
     self._g_updt_per_batch = g_updt_per_batch
 
   def summary (self) -> None:
     """Print a string summary of the discriminator and generator networks."""
+    print ("_" * 65)
     self._discriminator . summary()
     self._generator . summary()
+    if self._classifier is not None:
+      self._classifier . summary()
 
   @staticmethod
   def _unpack_data (data):
@@ -195,11 +220,24 @@ class GAN (tf.keras.Model):   # TODO add class description
     Y_gen = self.generate (X)
     mse_tracker . update_state (Y, Y_gen, sample_weight = w_Y)
 
-    return { "mse"    : mse_tracker.result()    ,
-             "d_loss" : d_loss_tracker.result() , 
-             "g_loss" : g_loss_tracker.result() ,
-             "d_lr"   : self._d_optimizer.lr    ,
-             "g_lr"   : self._g_optimizer.lr    }
+    if self._classifier is None:
+      return { "mse"    : mse_tracker.result()    ,
+               "d_loss" : d_loss_tracker.result() , 
+               "g_loss" : g_loss_tracker.result() ,
+               "d_lr"   : self._d_optimizer.lr    ,
+               "g_lr"   : self._g_optimizer.lr    }
+
+    ## If classifier enabled
+    else:
+      self._train_c_step (X, Y, w_X, w_Y)
+      c_loss = self._compute_c_loss (gen_sample, ref_sample)
+      c_loss_tracker . update_state (c_loss)
+      return { "mse"    : mse_tracker.result()    ,
+               "c_loss" : c_loss_tracker.result() ,
+               "d_loss" : d_loss_tracker.result() , 
+               "g_loss" : g_loss_tracker.result() ,
+               "d_lr"   : self._d_optimizer.lr    ,
+               "g_lr"   : self._g_optimizer.lr    }
 
   def test_step (self, data) -> dict:
     """Test step for Keras APIs."""
@@ -218,11 +256,23 @@ class GAN (tf.keras.Model):   # TODO add class description
     Y_gen = self.generate (X)
     mse_tracker . update_state (Y, Y_gen, sample_weight = w_Y)
 
-    return { "mse"    : mse_tracker.result()    ,
-             "d_loss" : d_loss_tracker.result() , 
-             "g_loss" : g_loss_tracker.result() ,
-             "d_lr"   : self._d_optimizer.lr    ,
-             "g_lr"   : self._g_optimizer.lr    }
+    if self._classifier is None:
+      return { "mse"    : mse_tracker.result()    ,
+               "d_loss" : d_loss_tracker.result() , 
+               "g_loss" : g_loss_tracker.result() ,
+               "d_lr"   : self._d_optimizer.lr    ,
+               "g_lr"   : self._g_optimizer.lr    }
+               
+    ## If classifier enabled
+    else:
+      c_loss = self._compute_c_loss (gen_sample, ref_sample)
+      c_loss_tracker . update_state (c_loss)
+      return { "mse"    : mse_tracker.result()    ,
+               "c_loss" : c_loss_tracker.result() ,
+               "d_loss" : d_loss_tracker.result() , 
+               "g_loss" : g_loss_tracker.result() ,
+               "d_lr"   : self._d_optimizer.lr    ,
+               "g_lr"   : self._g_optimizer.lr    }
 
   def _arrange_samples (self, X, Y, w_X = None, w_Y = None) -> tuple:   # TODO complete docstring
     """Arrange the reference and generated samples.
@@ -399,6 +449,62 @@ class GAN (tf.keras.Model):   # TODO add class description
               w_ref_2 * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1.0 ) )
     return tf.reduce_mean (th_loss)
 
+  def _train_c_step (self, X, Y, w_X = None, w_Y = None) -> None:   # TODO complete docstring
+    """Training step for the classifier.
+    
+    Parameters
+    ----------
+    X : `tf.Tensor`
+      ...
+
+    Y : `tf.Tensor`
+      ...
+
+    w_X : `tf.Tensor`, optional
+      ... (`None`, by default).
+
+    w_Y : `tf.Tensor`, optional
+      ... (`None`, by default).
+    """
+    with tf.GradientTape() as tape:
+      ref_sample, gen_sample = self._arrange_samples (X, Y, w_X, w_Y)
+      c_loss = self._compute_c_loss ( gen_sample, ref_sample )
+    grads = tape.gradient ( c_loss, self._classifier.trainable_weights )
+    self._c_optimizer.apply_gradients ( zip (grads, self._classifier.trainable_weights) )
+
+  def _compute_c_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
+    """Return the classifier loss.
+    
+    Parameters
+    ----------
+    gen_sample : `tuple` of `tf.Tensor`
+      ...
+
+    ref_sample : `tuple` of `tf.Tensor`
+      ...
+
+    Returns
+    -------
+    c_loss : `tf.Tensor`
+      ...
+    """
+    ## Extract input tensors and weights
+    XY_gen, w_gen = gen_sample
+    XY_ref, w_ref = ref_sample
+
+    ## Classifier output to gen and ref output
+    C_gen = self._classifier ( XY_gen )
+    C_ref = self._classifier ( XY_ref )
+
+    ## Loss computation
+    k_gen = 0.1
+    k_ref = 0.9
+    c_loss = w_gen * k_gen       * tf.math.log ( tf.clip_by_value ( C_gen     , 1e-12 , 1.0 ) ) + \
+             w_gen * (1 - k_gen) * tf.math.log ( tf.clip_by_value ( 1 - C_gen , 1e-12 , 1.0 ) ) + \
+             w_ref * k_ref       * tf.math.log ( tf.clip_by_value ( C_ref     , 1e-12 , 1.0 ) ) + \
+             w_ref * (1 - k_ref) * tf.math.log ( tf.clip_by_value ( 1 - C_ref , 1e-12 , 1.0 ) ) 
+    return - tf.reduce_mean (c_loss)
+
   def generate (self, X) -> tf.Tensor:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
     
@@ -438,6 +544,11 @@ class GAN (tf.keras.Model):   # TODO add class description
     return self._generator
 
   @property
+  def classifier (self) -> tf.keras.Sequential:
+    """The classifier of the GAN two-players game."""
+    return self._classifier
+
+  @property
   def latent_dim (self) -> int:
     """The dimension of the latent space."""
     return self._latent_dim
@@ -449,8 +560,13 @@ class GAN (tf.keras.Model):   # TODO add class description
 
   @property
   def g_optimizer (self) -> tf.keras.optimizers.Optimizer:
-    """The generator optimizer.."""
+    """The generator optimizer."""
     return self._g_optimizer
+
+  @property
+  def c_optimizer (self) -> tf.keras.optimizers.Optimizer:
+    """The classifier optimizer."""
+    return self._c_optimizer
 
   @property
   def d_lr0 (self) -> float:
@@ -461,6 +577,11 @@ class GAN (tf.keras.Model):   # TODO add class description
   def g_lr0 (self) -> float:
     """Initial value for generator learning rate."""
     return self._g_lr0
+
+  @property
+  def c_lr0 (self) -> float:
+    """Initial value for classifier learning rate."""
+    return self._c_lr0
 
   @property
   def g_updt_per_batch (self) -> int:

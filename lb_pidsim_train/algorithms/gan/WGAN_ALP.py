@@ -53,11 +53,13 @@ class WGAN_ALP (GAN):   # TODO add class description
                  Y_shape ,
                  discriminator ,
                  generator     ,
+                 classifier = None ,
                  latent_dim = 64 ) -> None:
     super().__init__ ( X_shape = X_shape ,
                        Y_shape = Y_shape ,
                        discriminator = discriminator , 
                        generator     = generator     ,
+                       classifier    = classifier    ,
                        latent_dim    = latent_dim    )
     self._loss_name = "Wasserstein distance"
 
@@ -71,6 +73,7 @@ class WGAN_ALP (GAN):   # TODO add class description
   def compile ( self , 
                 d_optimizer , 
                 g_optimizer ,
+                c_optimizer = None ,
                 d_updt_per_batch = 1 , 
                 g_updt_per_batch = 1 ,
                 v_adv_dir_updt   = 1 , 
@@ -99,21 +102,20 @@ class WGAN_ALP (GAN):   # TODO add class description
     """
     super().compile ( d_optimizer = d_optimizer , 
                       g_optimizer = g_optimizer , 
+                      c_optimizer = c_optimizer ,
                       d_updt_per_batch = d_updt_per_batch , 
                       g_updt_per_batch = g_updt_per_batch )
 
-    ## data-type control
-    try:
-      v_adv_dir_updt = int (v_adv_dir_updt)
-    except:
-      raise TypeError ("The number of virtual adversarial direction updates should be an integer.")
+    ## Data-type control
+    if not isinstance (v_adv_dir_updt, int):
+      if isinstance (v_adv_dir_updt, float): v_adv_dir_updt = int (v_adv_dir_updt)
+      else: raise TypeError ("The number of virtual adversarial direction updates should be an integer.")
 
-    try:
-      adv_lp_penalty = float (adv_lp_penalty)
-    except:
-      raise TypeError ("The adversarial Lipschitz penalty should be a float.")
+    if not isinstance (adv_lp_penalty, float):
+      if isinstance (adv_lp_penalty, int): adv_lp_penalty = float (adv_lp_penalty)
+      else: raise TypeError ("The adversarial Lipschitz penalty should be a float.")
 
-    ## data-value control
+    ## Data-value control
     if v_adv_dir_updt <= 0:
       raise ValueError ("The number of virtual adversarial direction updates should be greater than 0.")
 

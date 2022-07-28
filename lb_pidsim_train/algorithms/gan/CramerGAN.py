@@ -74,20 +74,25 @@ class CramerGAN (GAN):   # TODO add class description
                  Y_shape ,
                  discriminator ,
                  generator     ,
+                 classifier = None ,
                  latent_dim = 64 ,
                  critic_dim = 64 ) -> None:
     super().__init__ ( X_shape = X_shape ,
                        Y_shape = Y_shape ,
                        discriminator = discriminator , 
                        generator     = generator     ,
+                       classifier    = classifier    ,
                        latent_dim    = latent_dim    )
     self._loss_name = "Energy distance"
 
     ## Data-type control
-    try:
-      critic_dim = int ( critic_dim )
-    except:
-      raise TypeError ("The critic space dimension should be an integer.")
+    if not isinstance (critic_dim, int):
+      if isinstance (critic_dim, float): critic_dim = int (critic_dim)
+      else: raise TypeError ("The critic space dimension should be an integer.")
+
+    ## Data-value control
+    if critic_dim <= 0:
+      raise ValueError ("The critic space dimension should be greater than 0.")
 
     self._critic_dim = critic_dim
 
@@ -100,7 +105,8 @@ class CramerGAN (GAN):   # TODO add class description
 
   def compile ( self , 
                 d_optimizer ,
-                g_optimizer , 
+                g_optimizer ,
+                c_optimizer = None ,
                 d_updt_per_batch = 1 ,
                 g_updt_per_batch = 1 ,
                 grad_penalty = 10 ) -> None:   # TODO complete docstring
@@ -125,15 +131,15 @@ class CramerGAN (GAN):   # TODO add class description
     """
     super().compile ( d_optimizer = d_optimizer , 
                       g_optimizer = g_optimizer ,
+                      c_optimizer = c_optimizer ,
                       d_updt_per_batch = d_updt_per_batch ,
                       g_updt_per_batch = g_updt_per_batch )
     self._critic = Critic ( lambda x : self._discriminator(x) )
 
     ## Data-type control
-    try:
-      grad_penalty = float ( grad_penalty )
-    except:
-      raise TypeError ("The loss gradient penalty should be a float.")
+    if not isinstance (grad_penalty, float):
+      if isinstance (grad_penalty, int): grad_penalty = float (grad_penalty)
+      else: raise TypeError ("The loss gradient penalty should be a float.")
 
     ## Data-value control
     if grad_penalty <= 0:
