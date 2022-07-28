@@ -97,7 +97,11 @@ hp = hyperparams[args.particle][args.sample]
 properties = hp.copy()
 properties . update ( dict ( d_lr = hpc.suggestions.LogUniform (1e-5, 1e-3) ,
                              g_lr = hpc.suggestions.LogUniform (1e-5, 1e-3) ,
-                             num_epochs = hpc.suggestions.Int (50, 300, log = True) ) )
+                             duxb = hpc.suggestions.Int (1,4) ,
+                             guxb = hpc.suggestions.Int (1,2) ,
+                             vadu = hpc.suggestions.Int (1,2) ,
+                             adv_lp = hpc.suggestions.LogUniform (1e0, 1e2) ,
+                             bs_factor = hpc.suggestions.Int (1,4) ) )
 
 my_address = socket.gethostbyname(socket.gethostname())
 my_node_name = "pclhcb07"
@@ -107,11 +111,11 @@ study = hpc.Study ( name = model_name ,
                     special_properties = dict ( address = my_address ,
                                                 node_name = my_node_name ) ,
                     direction = "minimize" ,
-                    pruner  = hpc.pruners.MedianPruner ( n_startup_trials = 10 ,   # FIXME: set reliable values
-                                                         n_warmup_steps = 20 ,
+                    pruner  = hpc.pruners.MedianPruner ( n_startup_trials = 20 ,
+                                                         n_warmup_steps = 25 ,
                                                          interval_steps = 1 ,
-                                                         n_min_trials = 5 ) ,
-                    sampler = hpc.samplers.TPESampler() ,
+                                                         n_min_trials = 10 ) ,
+                    sampler = hpc.samplers.TPESampler ( n_startup_trials = 20 ) ,
                     client  = client )
 
 for iTrial in range(5):
@@ -138,7 +142,7 @@ for iTrial in range(5):
                                      w_var  = variables[args.model]["w_vars"][slot] if sw_avail else None , 
                                      selections = selections[args.model][slot] , 
                                      tree_names = None if calib_sample else "make_tuple" , 
-                                     chunk_size = 5e4 , 
+                                     chunk_size = hp["chunk_size"] , 
                                      verbose = 1 )
 
     if args.model == "Muon":   # Compute MuonLL to replace MuonMuLL
@@ -215,10 +219,10 @@ for iTrial in range(5):
     model . compile ( d_optimizer = d_opt , 
                       g_optimizer = g_opt , 
                       c_optimizer = c_opt ,
-                      d_updt_per_batch = trainer.params.get ( "d_updt_per_batch" , hp["d_updt_per_batch"] ) , 
-                      g_updt_per_batch = trainer.params.get ( "g_updt_per_batch" , hp["g_updt_per_batch"] ) ,
-                      v_adv_dir_updt = trainer.params.get ( "v_adv_dir_updt" , hp["v_adv_dir_updt"] ) ,
-                      adv_lp_penalty = trainer.params.get ( "adv_lp_penalty" , hp["adv_lp_penalty"] ) )
+                      d_updt_per_batch = trial.duxb , 
+                      g_updt_per_batch = trial.guxb ,
+                      v_adv_dir_updt = trial.vadu ,
+                      adv_lp_penalty = trial.adv_lp )
 
     # +-----------------+
     # |    Callbacks    |
@@ -236,15 +240,15 @@ for iTrial in range(5):
                               loss = "val_c_loss" ,
                               pruning = True ,
                               step = 1 ,
-                              timeout = 900 )
+                              timeout = 20000 )
 
     # +--------------------+
     # |    Run training    |
     # +--------------------+
 
     trainer . train_model ( model = model ,
-                            batch_size = 512 ,
-                            num_epochs = trial.num_epochs ,
+                            batch_size = 256 * trial.bs_factor ,
+                            num_epochs = hp["num_epochs"] ,
                             validation_split = hp["validation_split"] ,
                             callbacks = [model_saver, lr_scheduler, pruner] ,
                             produce_report = False ,

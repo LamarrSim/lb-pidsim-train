@@ -322,20 +322,20 @@ base:
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
-      g_num_layers  : 7
+      g_num_layers  : 5
       g_num_nodes   : 128
       g_alpha_leaky : 0.05
       latent_dim : 64
-      d_lr : 0.00002
-      g_lr : 0.00003
-      d_updt_per_batch : 3 #2
+      d_lr : 0.00005
+      g_lr : 0.00005
+      d_updt_per_batch : 1
       g_updt_per_batch : 1
-      v_adv_dir_updt : 1 #2
-      adv_lp_penalty : 100.0
+      v_adv_dir_updt : 1
+      adv_lp_penalty : 50.0
       lr_sched_factor : 0.90
       lr_sched_step : 10
-      batch_size : 512
-      num_epochs : 250
+      batch_size : 1024
+      num_epochs : 200
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
