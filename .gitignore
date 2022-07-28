@@ -1,3 +1,6 @@
+# General setup
+*.vscode
+
 # Swap files
 *.swp
 *.swo
