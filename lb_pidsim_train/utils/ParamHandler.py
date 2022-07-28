@@ -15,7 +15,11 @@ class ParamHandler:
   def get ( self, key, default ) -> dict:
     if key not in self._params.keys(): self._params [ key ] = default
     self._used_keys.add ( key ) 
-    return self._params [ key ] 
+    return self._params [ key ]
+
+  def clean ( self ) -> None:
+    self._params = dict() 
+    self._used_keys = set()
 
   def __del__ ( self ) -> None: 
     for key in self._params.keys():
