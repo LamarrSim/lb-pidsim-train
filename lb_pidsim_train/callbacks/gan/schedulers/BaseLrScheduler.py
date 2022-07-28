@@ -5,7 +5,7 @@ from tensorflow.keras.callbacks import Callback
 
 K = tf.keras.backend
 
-class GanBaseLrScheduler (Callback):   # TODO add docstring
+class BaseLrScheduler (Callback):   # TODO add docstring
   """class description"""
   def __init__ (self):   # TODO add data-type check
     super().__init__()

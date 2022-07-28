@@ -139,8 +139,9 @@ class TensorTrainer (BaseTrainer):   # TODO class description
                     batch_size = 1 ,
                     num_epochs = 1 ,
                     validation_split = 0.0 ,
-                    scheduler = None ,
-                    verbose = 0 ) -> None:   # TODO complete docstring
+                    callbacks = None ,
+                    produce_report = True ,
+                    verbose = 0 ) -> dict:   # TODO complete docstring
     """...
     
     Parameters
@@ -157,7 +158,7 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     validation_split : `float`, optional
       ... (`0.0`, by default).
 
-    scheduler : function, optional
+    callbacks : function, optional
       ... (`None`, by default).
 
     verbose : {0, 1, 2}, optional
@@ -229,8 +230,8 @@ class TensorTrainer (BaseTrainer):   # TODO class description
       val_ds = None
 
     ## Callbacks settings
-    if scheduler:
-      callbacks = [scheduler]
+    if callbacks:
+      callbacks = [callbacks]
     else:
       callbacks = None
 
@@ -253,18 +254,22 @@ class TensorTrainer (BaseTrainer):   # TODO class description
     self._model = model
 
     ## Report setup
-    report = Report()
-    date , hour = str ( datetime.now() ) . split (" ")
-    report.add_markdown (f"Report generated on **{date}** at {hour}")
-    report.add_markdown (f"Model training completed in **{timestamp}**")
-    self._report_params (report)
-    self._report_architecture (report, model)
-    self._training_plots (report, history)    
-    filename = f"{self._report_dir}/{self._report_name}"
-    report . write_report ( filename = f"{filename}.html" )
+    if produce_report:
+      report = Report()
+      date , hour = str ( datetime.now() ) . split (" ")
+      report.add_markdown (f"Report generated on **{date}** at {hour}")
+      report.add_markdown (f"Model training completed in **{timestamp}**")
+      self._report_params (report)
+      self._report_architecture (report, model)
+      self._training_plots (report, history)    
+      filename = f"{self._report_dir}/{self._report_name}"
+      report . write_report ( filename = f"{filename}.html" )
 
-    if (verbose > 0):
-      print (f"[INFO] Training report correctly exported to {filename}")
+      if (verbose > 0):
+        print (f"[INFO] Training report correctly exported to {filename}")
+
+    self._params.clean()
+    return history.history
 
   @staticmethod
   def _create_dataset ( data, batch_size = 100 ) -> tf.data.Dataset:   # TODO complete docstring

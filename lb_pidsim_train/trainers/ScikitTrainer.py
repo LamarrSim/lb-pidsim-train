@@ -36,6 +36,7 @@ class ScikitTrainer (BaseTrainer):
                     model ,
                     validation_split = 0.2 ,
                     performance_metric = "chi2_test" ,
+                    produce_report = True ,
                     verbose = 0 ) -> None:   # TODO add docstring
     """"""
     if not self._dataset_prepared:
@@ -85,27 +86,30 @@ class ScikitTrainer (BaseTrainer):
     self._scores = [None, None]   # score init
 
     ## Report setup
-    report = Report()   # TODO add hyperparams to the report
-    date , hour = str ( datetime.now() ) . split (" ")
-    report.add_markdown (f"Report generated on **{date}** at {hour}")
-    report.add_markdown (f"Classifier training completed in **{timestamp}**")
-    self._report_params (report)
-    if validation_split != 0.0:
+    if produce_report:
+      report = Report()   # TODO add hyperparams to the report
+      date , hour = str ( datetime.now() ) . split (" ")
+      report.add_markdown (f"Report generated on **{date}** at {hour}")
+      report.add_markdown (f"Classifier training completed in **{timestamp}**")
+      self._report_params (report)
+      if validation_split != 0.0:
+        report.add_markdown ("---")
+        report.add_markdown ('<h2 align="center">Model performance on validation set</h2>')
+        self._eff_hist2d (report, bins = 100, validation = True)
+        self._eff_hist1d (report, bins = 25, validation = True)
+        self._report_score (report, validation = True)
       report.add_markdown ("---")
-      report.add_markdown ('<h2 align="center">Model performance on validation set</h2>')
-      self._eff_hist2d (report, bins = 100, validation = True)
-      self._eff_hist1d (report, bins = 25, validation = True)
-      self._report_score (report, validation = True)
-    report.add_markdown ("---")
-    report.add_markdown ('<h2 align="center">Model performance on training set</h2>')
-    self._eff_hist2d (report, bins = 100, validation = False)
-    self._eff_hist1d (report, bins = 25, validation = False)
-    self._report_score (report, validation = False)
+      report.add_markdown ('<h2 align="center">Model performance on training set</h2>')
+      self._eff_hist2d (report, bins = 100, validation = False)
+      self._eff_hist1d (report, bins = 25, validation = False)
+      self._report_score (report, validation = False)
 
-    filename = f"{self._report_dir}/{self._report_name}.html"
-    report . write_report ( filename = f"{filename}" )
-    if (verbose > 0):
-      print ( f"[INFO] Training report correctly exported to {filename}" )
+      filename = f"{self._report_dir}/{self._report_name}.html"
+      report . write_report ( filename = f"{filename}" )
+      if (verbose > 0):
+        print ( f"[INFO] Training report correctly exported to {filename}" )
+
+    self._params.clean()
 
   def _report_params (self, report) -> None:
     report.add_markdown ("---")
@@ -202,7 +206,9 @@ class ScikitTrainer (BaseTrainer):
       ax[0].legend (handles = custom_handles, labels = custom_labels, loc = "upper right", fontsize = 10)
 
       ## Score computation
-      score = self._compute_score ( h_pred, h_true, strategy = self._performance_metric )
+      score = self._compute_score ( h_pred = np.where ( h_pred > 0.0 , h_pred , 0.0 ) , 
+                                    h_true = np.where ( h_true > 0.0 , h_true , 0.0 ) , 
+                                    strategy = self._performance_metric )
       if not validation:
         self._scores[0] . append ( score )
       else:

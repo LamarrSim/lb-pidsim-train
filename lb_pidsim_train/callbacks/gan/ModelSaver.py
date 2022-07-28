@@ -2,7 +2,7 @@ import os
 from tensorflow.keras.callbacks import Callback
 
 
-class GanModelSaver (Callback):
+class ModelSaver (Callback):
   def __init__ ( self , 
                  name , 
                  dirname = "./models"  , 

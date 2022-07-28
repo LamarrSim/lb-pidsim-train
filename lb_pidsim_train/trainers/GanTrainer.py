@@ -252,14 +252,16 @@ class GanTrainer (TensorTrainer):   # TODO class description
                     batch_size = 1 , 
                     num_epochs = 1 , 
                     validation_split = 0.0 , 
-                    scheduler = None , 
-                    verbose = 0 ) -> None:
-    super().train_model ( model = model , 
-                          batch_size = 2 * batch_size if model._loss_name == "Energy distance" else batch_size , 
-                          num_epochs = num_epochs , 
-                          validation_split = validation_split , 
-                          scheduler = scheduler , 
-                          verbose = verbose )
+                    callbacks = None , 
+                    produce_report = True ,
+                    verbose = 0 ) -> dict:
+    return super().train_model ( model = model , 
+                                 batch_size = 2 * batch_size if model._loss_name == "Energy distance" else batch_size ,
+                                 num_epochs = num_epochs , 
+                                 validation_split = validation_split , 
+                                 callbacks = callbacks , 
+                                 produce_report = produce_report ,
+                                 verbose = verbose )
 
   def _report_architecture (self, report, model) -> str:
     ## Discriminator architecture
@@ -301,53 +303,19 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
     n_epochs = len (history.history["mse"])
 
-    ## Learning curves plots (train-set)
+    ## GAN learning curves plots
     plt.figure (figsize = (8,5), dpi = 100)
-    plt.title  ("Learning curves (training set)", fontsize = 14)   # TODO plot loss variance
+    plt.title  ("GAN learning curves", fontsize = 14)   # TODO plot loss variance
     plt.xlabel ("Training epochs", fontsize = 12)
     plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
     plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
     plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
-    y_min = min ( min(history.history["d_loss"][int(n_epochs/10):]), min(history.history["g_loss"][int(n_epochs/10):]) )
-    y_max = max ( max(history.history["d_loss"][int(n_epochs/10):]), max(history.history["g_loss"][int(n_epochs/10):]) )
+    y_min = min ( min(history.history["d_loss"][int(n_epochs/2):]), min(history.history["g_loss"][int(n_epochs/2):]) )
+    y_max = max ( max(history.history["d_loss"][int(n_epochs/2):]), max(history.history["g_loss"][int(n_epochs/2):]) )
     y_min -= 0.2 * np.abs (y_max)
     y_max += 0.2 * np.abs (y_max)
     plt.ylim (bottom = y_min, top = y_max)
-
-    report.add_figure (options = "width=45%"); plt.clf(); plt.close()
-
-    ## Metric curves plots
-    plt.figure (figsize = (8,5), dpi = 100)
-    plt.title  ("Metric curves", fontsize = 14)
-    plt.xlabel ("Training epochs", fontsize = 12)
-    plt.ylabel ("Mean square error", fontsize = 12)
-    plt.plot (history.history["mse"], linewidth = 1.5, color = "forestgreen", label = "training set")
-    if self._validation_split != 0.0:
-      plt.plot (history.history["val_mse"], linewidth = 1.5, color = "orangered", label = "validation set")
-    plt.legend (loc = "upper right", fontsize = 10)
-    y_min = min ( min(history.history["mse"][int(n_epochs/10):]), min(history.history["val_mse"][int(n_epochs/10):]) )
-    y_max = max ( max(history.history["mse"][int(n_epochs/10):]), max(history.history["val_mse"][int(n_epochs/10):]) )
-    y_min -= 0.2 * np.abs (y_max)
-    y_max += 0.2 * np.abs (y_max)
-    plt.ylim (bottom = y_min, top = y_max)
-
-    report.add_figure (options = "width=45%"); plt.clf(); plt.close()
-
-    ## Learning curves plots (val-set)
-    plt.figure (figsize = (8,5), dpi = 100)
-    plt.title  ("Learning curves (validation set)", fontsize = 14)   # TODO plot loss variance
-    plt.xlabel ("Training epochs", fontsize = 12)
-    plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
-    if self._validation_split != 0.0:
-      plt.plot (history.history["val_d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
-      plt.plot (history.history["val_g_loss"], linewidth = 1.5, color = "coral", label = "generator")
-      plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
-      y_min = min ( min(history.history["val_d_loss"][int(n_epochs/10):]), min(history.history["val_g_loss"][int(n_epochs/10):]) )
-      y_max = max ( max(history.history["val_d_loss"][int(n_epochs/10):]), max(history.history["val_g_loss"][int(n_epochs/10):]) )
-      y_min -= 0.2 * np.abs (y_max)
-      y_max += 0.2 * np.abs (y_max)
-      plt.ylim (bottom = y_min, top = y_max)
 
     report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 
@@ -362,6 +330,42 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.legend (title = "Adversarial players:", loc = "lower left", fontsize = 10)
 
     report.add_figure (options = "width=45%"); plt.clf(); plt.close()
+
+    ## Metric curves plots
+    if "mse" in history.history.keys():
+      plt.figure (figsize = (8,5), dpi = 100)
+      plt.title  ("Metric curves", fontsize = 14)
+      plt.xlabel ("Training epochs", fontsize = 12)
+      plt.ylabel ("Mean square error", fontsize = 12)
+      plt.plot (history.history["mse"], linewidth = 1.5, color = "forestgreen", label = "training set")
+      if self._validation_split != 0.0:
+        plt.plot (history.history["val_mse"], linewidth = 1.5, color = "orangered", label = "validation set")
+      plt.legend (loc = "upper right", fontsize = 10)
+      y_min = min ( min(history.history["mse"][int(n_epochs/2):]), min(history.history["val_mse"][int(n_epochs/2):]) )
+      y_max = max ( max(history.history["mse"][int(n_epochs/2):]), max(history.history["val_mse"][int(n_epochs/2):]) )
+      y_min -= 0.2 * np.abs (y_max)
+      y_max += 0.2 * np.abs (y_max)
+      plt.ylim (bottom = y_min, top = y_max)
+
+      report.add_figure (options = "width=45%"); plt.clf(); plt.close()
+
+    ## Classifier learning curves
+    if "c_loss" in history.history.keys():
+      plt.figure (figsize = (8,5), dpi = 100)
+      plt.title  ("Classifier learning curves", fontsize = 14)   # TODO plot loss variance
+      plt.xlabel ("Training epochs", fontsize = 12)
+      plt.ylabel ("Binary cross entropy", fontsize = 12)
+      plt.plot (history.history["c_loss"], linewidth = 1.5, color = "forestgreen", label = "training set")
+      if self._validation_split != 0.0:
+        plt.plot (history.history["val_c_loss"], linewidth = 1.5, color = "orangered", label = "validation set")
+      plt.legend (loc = "upper right", fontsize = 10)
+      y_min = min ( min(history.history["c_loss"][int(n_epochs/2):]), min(history.history["val_c_loss"][int(n_epochs/2):]) )
+      y_max = max ( max(history.history["c_loss"][int(n_epochs/2):]), max(history.history["val_c_loss"][int(n_epochs/2):]) )
+      y_min -= 0.2 * np.abs (y_max)
+      y_max += 0.2 * np.abs (y_max)
+      plt.ylim (bottom = y_min, top = y_max)
+
+      report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 
     report.add_markdown ("---")
 
@@ -547,8 +551,9 @@ class GanTrainer (TensorTrainer):   # TODO class description
       ax[i].set_xlabel (x_label, fontsize = 12)
       ax[i].set_ylabel (f"{sel} selection efficiency", fontsize = 12)
 
-      query_ref = ( x_ref > np.percentile (x_ref, pctl, axis = None) )
-      query_gen = ( x_gen > np.percentile (x_gen, pctl, axis = None) )
+      cut_ref = np.percentile (x_ref, pctl, axis = None)
+      query_ref = ( x_ref > cut_ref )
+      query_gen = ( x_gen > cut_ref )
 
       h_all, bin_edges = np.histogram ( var            , bins = bins , weights = self._w_Y            . flatten() )
       h_ref, _         = np.histogram ( var[query_ref] , bins = bins , weights = self._w_Y[query_ref] . flatten() )

@@ -226,6 +226,16 @@ class BaseTrainer (DataHandler):   # TODO class description
     raise NotImplementedError ("error")   # TODO add error message
 
   @property
+  def export_dir (self) -> str:
+    """Export directory for the trained model."""
+    return self._export_dir
+
+  @property
+  def report_dir (self) -> str:
+    """Report directory for the trained model."""
+    return self._report_dir
+
+  @property
   def X_scaled (self) -> np.ndarray:
     """Array containing a preprocessed version of the input-set."""
     return self._X_scaled

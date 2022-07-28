@@ -3,11 +3,11 @@
 import yaml
 import tensorflow as tf
 
-from lb_pidsim_train.utils      import argparser
-from lb_pidsim_train.trainers   import GanTrainer
-from lb_pidsim_train.algorithms import CramerGAN
-from lb_pidsim_train.callbacks  import GanModelSaver, GanExpLrScheduler
-from tensorflow.keras.layers    import Dense, LeakyReLU, Dropout
+from lb_pidsim_train.utils import argparser
+from lb_pidsim_train.trainers import GanTrainer
+from lb_pidsim_train.algorithms.gan import CramerGAN
+from lb_pidsim_train.callbacks.gan  import ModelSaver, ExpLrScheduler
+from tensorflow.keras.layers import Dense, LeakyReLU, Dropout
 
 
 # +---------------------+
@@ -74,13 +74,6 @@ trainer = GanTrainer ( name = model_name ,
                        report_name = model_name )
 
 # +-------------------------+
-# |    Optimization step    |
-# +-------------------------+
-
-hp = hyperparams[args.particle][args.sample]
-# TODO add OptunAPI update
-
-# +-------------------------+
 # |    Data for training    |
 # +-------------------------+
 
@@ -91,6 +84,8 @@ else:
 
 file_list = datasets[args.model][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
+
+hp = hyperparams[args.particle][args.sample]
 
 trainer . feed_from_root_files ( root_files = file_list , 
                                  X_vars = variables[args.model]["X_vars"][slot] , 
@@ -177,13 +172,13 @@ model . summary()
 # |    Callbacks    |
 # +-----------------+
 
-model_saver  = GanModelSaver ( name = model_name , 
-                               dirname = config["model_dir"] , 
-                               model_to_save = "all" ,
-                               verbose = 1 )
+model_saver  = ModelSaver ( name = model_name , 
+                            dirname = trainer.export_dir , 
+                            model_to_save = "all" ,
+                            verbose = 1 )
 
-lr_scheduler = GanExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
-                                   step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
+lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
+                                step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
 
 # +--------------------+
 # |    Run training    |
@@ -193,5 +188,5 @@ trainer . train_model ( model = model ,
                         batch_size = hp["batch_size"] ,
                         num_epochs = hp["num_epochs"] ,
                         validation_split = hp["validation_split"] ,
-                        scheduler = [model_saver, lr_scheduler] ,
+                        callbacks = [model_saver, lr_scheduler] ,
                         verbose = 1 )

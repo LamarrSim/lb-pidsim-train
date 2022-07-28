@@ -63,13 +63,6 @@ trainer = ScikitTrainer ( name = model_name ,
                           report_name = model_name )
 
 # +-------------------------+
-# |    Optimization step    |
-# +-------------------------+
-
-hp = hyperparams[args.particle][args.sample]
-# TODO add OptunAPI update
-
-# +-------------------------+
 # |    Data for training    |
 # +-------------------------+
 
@@ -81,12 +74,14 @@ else:
 file_list = datasets["isMuon"][args.particle][args.sample]
 file_list = [ f"{data_dir}/{file_name}" for file_name in file_list ]
 
+hp = hyperparams[args.particle][args.sample]
+
 trainer . feed_from_root_files ( root_files = file_list , 
                                  X_vars = variables["isMuon"]["X_vars"][slot] , 
                                  Y_vars = variables["isMuon"]["Y_vars"][slot] , 
                                  w_var  = variables["isMuon"]["w_vars"][slot] if sw_avail else None , 
                                  selections = selections["isMuon"][slot] , 
-                                 tree_names = None if calib_sample else f"make_tuple/tuple_{args.particle.lower()}" , 
+                                 tree_names = None if calib_sample else "make_tuple" ,
                                  chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
