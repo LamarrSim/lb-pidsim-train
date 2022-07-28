@@ -118,7 +118,7 @@ study = hpc.Study ( name = model_name ,
                     sampler = hpc.samplers.TPESampler ( n_startup_trials = 20 ) ,
                     client  = client )
 
-for iTrial in range(5):
+for iTrial in range(50):
 
   with study.trial() as trial:
 
