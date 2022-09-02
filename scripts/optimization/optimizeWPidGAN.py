@@ -1,6 +1,3 @@
-#from __future__ import annotations
-
-from gc import callbacks
 import yaml
 import socket
 import tensorflow as tf
@@ -9,7 +6,7 @@ import hopaas_client as hpc
 from lb_pidsim_train.utils import argparser
 from lb_pidsim_train.trainers import GanTrainer
 from lb_pidsim_train.algorithms.gan import WGAN_ALP
-from lb_pidsim_train.callbacks.gan  import ModelSaver, ExpLrScheduler
+from lb_pidsim_train.callbacks.gan  import ExpLrScheduler, HopaasModelSaver
 from lb_pidsim_train.callbacks import HopaasReporter
 from tensorflow.keras.layers import Dense, LeakyReLU, Dropout
 
@@ -27,6 +24,8 @@ print (   "\t\t\t\t\t+----------------------------------------------+\n" )
 parser = argparser ("WGAN optimization")
 parser . add_argument ( "-w", "--weights", default = "no", choices = ["yes", "no"] )
 parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
+parser . add_argument ( "-n", "--node_name", required = True )
+parser . add_argument ( "-j", "--num_jobs", required = True )
 args = parser . parse_args()
 
 slot = "-" . join ( args.sample . split("-") [:-1] )
@@ -41,43 +40,27 @@ if sw_avail: print ( "[INFO] sWeighted GAN training selected" )
 rw_enabled = ( args.reweighting == "yes" )
 if rw_enabled: print ( "[INFO] Reweighting strategy enabled for training" )
 
+num_jobs = int ( args.num_jobs )
+
 # +---------------------------+
 # |    Configuration files    |
 # +---------------------------+
 
-with open ("../training/config/config.yml") as file:
+with open ("config/config.yml") as file:
   config = yaml.full_load (file)
 
-with open ("../training/config/datasets.yml") as file:
+with open ("config/datasets.yml") as file:
   datasets = yaml.full_load (file)
 
-with open ("../training/config/variables.yml") as file:
+with open ("config/variables.yml") as file:
   variables = yaml.full_load (file)
 
-with open ("../training/config/selections.yml") as file:
+with open ("config/selections.yml") as file:
   selections = yaml.full_load (file)
 
-with open (f"../training/config/hyperparams/{args.model.lower()}-wgan.yml") as file:
+with open (f"config/hyperparams/{args.model.lower()}-wgan.yml") as file:
   hyperparams = yaml.full_load (file)
-  hyperparams = hyperparams["standard"] if sw_avail else hyperparams["base"]
-
-# +----------------------------+
-# |    Trainer construction    | 
-# +----------------------------+
-
-model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
-
-if rw_enabled : model_name += ".r"    # reweighting enabled
-if sw_avail   : model_name += ".ww"   # WGAN with weights
-else          : model_name += ".bw"   # base WGAN
-
-model_name += ".opt"
-
-trainer = GanTrainer ( name = model_name ,
-                       export_dir  = "{}/optimization_studies/{}" . format (config["model_dir"], args.model) ,
-                       export_name = model_name ,
-                       report_dir  = "{}/optimization_studies/{}" . format (config["report_dir"], args.model) ,
-                       report_name = model_name )
+  hyperparams = hyperparams["with-weights"] if sw_avail else hyperparams["no-weights"]
 
 # +-----------------------------+
 # |    Client initialization    | 
@@ -89,6 +72,18 @@ server_port    = config["hopaas"]["port"]
 client  = hpc.Client ( server = f"{server_address}:{server_port}" ,
                        token  = config["hopaas"]["token"] )
 
+# +--------------------+
+# |    Model naming    | 
+# +--------------------+
+
+base_model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
+
+if rw_enabled : base_model_name += "-r"    # reweighting enabled
+if sw_avail   : base_model_name += "-ww"   # WGAN with weights
+else          : base_model_name += "-nw"   # WGAN without weights
+
+base_model_name += "-opt"
+
 # +----------------------+
 # |    Study creation    | 
 # +----------------------+
@@ -97,32 +92,42 @@ hp = hyperparams[args.particle][args.sample]
 properties = hp.copy()
 properties . update ( dict ( d_lr = hpc.suggestions.LogUniform (1e-5, 1e-3) ,
                              g_lr = hpc.suggestions.LogUniform (1e-5, 1e-3) ,
-                             duxb = hpc.suggestions.Int (1,4) ,
-                             guxb = hpc.suggestions.Int (1,2) ,
-                             vadu = hpc.suggestions.Int (1,2) ,
-                             adv_lp = hpc.suggestions.LogUniform (1e0, 1e2) ,
+                             duxb = hpc.suggestions.Int (1,5) ,
+                             adv_lp = hpc.suggestions.LogUniform (1e1, 1e3) ,
                              bs_factor = hpc.suggestions.Int (1,4) ) )
 
 my_address = socket.gethostbyname(socket.gethostname())
-my_node_name = "pclhcb07"
+my_node_name = f"{args.node_name}"
 
-study = hpc.Study ( name = model_name ,
+study = hpc.Study ( name = base_model_name ,
                     properties = properties ,
                     special_properties = dict ( address = my_address ,
                                                 node_name = my_node_name ) ,
-                    direction = "minimize" ,
+                    direction = "maximize" ,   # corresponds to difficulties in gen/ref separation
                     pruner  = hpc.pruners.MedianPruner ( n_startup_trials = 20 ,
-                                                         n_warmup_steps = 25 ,
+                                                         n_warmup_steps = 20 ,
                                                          interval_steps = 1 ,
                                                          n_min_trials = 10 ) ,
                     sampler = hpc.samplers.TPESampler ( n_startup_trials = 20 ) ,
                     client  = client )
 
-for iTrial in range(50):
+for iTrial in range(num_jobs):
 
   with study.trial() as trial:
 
     print(f"\n{'< ' * 30} Trial n. {trial.id} {' >' * 30}\n")
+
+    # +----------------------------+
+    # |    Trainer construction    | 
+    # +----------------------------+
+
+    model_name = f"{base_model_name}_suid{study.study_id[:4]}-trial{trial.id:0>4}"
+
+    trainer = GanTrainer ( name = model_name ,
+                           export_dir  = "{}/optimization_studies/{}" . format (config["model_dir"], args.model) ,
+                           export_name = model_name ,
+                           report_dir  = "{}/optimization_studies/{}" . format (config["report_dir"], args.model) ,
+                           report_name = model_name )
 
     # +-------------------------+
     # |    Data for training    |
@@ -220,18 +225,13 @@ for iTrial in range(50):
                       g_optimizer = g_opt , 
                       c_optimizer = c_opt ,
                       d_updt_per_batch = trial.duxb , 
-                      g_updt_per_batch = trial.guxb ,
-                      v_adv_dir_updt = trial.vadu ,
+                      g_updt_per_batch = trainer.params.get ( "g_updt_per_batch" , hp["g_updt_per_batch"] ) ,
+                      v_adv_dir_updt = trainer.params.get ( "v_adv_dir_updt" , hp["v_adv_dir_updt"] ) ,
                       adv_lp_penalty = trial.adv_lp )
 
     # +-----------------+
     # |    Callbacks    |
     # +-----------------+
-
-    model_saver  = ModelSaver ( name = model_name , 
-                                dirname = trainer.export_dir , 
-                                model_to_save = "gen" ,
-                                verbose = 1 )
 
     lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
                                     step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
@@ -242,6 +242,13 @@ for iTrial in range(50):
                               step = 1 ,
                               timeout = 20000 )
 
+    model_saver = HopaasModelSaver ( trial = trial ,
+                                     name = model_name , 
+                                     dirname = trainer.export_dir , 
+                                     model_to_save = "gen" ,
+                                     min_trials_to_save = 20 ,
+                                     verbose = 1 )
+
     # +--------------------+
     # |    Run training    |
     # +--------------------+
@@ -250,6 +257,6 @@ for iTrial in range(50):
                             batch_size = 256 * trial.bs_factor ,
                             num_epochs = hp["num_epochs"] ,
                             validation_split = hp["validation_split"] ,
-                            callbacks = [model_saver, lr_scheduler, pruner] ,
+                            callbacks = [lr_scheduler, pruner, model_saver] ,
                             produce_report = False ,
                             verbose = 1 )

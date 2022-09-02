@@ -1,0 +1,345 @@
+# ==========================================================================================
+with-weights:
+# ==========================================================================================
+
+  # +------------+
+  # |    MUON    |
+  # +------------+
+  Muon:
+
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size : 10000000   # 23 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+  # +------------+
+  # |    PION    |
+  # +------------+
+  Pion:
+
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size :   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+  # +------------+
+  # |    KAON    |
+  # +------------+
+  Kaon:
+
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size :   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 7
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+  # +--------------+
+  # |    PROTON    |
+  # +--------------+
+  Proton:
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size :   # 5 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+# ==========================================================================================
+no-weights:
+# ==========================================================================================
+
+  # +------------+
+  # |    MUON    |
+  # +------------+
+  Muon:
+
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size : 10000000   # 23 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Simu samples | 2016 Mag Up | ---->
+    2016-MagUp-simu:
+      chunk_size : 6000000   # 16 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+    # <---- | Simu samples | 2016 Mag Down | ---->
+    2016-MagDown-simu:
+
+  # +------------+
+  # |    PION    |
+  # +------------+
+  Pion:
+
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size : null   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Simu samples | 2016 Mag Up | ---->
+    2016-MagUp-simu:
+      chunk_size : null   # 8 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+    # <---- | Simu samples | 2016 Mag Down | ---->
+    2016-MagDown-simu:
+
+  # +------------+
+  # |    KAON    |
+  # +------------+
+  Kaon:
+
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size : null   # 2 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Simu samples | 2016 Mag Up | ---->
+    2016-MagUp-simu:
+      chunk_size : null   # 1.5 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+    # <---- | Simu samples | 2016 Mag Down | ---->
+    2016-MagDown-simu:
+
+  # +--------------+
+  # |    PROTON    |
+  # +--------------+
+  Proton:
+    # <---- | Calib samples | 2016 Mag Up | ---->
+    2016-MagUp-data:
+      chunk_size : null   # 5 mln
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+    
+    # <---- | Simu samples | 2016 Mag Up | ---->
+    2016-MagUp-simu:
+      chunk_size : null   # 600k
+      d_num_layers  : 5
+      d_num_nodes   : 128
+      d_alpha_leaky : 0.05
+      g_num_layers  : 5
+      g_num_nodes   : 128
+      g_alpha_leaky : 0.05
+      latent_dim : 64
+      d_lr : null
+      g_lr : null
+      d_updt_per_batch : null
+      g_updt_per_batch : 1
+      v_adv_dir_updt : 1
+      adv_lp_penalty : null
+      lr_sched_factor : 0.90
+      lr_sched_step : 10
+      batch_size : null
+      num_epochs : 250
+      validation_split : 0.2
+
+    # <---- | Calib samples | 2016 Mag Down | ---->
+    2016-MagDown-data:
+
+    # <---- | Simu samples | 2016 Mag Down | ---->
+    2016-MagDown-simu:

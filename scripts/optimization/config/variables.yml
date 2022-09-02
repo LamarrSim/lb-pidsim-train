@@ -1,0 +1,433 @@
+# +------------+
+# |    RICH    |
+# +------------+
+Rich:
+
+  X_vars:
+    2016-MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+    2016-MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+
+  X_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+
+  Y_vars:
+    2016-MagUp:
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+    2016-MagDown:
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+
+  Y_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+
+  w_vars:
+    2016-MagUp: probe_sWeight
+    2016-MagDown: probe_sWeight
+
+# +------------+
+# |    MUON    |
+# +------------+
+Muon:
+
+  X_vars:
+    2016-MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+    2016-MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+
+  X_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+
+  Y_vars:
+    2016-MagUp:
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016-MagDown:
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  Y_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+
+  w_vars:
+    2016-MagUp: probe_sWeight
+    2016-MagDown: probe_sWeight
+
+# +------------------+
+# |    GLOBAL PID    |
+# +------------------+
+GlobalPID:
+
+  X_vars:
+    2016-MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_isMuon
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016-MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_isMuon
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  X_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - pass-through
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - pass-through
+      - simple-quantile-10000
+      - simple-quantile-10000
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - pass-through
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - pass-through
+      - simple-quantile-10000
+      - simple-quantile-10000
+
+  Y_vars:
+    2016-MagUp:
+      - probe_Brunel_PIDe
+      - probe_Brunel_PIDK
+      - probe_Brunel_PIDp
+      - probe_Brunel_MC15TuneV1_ProbNNe
+      - probe_Brunel_MC15TuneV1_ProbNNpi
+      - probe_Brunel_MC15TuneV1_ProbNNk
+      - probe_Brunel_MC15TuneV1_ProbNNp
+    2016-MagDown:
+      - probe_Brunel_PIDe
+      - probe_Brunel_PIDK
+      - probe_Brunel_PIDp
+      - probe_Brunel_MC15TuneV1_ProbNNe
+      - probe_Brunel_MC15TuneV1_ProbNNpi
+      - probe_Brunel_MC15TuneV1_ProbNNk
+      - probe_Brunel_MC15TuneV1_ProbNNp
+    
+  Y_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+      - weighted-quantile-1000
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
+      - simple-quantile-1000
+
+  w_vars:
+    2016-MagUp: probe_sWeight
+    2016-MagDown: probe_sWeight
+
+# +----------------------+
+# |    GLOBAL MUON ID    |
+# +----------------------+
+GlobalMuonId:
+
+  X_vars:
+    2016-MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+    2016-MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+      - probe_Brunel_RichDLLe
+      - probe_Brunel_RichDLLmu
+      - probe_Brunel_RichDLLk
+      - probe_Brunel_RichDLLp
+      - probe_Brunel_MuonMuLL
+      - probe_Brunel_MuonBgLL
+
+  X_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-100
+      - pass-through
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+      - weighted-quantile-10000
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-10000
+
+  Y_vars:
+    2016-MagUp:
+      - probe_Brunel_PIDmu
+      - probe_Brunel_MC15TuneV1_ProbNNmu
+    2016-MagDown:
+      - probe_Brunel_PIDmu
+      - probe_Brunel_MC15TuneV1_ProbNNmu
+
+  Y_preprocessing:
+    2016-MagUp-data:
+      - weighted-quantile-10000
+      - weighted-quantile-1000
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-1000
+    2016-MagDown-data:
+      - weighted-quantile-10000
+      - weighted-quantile-1000
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-1000
+
+  w_vars:
+    2016-MagUp: probe_sWeight
+    2016-MagDown: probe_sWeight
+
+# +---------------+
+# |    IS MUON    |
+# +---------------+
+isMuon:
+
+  X_vars:
+    2016-MagUp:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+    2016-MagDown:
+      - probe_Brunel_P
+      - probe_Brunel_ETA
+      - nTracks_Brunel
+      - probe_Brunel_trackcharge
+
+  X_preprocessing:
+    2016-MagUp-data:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+    2016-MagUp-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+    2016-MagDown-data:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+    2016-MagDown-simu:
+      - simple-quantile-10000
+      - simple-quantile-10000
+      - simple-quantile-100
+      - pass-through
+
+  Y_vars:
+    2016-MagUp: probe_Brunel_isMuon
+    2016-MagDown: probe_Brunel_isMuon
+
+  Y_preprocessing:
+    2016-MagUp-data: null
+    2016-MagUp-simu: null
+    2016-MagDown-data: null
+    2016-MagDown-simu: null
+
+  w_vars:
+    2016-MagUp: probe_sWeight
+    2016-MagDown: probe_sWeight
+      
