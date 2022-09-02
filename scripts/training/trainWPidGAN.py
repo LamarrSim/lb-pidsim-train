@@ -1,12 +1,10 @@
-#from __future__ import annotations
-
 import yaml
 import tensorflow as tf
 
 from lb_pidsim_train.utils import argparser
 from lb_pidsim_train.trainers import GanTrainer
 from lb_pidsim_train.algorithms.gan import WGAN_ALP
-from lb_pidsim_train.callbacks.gan  import ModelSaver, ExpLrScheduler
+from lb_pidsim_train.callbacks.gan  import ExpLrScheduler, ModelSaver
 from tensorflow.keras.layers import Dense, LeakyReLU, Dropout
 
 
@@ -55,7 +53,7 @@ with open ("config/selections.yml") as file:
 
 with open (f"config/hyperparams/{args.model.lower()}-wgan.yml") as file:
   hyperparams = yaml.full_load (file)
-  hyperparams = hyperparams["standard"] if sw_avail else hyperparams["base"]
+  hyperparams = hyperparams["with-weights"] if sw_avail else hyperparams["no-weights"]
 
 # +----------------------------+
 # |    Trainer construction    | 
@@ -63,9 +61,9 @@ with open (f"config/hyperparams/{args.model.lower()}-wgan.yml") as file:
 
 model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 
-if rw_enabled : model_name += ".r"    # reweighting enabled
-if sw_avail   : model_name += ".ww"   # WGAN with weights
-else          : model_name += ".bw"   # base WGAN
+if rw_enabled : model_name += "-r"    # reweighting enabled
+if sw_avail   : model_name += "-ww"   # WGAN with weights
+else          : model_name += "-nw"   # WGAN without weights
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -172,13 +170,13 @@ model . summary()
 # |    Callbacks    |
 # +-----------------+
 
+lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
+                                step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
+
 model_saver  = ModelSaver ( name = model_name , 
                             dirname = trainer.export_dir , 
                             model_to_save = "all" ,
                             verbose = 1 )
-
-lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
-                                step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
 
 # +--------------------+
 # |    Run training    |
@@ -188,5 +186,5 @@ trainer . train_model ( model = model ,
                         batch_size = hp["batch_size"] ,
                         num_epochs = hp["num_epochs"] ,
                         validation_split = hp["validation_split"] ,
-                        callbacks = [model_saver, lr_scheduler] ,
+                        callbacks = [lr_scheduler, model_saver] ,
                         verbose = 1 )

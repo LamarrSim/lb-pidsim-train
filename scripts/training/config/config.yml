@@ -6,13 +6,11 @@ data_dir :
   data   : /data
   simu   : /data
 
-model_dir : /models
-
-class_dir : /models
-
+model_dir  : /models
+class_dir  : /models
 report_dir : /reports
 
 hopaas :
-  address : hopaas-server-address
-  port    : 80   # or 443
-  token   : user-hopaas-token
+  address : null
+  port    : null
+  token   : null
