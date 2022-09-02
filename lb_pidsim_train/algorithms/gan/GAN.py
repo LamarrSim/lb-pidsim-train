@@ -229,7 +229,8 @@ class GAN (tf.keras.Model):   # TODO add class description
 
     ## If classifier enabled
     else:
-      self._train_c_step (X, Y, w_X, w_Y)
+      for k in range(2):
+        self._train_c_step (X, Y, w_X, w_Y)
       c_loss = self._compute_c_loss (gen_sample, ref_sample)
       c_loss_tracker . update_state (c_loss)
       return { "mse"    : mse_tracker.result()    ,
@@ -497,12 +498,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     C_ref = self._classifier ( XY_ref )
 
     ## Loss computation
-    k_gen = 0.1
-    k_ref = 0.9
-    c_loss = w_gen * k_gen       * tf.math.log ( tf.clip_by_value ( C_gen     , 1e-12 , 1.0 ) ) + \
-             w_gen * (1 - k_gen) * tf.math.log ( tf.clip_by_value ( 1 - C_gen , 1e-12 , 1.0 ) ) + \
-             w_ref * k_ref       * tf.math.log ( tf.clip_by_value ( C_ref     , 1e-12 , 1.0 ) ) + \
-             w_ref * (1 - k_ref) * tf.math.log ( tf.clip_by_value ( 1 - C_ref , 1e-12 , 1.0 ) ) 
+    c_loss = w_gen * tf.math.log ( tf.clip_by_value ( 1 - C_gen , 1e-12 , 1.0 ) ) + \
+             w_ref * tf.math.log ( tf.clip_by_value ( C_ref     , 1e-12 , 1.0 ) )
     return - tf.reduce_mean (c_loss)
 
   def generate (self, X) -> tf.Tensor:   # TODO complete docstring

@@ -49,7 +49,7 @@ class HopaasReporter (Callback):
     logs = logs or {}
     monitor_value = float ( logs.get(self._loss) )
     if monitor_value is None:
-      monitor_kyes = list ( logs.keys() )
+      monitor_keys = list ( logs.keys() )
       print ( f"[WARNING] Pruning strategy conditioned on metric `{self._loss}` which "
-              f"is not available. Available metrics are: {','.join(monitor_kyes)}." )
+              f"is not available. Available metrics are: {','.join(monitor_keys)}." )
     return monitor_value
