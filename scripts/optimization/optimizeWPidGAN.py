@@ -11,6 +11,9 @@ from lb_pidsim_train.callbacks import HopaasReporter
 from tensorflow.keras.layers import Dense, LeakyReLU, Dropout
 
 
+my_address = socket.gethostbyname(socket.gethostname())
+
+
 # +---------------------+
 # |    Initial setup    |
 # +---------------------+
@@ -24,8 +27,8 @@ print (   "\t\t\t\t\t+----------------------------------------------+\n" )
 parser = argparser ("WGAN optimization")
 parser . add_argument ( "-w", "--weights", default = "no", choices = ["yes", "no"] )
 parser . add_argument ( "-r", "--reweighting", default = "no", choices = ["yes", "no"] )
-parser . add_argument ( "-n", "--node_name", required = True )
-parser . add_argument ( "-j", "--num_jobs", required = True )
+parser . add_argument ( "-n", "--node_name", default = f"ip:{my_address}" )
+parser . add_argument ( "-j", "--num_jobs", default = 1 )
 args = parser . parse_args()
 
 slot = "-" . join ( args.sample . split("-") [:-1] )
@@ -40,6 +43,7 @@ if sw_avail: print ( "[INFO] sWeighted GAN training selected" )
 rw_enabled = ( args.reweighting == "yes" )
 if rw_enabled: print ( "[INFO] Reweighting strategy enabled for training" )
 
+my_node_name = f"{args.node_name}"
 num_jobs = int ( args.num_jobs )
 
 # +---------------------------+
@@ -69,8 +73,8 @@ with open (f"config/hyperparams/{args.model.lower()}-wgan.yml") as file:
 server_address = config["hopaas"]["address"]
 server_port    = config["hopaas"]["port"]
 
-client  = hpc.Client ( server = f"{server_address}:{server_port}" ,
-                       token  = config["hopaas"]["token"] )
+client = hpc.Client ( server = f"{server_address}:{server_port}" ,
+                      token  = config["hopaas"]["token"] )
 
 # +--------------------+
 # |    Model naming    | 
@@ -95,9 +99,6 @@ properties . update ( dict ( d_lr = hpc.suggestions.LogUniform (1e-5, 1e-3) ,
                              duxb = hpc.suggestions.Int (1,5) ,
                              adv_lp = hpc.suggestions.LogUniform (1e1, 1e3) ,
                              bs_factor = hpc.suggestions.Int (1,4) ) )
-
-my_address = socket.gethostbyname(socket.gethostname())
-my_node_name = f"{args.node_name}"
 
 study = hpc.Study ( name = base_model_name ,
                     properties = properties ,
@@ -124,9 +125,9 @@ for iTrial in range(num_jobs):
     model_name = f"{base_model_name}_suid{study.study_id[:4]}-trial{trial.id:0>4}"
 
     trainer = GanTrainer ( name = model_name ,
-                           export_dir  = "{}/optimization_studies/{}" . format (config["model_dir"], args.model) ,
+                           export_dir  = "{}/{}" . format (config["model_dir"], args.model) ,
                            export_name = model_name ,
-                           report_dir  = "{}/optimization_studies/{}" . format (config["report_dir"], args.model) ,
+                           report_dir  = "{}/{}" . format (config["report_dir"], args.model) ,
                            report_name = model_name )
 
     # +-------------------------+
