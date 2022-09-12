@@ -8,7 +8,7 @@ class HopaasModelSaver (Callback):
                  trial ,
                  name  , 
                  dirname = "./models"   , 
-                 model_to_save = "all"  ,
+                 model_to_save = "gen"  ,
                  min_trials_to_save = 0 ,
                  verbose = 1 ) -> None:
     super().__init__()
@@ -26,7 +26,7 @@ class HopaasModelSaver (Callback):
     self._verbose = verbose
 
   def on_train_end (self, logs = None ) -> None:
-    if self._trial.id >= self._min_trials_to_save:
+    if (self._trial.id >= self._min_trials_to_save) and (not self._trial.should_prune):
       if self._model_to_save == "gen":
         self.model.generator . save ( f"{self._filename}/saved_generator", save_format = "tf" )
         self._verbose_message ( model = "generator", verbose = self._verbose )

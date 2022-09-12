@@ -26,24 +26,18 @@ class HopaasReporter (Callback):
 
     if self._step is not None:
       if (epoch + 1) % self._step == 0:
-        monitor_value = self._get_monitor_value (logs = logs)
-        if not self._pruning:
-          self._trial.loss = monitor_value
-        else:
+        if self._pruning:
+          self._trial.loss = self._get_monitor_value (logs = logs)
           if self._trial.should_prune:
             self.model.stop_training = True
-            print ( f"[INFO] Training trial n. {self._trial.id} "
-                     "remotely pruned by the Hopaas server" )
-          else:
-            self._trial.loss = monitor_value
 
   def on_train_end (self, logs = None) -> None:
-    monitor_value = self._get_monitor_value (logs = logs)
     if not self._pruning:
-      self._trial.loss = monitor_value
+      self._trial.loss = self._get_monitor_value (logs = logs)
     else:
-      if not self._trial.should_prune:
-        self._trial.loss = monitor_value
+      if self._trial.should_prune:
+        print ( f"[INFO] Training trial n. {self._trial.id} "
+                 "remotely pruned by the Hopaas server" )
 
   def _get_monitor_value (self, logs) -> float:
     logs = logs or {}

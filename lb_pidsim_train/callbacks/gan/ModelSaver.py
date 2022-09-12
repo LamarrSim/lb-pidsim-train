@@ -6,7 +6,7 @@ class ModelSaver (Callback):
   def __init__ ( self , 
                  name , 
                  dirname = "./models"  , 
-                 model_to_save = "all" , 
+                 model_to_save = "gen" , 
                  step = None ,
                  verbose = 1 ) -> None:
     super().__init__()
