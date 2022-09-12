@@ -86,9 +86,9 @@ class DataHandler:   # TODO add class description
     if isinstance (tree_names, str):
       tree_names = [ tree_names for i in range ( len(root_files) ) ]
 
-    self._X_vars = self._params.get ( "X_vars" , X_vars )
-    self._Y_vars = self._params.get ( "Y_vars" , Y_vars )
-    self._w_var  = self._params.get ( "w_var"  , w_var  )
+    self._X_vars = self._params.get ( "X_vars" , X_vars.copy() )
+    self._Y_vars = self._params.get ( "Y_vars" , Y_vars.copy() )
+    self._w_var  = self._params.get ( "w_var"  , w_var.copy() if w_var else None )
 
     ## List of branch names
     branches = list()
