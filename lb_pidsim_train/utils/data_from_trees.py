@@ -80,14 +80,16 @@ def data_from_trees ( trees ,
 
   ## Data-type control
   if max_ntrees is not None:
-    if isinstance (max_ntrees, float): int (max_ntrees)
-    else: raise TypeError ("The maximum number of trees should be an integer.")
+    if not isinstance (max_ntrees, int):
+      if isinstance (max_ntrees, float): int (max_ntrees)
+      else: raise TypeError ("The maximum number of trees should be an integer.")
   else:
     max_ntrees = int (len(trees))
 
   if chunk_size is not None:
-    if isinstance (chunk_size, float): int (chunk_size)
-    else: raise TypeError ("The chunk-size should be an integer.")
+    if not isinstance (chunk_size, int):
+      if isinstance (chunk_size, float): int (chunk_size)
+      else: raise TypeError ("The chunk-size should be an integer.")
   else:
     chunk_size = int (tot_entries)
 
