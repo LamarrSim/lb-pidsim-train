@@ -208,7 +208,7 @@ for iTrial in range(num_jobs):
 
     classifier = list()
     for layer in range(5):
-      classifier . append ( Dense (64, kernel_initializer = "glorot_uniform") )
+      classifier . append ( Dense (64, kernel_initializer = "glorot_uniform", kernel_regularizer = "l2") )
       classifier . append ( LeakyReLU (alpha = 0.1) )
       classifier . append ( Dropout (rate = 0.1) )
 
