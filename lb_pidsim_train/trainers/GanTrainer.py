@@ -64,10 +64,10 @@ class GanTrainer (TensorTrainer):   # TODO class description
                           batch_size = None ,
                           save_model = True ,
                           verbose = 0 ) -> tf.keras.Sequential:   # TODO add docstring
-    physical_devices = tf.config.list_physical_devices ("GPU")
+    gpus_avail = len ( tf.config.list_physical_devices ("GPU") ) > 0
 
     ## Memory allocation
-    if ( len (physical_devices) > 0 ):
+    if gpus_avail:
       with tf.device ("/gpu:0"):
         input  = tf.cast ( tf.convert_to_tensor(self.X_scaled) , dtype = TF_FLOAT )
         output = tf.cast ( tf.convert_to_tensor(self.w)        , dtype = TF_FLOAT )

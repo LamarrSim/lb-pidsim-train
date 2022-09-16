@@ -18,8 +18,8 @@ class HopaasModelSaver (Callback):
     if not os.path.exists (f"{self._filename}"):
       os.makedirs (f"{self._filename}")
 
-    if model_to_save not in ["gen", "disc", "all"]:
-      raise ValueError ("`model_to_save` should be chosen in ['gen', 'disc', 'all'].")
+    if model_to_save not in ["gen", "disc", "both"]:
+      raise ValueError ("`model_to_save` should be chosen in ['gen', 'disc', 'both'].")
 
     self._model_to_save = model_to_save
     self._min_trials_to_save = min_trials_to_save
