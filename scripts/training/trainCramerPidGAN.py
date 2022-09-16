@@ -61,9 +61,10 @@ with open (f"config/hyperparams/{args.model.lower()}-cramergan.yml") as file:
 
 model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 
-if rw_enabled : model_name += "-r"    # reweighting enabled
 if sw_avail   : model_name += "-wc"   # CramerGAN with weights
 else          : model_name += "-nc"   # CramerGAN without weights
+if rw_enabled : model_name +=  "r"    # reweighting enabled
+
 
 trainer = GanTrainer ( name = model_name ,
                        export_dir  = config["model_dir"] ,
@@ -94,12 +95,21 @@ trainer . feed_from_root_files ( root_files = file_list ,
                                  chunk_size = hp["chunk_size"] , 
                                  verbose = 1 )
 
-if args.model == "Muon":   # Compute MuonLL to replace MuonMuLL
+if args.model == "Rich":   # compute RichDLLpk to replace RichDLLp
+  trainer._datachunk["RichDLLpk"] = trainer._datachunk["probe_Brunel_RichDLLp"] - \
+                                    trainer._datachunk["probe_Brunel_RichDLLk"]
+  trainer._Y_vars[-1] = "RichDLLpk"
+elif args.model == "Muon":   # compute MuonLL to replace MuonBgLL
   trainer._datachunk["MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
                                  trainer._datachunk["probe_Brunel_MuonBgLL"]
   trainer._Y_vars[-1] = "MuonLL"
-  columns = trainer.X_vars + trainer.Y_vars + trainer.w_var if trainer.w_var else trainer.X_vars + trainer.Y_vars
-  trainer._datachunk = trainer._datachunk[columns]
+elif args.model == "GlobalPID":   # compute PIDpk to replace PIDp
+  trainer._datachunk["PIDpk"] = trainer._datachunk["probe_Brunel_PIDp"] - \
+                                trainer._datachunk["probe_Brunel_PIDK"]
+  trainer._Y_vars[2] = "PIDpk"
+
+columns = trainer.X_vars + trainer.Y_vars + trainer.w_var if trainer.w_var else trainer.X_vars + trainer.Y_vars
+trainer._datachunk = trainer._datachunk[columns]
 
 # +--------------------------+
 # |    Data preprocessing    |
@@ -175,7 +185,7 @@ lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" 
 
 model_saver  = ModelSaver ( name = model_name , 
                             dirname = trainer.export_dir , 
-                            model_to_save = "all" ,
+                            model_to_save = "gen" ,
                             verbose = 1 )
 
 # +--------------------+
