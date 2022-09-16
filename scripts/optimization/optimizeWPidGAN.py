@@ -6,8 +6,8 @@ import hopaas_client as hpc
 from lb_pidsim_train.utils import argparser
 from lb_pidsim_train.trainers import GanTrainer
 from lb_pidsim_train.algorithms.gan import WGAN_ALP
-from lb_pidsim_train.callbacks.gan  import ExpLrScheduler, HopaasModelSaver
-from lb_pidsim_train.callbacks import HopaasReporter
+from lb_pidsim_train.callbacks.gan  import ExpLrScheduler, HopaasModelSaver, CyclicInitializer
+from lb_pidsim_train.callbacks import HopaasReporter, StopWatch
 from tensorflow.keras.layers import Dense, LeakyReLU, Dropout
 
 
@@ -82,9 +82,9 @@ client = hpc.Client ( server = f"{server_address}:{server_port}" ,
 
 base_model_name = f"{args.model}_{args.particle}_{args.sample}_{args.version}"
 
-if rw_enabled : base_model_name += "-r"    # reweighting enabled
 if sw_avail   : base_model_name += "-ww"   # WGAN with weights
 else          : base_model_name += "-nw"   # WGAN without weights
+if rw_enabled : base_model_name +=  "r"    # reweighting enabled
 
 base_model_name += "-opt"
 
@@ -94,11 +94,10 @@ base_model_name += "-opt"
 
 hp = hyperparams[args.particle][args.sample]
 properties = hp.copy()
-properties . update ( dict ( d_lr = hpc.suggestions.LogUniform (1e-5, 1e-3) ,
-                             g_lr = hpc.suggestions.LogUniform (1e-5, 1e-3) ,
+properties . update ( dict ( d_lr = hpc.suggestions.LogUniform (5e-6, 5e-5) ,
+                             g_lr = hpc.suggestions.LogUniform (5e-6, 5e-5) ,
                              duxb = hpc.suggestions.Int (1,5) ,
-                             adv_lp = hpc.suggestions.LogUniform (1e1, 1e3) ,
-                             bs_factor = hpc.suggestions.Int (1,4) ) )
+                             adv_lp = hpc.suggestions.LogUniform (1e1, 1e3) ) )
 
 study = hpc.Study ( name = base_model_name ,
                     properties = properties ,
@@ -151,12 +150,21 @@ for iTrial in range(num_jobs):
                                      chunk_size = hp["chunk_size"] , 
                                      verbose = 1 )
 
-    if args.model == "Muon":   # Compute MuonLL to replace MuonMuLL
+    if args.model == "Rich":   # compute RichDLLpk to replace RichDLLp
+      trainer._datachunk["RichDLLpk"] = trainer._datachunk["probe_Brunel_RichDLLp"] - \
+                                        trainer._datachunk["probe_Brunel_RichDLLk"]
+      trainer._Y_vars[-1] = "RichDLLpk"
+    elif args.model == "Muon":   # compute MuonLL to replace MuonBgLL
       trainer._datachunk["MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
                                      trainer._datachunk["probe_Brunel_MuonBgLL"]
       trainer._Y_vars[-1] = "MuonLL"
-      columns = trainer.X_vars + trainer.Y_vars + trainer.w_var if trainer.w_var else trainer.X_vars + trainer.Y_vars
-      trainer._datachunk = trainer._datachunk[columns]
+    elif args.model == "GlobalPID":   # compute PIDpk to replace PIDp
+      trainer._datachunk["PIDpk"] = trainer._datachunk["probe_Brunel_PIDp"] - \
+                                    trainer._datachunk["probe_Brunel_PIDK"]
+      trainer._Y_vars[2] = "PIDpk"
+
+    columns = trainer.X_vars + trainer.Y_vars + trainer.w_var if trainer.w_var else trainer.X_vars + trainer.Y_vars
+    trainer._datachunk = trainer._datachunk[columns]
 
     # +--------------------------+
     # |    Data preprocessing    |
@@ -237,11 +245,14 @@ for iTrial in range(num_jobs):
     lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
                                     step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
 
+    timer = StopWatch ( timeout = 12500 )
+
+    initializer = CyclicInitializer ( cycle = 1 )
+
     pruner = HopaasReporter ( trial = trial ,
                               loss = "val_c_loss" ,
                               pruning = True ,
-                              step = 1 ,
-                              timeout = 20000 )
+                              step = 1 )
 
     model_saver = HopaasModelSaver ( trial = trial ,
                                      name = model_name , 
@@ -255,9 +266,9 @@ for iTrial in range(num_jobs):
     # +--------------------+
 
     trainer . train_model ( model = model ,
-                            batch_size = 256 * trial.bs_factor ,
+                            batch_size = hp["batch_size"] ,
                             num_epochs = hp["num_epochs"] ,
                             validation_split = hp["validation_split"] ,
-                            callbacks = [lr_scheduler, pruner, model_saver] ,
-                            produce_report = False ,
+                            callbacks = [lr_scheduler, timer, initializer, pruner, model_saver] ,
+                            produce_report = (trial.id >= 20) ,
                             verbose = 1 )
