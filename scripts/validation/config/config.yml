@@ -1,0 +1,16 @@
+# +----------------------+
+# |    DIRECTORY PATH    |
+# +----------------------+
+
+data_dir : 
+  data   : /data
+  simu   : /data
+
+model_dir  : /models
+class_dir  : /models
+report_dir : /reports
+
+hopaas :
+  address : null
+  port    : null
+  token   : null

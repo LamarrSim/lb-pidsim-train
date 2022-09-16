@@ -1,0 +1,182 @@
+# +------------+
+# |    RICH    |
+# +------------+
+Rich:
+
+  #  RICH : Muon
+  # -------------
+  Muon:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 60 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 18 mln
+      num_jobs : 4
+
+  #  RICH : Pion
+  # -------------
+  Pion:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 150 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 150 mln
+      num_jobs : 4
+
+  #  RICH : Kaon
+  # -------------
+  Kaon:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 150 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 40 mln
+      num_jobs : 4
+
+  #  RICH : Proton
+  # ---------------
+  Proton:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 105 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 30 mln
+      num_jobs : 4
+
+
+# +------------+
+# |    MUON    |
+# +------------+
+Muon:
+
+  #  MUON : Muon
+  # -------------
+  Muon:
+    2016-MagUp-data:
+      chunk_size : 10000000   # 23 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 6000000   # 16 mln
+      num_jobs : 4
+
+  #  MUON : Pion
+  # -------------
+  Pion:
+    2016-MagUp-data:
+      chunk_size :   # 2 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size :   # 8 mln
+      num_jobs : 4
+
+  #  MUON : Kaon
+  # -------------
+  Kaon:
+    2016-MagUp-data:
+      chunk_size :   # 2 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size :   # 1.5 mln
+      num_jobs : 4
+
+  #  MUON : Proton
+  # ---------------
+  Proton:
+    2016-MagUp-data:
+      chunk_size :   # 5 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size :   # 600k
+      num_jobs : 4
+
+
+# +------------------+
+# |    GLOBAL PID    |
+# +------------------+
+GlobalPID:
+
+  #  GLOBALPID : Muon
+  # ------------------
+  Muon:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 60 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 18 mln
+      num_jobs : 4
+
+  #  GLOBALPID : Pion
+  # ------------------
+  Pion:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 150 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 150 mln
+      num_jobs : 4
+
+  #  GLOBALPID : Kaon
+  # ------------------
+  Kaon:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 150 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 40 mln
+      num_jobs : 4
+
+  #  GLOBALPID : Proton
+  # --------------------
+  Proton:
+    2016-MagUp-data:
+      chunk_size : 5000000   # 105 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 5000000   # 30 mln
+      num_jobs : 4
+
+
+# +----------------------+
+# |    GLOBAL MUON ID    |
+# +----------------------+
+GlobalMuonId:
+
+  #  GLOBALMUON : Muon
+  # -------------------
+  Muon:
+    2016-MagUp-data:
+      chunk_size : 10000000   # 23 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size : 6000000   # 16 mln
+      num_jobs : 4
+
+  #  GLOBALMUON : Pion
+  # -------------------
+  Pion:
+    2016-MagUp-data:
+      chunk_size :   # 2 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size :   # 8 mln
+      num_jobs : 4
+
+  #  GLOBALMUON : Kaon
+  # -------------------
+  Kaon:
+    2016-MagUp-data:
+      chunk_size :   # 2 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size :   # 1.5 mln
+      num_jobs : 4
+
+  #  GLOBALMUON : Proton
+  # ---------------------
+  Proton:
+    2016-MagUp-data:
+      chunk_size :   # 5 mln
+      num_jobs : 4
+    2016-MagUp-simu:
+      chunk_size :   # 600k
+      num_jobs : 4
