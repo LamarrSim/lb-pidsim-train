@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
+from tensorflow.keras.losses import BinaryCrossentropy
 
 
 d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
@@ -229,7 +230,7 @@ class GAN (tf.keras.Model):   # TODO add class description
 
     ## If classifier enabled
     else:
-      for k in range(2):
+      for k in range(3):
         self._train_c_step (X, Y, w_X, w_Y)
       c_loss = self._compute_c_loss (gen_sample, ref_sample)
       c_loss_tracker . update_state (c_loss)
@@ -489,18 +490,22 @@ class GAN (tf.keras.Model):   # TODO add class description
     c_loss : `tf.Tensor`
       ...
     """
-    ## Extract input tensors and weights
+    ## Extract input tensors
     XY_gen, w_gen = gen_sample
     XY_ref, w_ref = ref_sample
 
-    ## Classifier output to gen and ref output
-    C_gen = self._classifier ( XY_gen )
-    C_ref = self._classifier ( XY_ref )
+    c_input  = tf.concat ( [ XY_gen , XY_ref ] , axis = 0 )
+    c_weight = tf.concat ( [  w_gen ,  w_ref ] , axis = 0 )
+
+    ## Labels setup
+    label_gen = tf.zeros_like ( w_gen, dtype = w_gen.dtype )
+    label_ref = tf.ones_like  ( w_ref, dtype = w_ref.dtype )
+    labels = tf.concat ( [ label_gen , label_ref ] , axis = 0 )
 
     ## Loss computation
-    c_loss = w_gen * tf.math.log ( tf.clip_by_value ( 1 - C_gen , 1e-12 , 1.0 ) ) + \
-             w_ref * tf.math.log ( tf.clip_by_value ( C_ref     , 1e-12 , 1.0 ) )
-    return - tf.reduce_mean (c_loss)
+    c_output = self._classifier (c_input)
+    c_loss = BinaryCrossentropy()
+    return c_loss ( labels, c_output, sample_weight = c_weight )
 
   def generate (self, X) -> tf.Tensor:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
