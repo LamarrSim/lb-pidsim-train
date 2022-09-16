@@ -155,7 +155,6 @@ input_tensor  = tf.concat ( [X_gen, latent_tensor], axis = 1 )
 
 Y_gen = generator ( input_tensor ) . numpy() . astype (NP_FLOAT)
 Y_ref = scaler_Y . transform ( dh.Y )
-np.savez (f"./{model_name}.npz", X_gen=X_gen, Y_gen=Y_gen, X_ref=dh.X, Y_ref=Y_ref)
 Y_gen = scaler_Y . inverse_transform ( Y_gen )
 
 # +----------------------+
