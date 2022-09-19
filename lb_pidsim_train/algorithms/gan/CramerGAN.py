@@ -74,14 +74,14 @@ class CramerGAN (GAN):   # TODO add class description
                  Y_shape ,
                  discriminator ,
                  generator     ,
-                 classifier = None ,
+                 referee = None ,
                  latent_dim = 64 ,
                  critic_dim = 64 ) -> None:
     super().__init__ ( X_shape = X_shape ,
                        Y_shape = Y_shape ,
                        discriminator = discriminator , 
                        generator     = generator     ,
-                       classifier    = classifier    ,
+                       referee       = referee       ,
                        latent_dim    = latent_dim    )
     self._loss_name = "Energy distance"
 
@@ -106,7 +106,7 @@ class CramerGAN (GAN):   # TODO add class description
   def compile ( self , 
                 d_optimizer ,
                 g_optimizer ,
-                c_optimizer = None ,
+                r_optimizer = None ,
                 d_updt_per_batch = 1 ,
                 g_updt_per_batch = 1 ,
                 grad_penalty = 10 ) -> None:   # TODO complete docstring
@@ -131,7 +131,7 @@ class CramerGAN (GAN):   # TODO add class description
     """
     super().compile ( d_optimizer = d_optimizer , 
                       g_optimizer = g_optimizer ,
-                      c_optimizer = c_optimizer ,
+                      r_optimizer = r_optimizer ,
                       d_updt_per_batch = d_updt_per_batch ,
                       g_updt_per_batch = g_updt_per_batch )
     self._critic = Critic ( lambda x : self._discriminator(x) )

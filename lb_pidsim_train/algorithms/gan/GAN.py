@@ -14,8 +14,8 @@ d_loss_tracker = tf.keras.metrics.Mean ( name = "d_loss" )
 g_loss_tracker = tf.keras.metrics.Mean ( name = "g_loss" )
 """Metric instance to track the generator loss score."""
 
-c_loss_tracker = tf.keras.metrics.Mean ( name = "c_loss" )
-"""Metric instance to track the classifier loss score."""
+r_loss_tracker = tf.keras.metrics.Mean ( name = "r_loss" )
+"""Metric instance to track the referee loss score."""
 
 mse_tracker = tf.keras.metrics.MeanSquaredError ( name = "mse" )
 """Metric instance to track the mean square error."""
@@ -73,7 +73,7 @@ class GAN (tf.keras.Model):   # TODO add class description
                  Y_shape ,
                  discriminator ,
                  generator     , 
-                 classifier = None ,
+                 referee = None ,
                  latent_dim = 64 ) -> None:
     super().__init__()
     self._loss_name = "Loss function"
@@ -112,20 +112,20 @@ class GAN (tf.keras.Model):   # TODO add class description
     self._generator . add ( Dense ( units = Y_shape, activation = "linear" ,
                                     kernel_initializer = "glorot_normal" ) )
 
-    ## Classifier sequential model
-    if classifier is not None:
-      self._classifier = Sequential ( name = "classifier" )
-      for c_layer in classifier:
-        self._classifier . add ( c_layer )
-      self._classifier . add ( Dense ( units = 1, activation = "sigmoid" ,
-                                      kernel_initializer = "glorot_normal" ) )
+    ## Referee sequential model
+    if referee is not None:
+      self._referee = Sequential ( name = "referee" )
+      for r_layer in referee:
+        self._referee . add ( r_layer )
+      self._referee . add ( Dense ( units = 1, activation = "sigmoid" ,
+                                    kernel_initializer = "glorot_normal" ) )
     else:
-      self._classifier = None
+      self._referee = None
 
   def compile ( self , 
                 d_optimizer ,
                 g_optimizer , 
-                c_optimizer = None ,
+                r_optimizer = None ,
                 d_updt_per_batch = 1 ,
                 g_updt_per_batch = 1 ) -> None:   # TODO complete docstring
     """Configure the models for GAN training.
@@ -149,8 +149,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     ## Build discriminator and generator models
     self._discriminator . build ( input_shape = (None, self._X_shape + self._Y_shape) )
     self._generator . build ( input_shape = (None, self._X_shape + self._latent_dim) )
-    if self._classifier is not None:
-      self._classifier . build ( input_shape = (None, self._X_shape + self._Y_shape) )
+    if self._referee is not None:
+      self._referee . build ( input_shape = (None, self._X_shape + self._Y_shape) )
 
     ## Data-type control
     if not isinstance (d_updt_per_batch, int):
@@ -170,10 +170,10 @@ class GAN (tf.keras.Model):   # TODO add class description
 
     self._d_optimizer = d_optimizer
     self._g_optimizer = g_optimizer
-    self._c_optimizer = c_optimizer
+    self._r_optimizer = r_optimizer
     self._d_lr0 = float ( d_optimizer.learning_rate )
     self._g_lr0 = float ( g_optimizer.learning_rate )
-    self._c_lr0 = float ( c_optimizer.learning_rate ) if (self._c_optimizer is not None) else None
+    self._r_lr0 = float ( r_optimizer.learning_rate ) if (self._r_optimizer is not None) else None
     self._d_updt_per_batch = d_updt_per_batch
     self._g_updt_per_batch = g_updt_per_batch
 
@@ -182,8 +182,8 @@ class GAN (tf.keras.Model):   # TODO add class description
     print ("_" * 65)
     self._discriminator . summary()
     self._generator . summary()
-    if self._classifier is not None:
-      self._classifier . summary()
+    if self._referee is not None:
+      self._referee . summary()
 
   @staticmethod
   def _unpack_data (data):
@@ -221,21 +221,21 @@ class GAN (tf.keras.Model):   # TODO add class description
     Y_gen = self.generate (X)
     mse_tracker . update_state (Y, Y_gen, sample_weight = w_Y)
 
-    if self._classifier is None:
+    if self._referee is None:
       return { "mse"    : mse_tracker.result()    ,
                "d_loss" : d_loss_tracker.result() , 
                "g_loss" : g_loss_tracker.result() ,
                "d_lr"   : self._d_optimizer.lr    ,
                "g_lr"   : self._g_optimizer.lr    }
 
-    ## If classifier enabled
+    ## If referee enabled
     else:
       for k in range(3):
-        self._train_c_step (X, Y, w_X, w_Y)
-      c_loss = self._compute_c_loss (gen_sample, ref_sample)
-      c_loss_tracker . update_state (c_loss)
+        self._train_r_step (X, Y, w_X, w_Y)
+      r_loss = self._compute_r_loss (gen_sample, ref_sample)
+      r_loss_tracker . update_state (r_loss)
       return { "mse"    : mse_tracker.result()    ,
-               "c_loss" : c_loss_tracker.result() ,
+               "r_loss" : r_loss_tracker.result() ,
                "d_loss" : d_loss_tracker.result() , 
                "g_loss" : g_loss_tracker.result() ,
                "d_lr"   : self._d_optimizer.lr    ,
@@ -258,19 +258,19 @@ class GAN (tf.keras.Model):   # TODO add class description
     Y_gen = self.generate (X)
     mse_tracker . update_state (Y, Y_gen, sample_weight = w_Y)
 
-    if self._classifier is None:
+    if self._referee is None:
       return { "mse"    : mse_tracker.result()    ,
                "d_loss" : d_loss_tracker.result() , 
                "g_loss" : g_loss_tracker.result() ,
                "d_lr"   : self._d_optimizer.lr    ,
                "g_lr"   : self._g_optimizer.lr    }
                
-    ## If classifier enabled
+    ## If referee enabled
     else:
-      c_loss = self._compute_c_loss (gen_sample, ref_sample)
-      c_loss_tracker . update_state (c_loss)
+      r_loss = self._compute_r_loss (gen_sample, ref_sample)
+      r_loss_tracker . update_state (r_loss)
       return { "mse"    : mse_tracker.result()    ,
-               "c_loss" : c_loss_tracker.result() ,
+               "r_loss" : r_loss_tracker.result() ,
                "d_loss" : d_loss_tracker.result() , 
                "g_loss" : g_loss_tracker.result() ,
                "d_lr"   : self._d_optimizer.lr    ,
@@ -451,8 +451,8 @@ class GAN (tf.keras.Model):   # TODO add class description
               w_ref_2 * tf.math.log ( tf.clip_by_value ( 1 - D_ref_2 , 1e-12 , 1.0 ) )
     return tf.reduce_mean (th_loss)
 
-  def _train_c_step (self, X, Y, w_X = None, w_Y = None) -> None:   # TODO complete docstring
-    """Training step for the classifier.
+  def _train_r_step (self, X, Y, w_X = None, w_Y = None) -> None:   # TODO complete docstring
+    """Training step for the referee.
     
     Parameters
     ----------
@@ -470,12 +470,12 @@ class GAN (tf.keras.Model):   # TODO add class description
     """
     with tf.GradientTape() as tape:
       ref_sample, gen_sample = self._arrange_samples (X, Y, w_X, w_Y)
-      c_loss = self._compute_c_loss ( gen_sample, ref_sample )
-    grads = tape.gradient ( c_loss, self._classifier.trainable_weights )
-    self._c_optimizer.apply_gradients ( zip (grads, self._classifier.trainable_weights) )
+      r_loss = self._compute_r_loss ( gen_sample, ref_sample )
+    grads = tape.gradient ( r_loss, self._referee.trainable_weights )
+    self._r_optimizer.apply_gradients ( zip (grads, self._referee.trainable_weights) )
 
-  def _compute_c_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
-    """Return the classifier loss.
+  def _compute_r_loss (self, gen_sample, ref_sample) -> tf.Tensor:   # TODO complete docstring
+    """Return the referee loss.
     
     Parameters
     ----------
@@ -487,15 +487,15 @@ class GAN (tf.keras.Model):   # TODO add class description
 
     Returns
     -------
-    c_loss : `tf.Tensor`
+    r_loss : `tf.Tensor`
       ...
     """
     ## Extract input tensors
     XY_gen, w_gen = gen_sample
     XY_ref, w_ref = ref_sample
 
-    c_input  = tf.concat ( [ XY_gen , XY_ref ] , axis = 0 )
-    c_weight = tf.concat ( [  w_gen ,  w_ref ] , axis = 0 )
+    r_input  = tf.concat ( [ XY_gen , XY_ref ] , axis = 0 )
+    r_weight = tf.concat ( [  w_gen ,  w_ref ] , axis = 0 )
 
     ## Labels setup
     label_gen = tf.zeros_like ( w_gen, dtype = w_gen.dtype )
@@ -503,9 +503,9 @@ class GAN (tf.keras.Model):   # TODO add class description
     labels = tf.concat ( [ label_gen , label_ref ] , axis = 0 )
 
     ## Loss computation
-    c_output = self._classifier (c_input)
-    c_loss = BinaryCrossentropy()
-    return c_loss ( labels, c_output, sample_weight = c_weight )
+    r_output = self._referee (r_input)
+    r_loss = BinaryCrossentropy()
+    return r_loss ( labels, r_output, sample_weight = r_weight )
 
   def generate (self, X) -> tf.Tensor:   # TODO complete docstring
     """Method to generate the target variables `Y` given the input features `X`.
@@ -546,9 +546,9 @@ class GAN (tf.keras.Model):   # TODO add class description
     return self._generator
 
   @property
-  def classifier (self) -> tf.keras.Sequential:
-    """The classifier of the GAN two-players game."""
-    return self._classifier
+  def referee (self) -> tf.keras.Sequential:
+    """The referee of the GAN two-players game."""
+    return self._referee
 
   @property
   def latent_dim (self) -> int:
@@ -566,9 +566,9 @@ class GAN (tf.keras.Model):   # TODO add class description
     return self._g_optimizer
 
   @property
-  def c_optimizer (self) -> tf.keras.optimizers.Optimizer:
-    """The classifier optimizer."""
-    return self._c_optimizer
+  def r_optimizer (self) -> tf.keras.optimizers.Optimizer:
+    """The referee optimizer."""
+    return self._r_optimizer
 
   @property
   def d_lr0 (self) -> float:
@@ -581,9 +581,9 @@ class GAN (tf.keras.Model):   # TODO add class description
     return self._g_lr0
 
   @property
-  def c_lr0 (self) -> float:
-    """Initial value for classifier learning rate."""
-    return self._c_lr0
+  def r_lr0 (self) -> float:
+    """Initial value for referee learning rate."""
+    return self._r_lr0
 
   @property
   def g_updt_per_batch (self) -> int:

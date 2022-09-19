@@ -349,18 +349,18 @@ class GanTrainer (TensorTrainer):   # TODO class description
 
       report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 
-    ## Classifier learning curves
-    if "c_loss" in history.history.keys():
+    ## Referee learning curves
+    if "r_loss" in history.history.keys():
       plt.figure (figsize = (8,5), dpi = 100)
-      plt.title  ("Classifier learning curves", fontsize = 14)   # TODO plot loss variance
+      plt.title  ("Referee learning curves", fontsize = 14)   # TODO plot loss variance
       plt.xlabel ("Training epochs", fontsize = 12)
       plt.ylabel ("Binary cross entropy", fontsize = 12)
-      plt.plot (history.history["c_loss"], linewidth = 1.5, color = "forestgreen", label = "training set")
+      plt.plot (history.history["r_loss"], linewidth = 1.5, color = "forestgreen", label = "training set")
       if self._validation_split != 0.0:
-        plt.plot (history.history["val_c_loss"], linewidth = 1.5, color = "orangered", label = "validation set")
+        plt.plot (history.history["val_r_loss"], linewidth = 1.5, color = "orangered", label = "validation set")
       plt.legend (loc = "upper right", fontsize = 10)
-      y_min = min ( min(history.history["c_loss"][int(n_epochs/2):]), min(history.history["val_c_loss"][int(n_epochs/2):]) )
-      y_max = max ( max(history.history["c_loss"][int(n_epochs/2):]), max(history.history["val_c_loss"][int(n_epochs/2):]) )
+      y_min = min ( min(history.history["r_loss"][int(n_epochs/2):]), min(history.history["val_r_loss"][int(n_epochs/2):]) )
+      y_max = max ( max(history.history["r_loss"][int(n_epochs/2):]), max(history.history["val_r_loss"][int(n_epochs/2):]) )
       y_min -= 0.2 * np.abs (y_max)
       y_max += 0.2 * np.abs (y_max)
       plt.ylim (bottom = y_min, top = y_max)
