@@ -6,7 +6,7 @@ import hopaas_client as hpc
 from lb_pidsim_train.utils import argparser
 from lb_pidsim_train.trainers import GanTrainer
 from lb_pidsim_train.algorithms.gan import WGAN_ALP
-from lb_pidsim_train.callbacks.gan  import ExpLrScheduler, HopaasModelSaver, CyclicInitializer
+from lb_pidsim_train.callbacks.gan  import ExpLrScheduler, HopaasModelSaver, RefereeInitializer
 from lb_pidsim_train.callbacks import HopaasReporter, StopWatch
 from tensorflow.keras.layers import Dense, LeakyReLU, Dropout
 
@@ -94,10 +94,11 @@ base_model_name += "-opt"
 
 hp = hyperparams[args.particle][args.sample]
 properties = hp.copy()
-properties . update ( dict ( d_lr = hpc.suggestions.LogUniform (5e-6, 5e-5) ,
-                             g_lr = hpc.suggestions.LogUniform (5e-6, 5e-5) ,
-                             duxb = hpc.suggestions.Int (1,5) ,
-                             adv_lp = hpc.suggestions.LogUniform (1e1, 1e3) ) )
+properties . update ( dict ( d_nl = hpc.suggestions.Int (3, 9, step = 2) ,
+                             g_nl = hpc.suggestions.Int (3, 9, step = 2) ,
+                             d_lr = hpc.suggestions.LogUniform (1e-6, 1e-4) ,
+                             g_lr = hpc.suggestions.LogUniform (1e-6, 1e-4) ,
+                             duxb = hpc.suggestions.Int (1, 5) ) )
 
 study = hpc.Study ( name = base_model_name ,
                     properties = properties ,
@@ -105,7 +106,7 @@ study = hpc.Study ( name = base_model_name ,
                                                 node_name = my_node_name ) ,
                     direction = "maximize" ,   # corresponds to difficulties in gen/ref separation
                     pruner  = hpc.pruners.MedianPruner ( n_startup_trials = 20 ,
-                                                         n_warmup_steps = 20 ,
+                                                         n_warmup_steps = 50 ,
                                                          interval_steps = 1 ,
                                                          n_min_trials = 10 ) ,
                     sampler = hpc.samplers.TPESampler ( n_startup_trials = 20 ) ,
@@ -186,7 +187,7 @@ for iTrial in range(num_jobs):
 
     trainer.params.get ("model", "Wasserstein GAN")
 
-    d_num_layers  = trainer.params.get ( "d_num_layers"  , hp["d_num_layers"]  ) 
+    d_num_layers  = trainer.params.get ( "d_num_layers"  , trial.d_nl          )
     d_num_nodes   = trainer.params.get ( "d_num_nodes"   , hp["d_num_nodes"]   )
     d_alpha_leaky = trainer.params.get ( "d_alpha_leaky" , hp["d_alpha_leaky"] )
 
@@ -194,29 +195,30 @@ for iTrial in range(num_jobs):
     for layer in range (d_num_layers):
       discriminator . append ( Dense (d_num_nodes, kernel_initializer = "glorot_uniform") )
       discriminator . append ( LeakyReLU (alpha = d_alpha_leaky) )
+    print ( f"[INFO] The Hopaas server suggests d_num_layers = {d_num_layers}" )
 
-    g_num_layers   = trainer.params.get ( "g_num_layers"   , hp["g_num_layers"]  )
+    g_num_layers   = trainer.params.get ( "g_num_layers"   , trial.g_nl          )
     g_num_nodes    = trainer.params.get ( "g_num_nodes"    , hp["g_num_nodes"]   )
     g_alpha_leaky  = trainer.params.get ( "g_alpha_leaky"  , hp["g_alpha_leaky"] )
-    g_dropout_rate = trainer.params.get ( "g_dropout_rate" , 0.1 )
+    # g_dropout_rate = trainer.params.get ( "g_dropout_rate" , 0.1 )
 
     generator = list()
     for layer in range (g_num_layers):
       generator . append ( Dense (g_num_nodes, kernel_initializer = "glorot_uniform") )
       generator . append ( LeakyReLU (alpha = g_alpha_leaky) )
-      generator . append ( Dropout (rate = g_dropout_rate) )
+      # generator . append ( Dropout (rate = g_dropout_rate) )
+    print ( f"[INFO] The Hopaas server suggests g_num_layers = {g_num_layers}" )
 
-    classifier = list()
+    referee = list()
     for layer in range(5):
-      classifier . append ( Dense (64, kernel_initializer = "glorot_uniform", kernel_regularizer = "l2") )
-      classifier . append ( LeakyReLU (alpha = 0.1) )
-      classifier . append ( Dropout (rate = 0.1) )
+      referee . append ( Dense (64, kernel_initializer = "glorot_uniform", kernel_regularizer = "l2") )
+      referee . append ( LeakyReLU (alpha = 0.1) )
 
     model = WGAN_ALP ( X_shape = len(trainer.X_vars) , 
                        Y_shape = len(trainer.Y_vars) , 
                        discriminator = discriminator , 
                        generator = generator ,
-                       classifier = classifier ,
+                       referee = referee ,
                        latent_dim = trainer.params.get ( "latent_dim" , hp["latent_dim"] ) )
 
     # +---------------------------+
@@ -228,15 +230,19 @@ for iTrial in range(num_jobs):
 
     d_opt = tf.optimizers.RMSprop ( learning_rate = trainer.params.get ( "d_lr0" , trial.d_lr ) )
     g_opt = tf.optimizers.RMSprop ( learning_rate = trainer.params.get ( "g_lr0" , trial.g_lr ) )
-    c_opt = tf.optimizers.Adam ( learning_rate = 0.0001 )
+    r_opt = tf.optimizers.RMSprop ( learning_rate = 0.0001 )
 
     model . compile ( d_optimizer = d_opt , 
                       g_optimizer = g_opt , 
-                      c_optimizer = c_opt ,
-                      d_updt_per_batch = trial.duxb , 
+                      r_optimizer = r_opt ,
+                      d_updt_per_batch = trainer.params.get ( "d_updt_per_batch" , trial.duxb ) , 
                       g_updt_per_batch = trainer.params.get ( "g_updt_per_batch" , hp["g_updt_per_batch"] ) ,
                       v_adv_dir_updt = trainer.params.get ( "v_adv_dir_updt" , hp["v_adv_dir_updt"] ) ,
-                      adv_lp_penalty = trial.adv_lp )
+                      adv_lp_penalty = trainer.params.get ( "adv_lp_penalty" , hp["adv_lp_penalty"] ) )
+
+    print ( f"[INFO] The Hopaas server suggests d_lr0 = {model.d_lr0}" )
+    print ( f"[INFO] The Hopaas server suggests g_lr0 = {model.g_lr0}" )
+    print ( f"[INFO] The Hopaas server suggests d_updt_per_batch = {model.d_updt_per_batch}" )
 
     # +-----------------+
     # |    Callbacks    |
@@ -245,12 +251,12 @@ for iTrial in range(num_jobs):
     lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
                                     step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
 
-    timer = StopWatch ( timeout = 12500 )
+    timer = StopWatch ( timeout = 15000, min_epochs_to_stop = 100 )
 
-    initializer = CyclicInitializer ( cycle = 1 )
+    initializer = RefereeInitializer ( step = 5 )
 
     pruner = HopaasReporter ( trial = trial ,
-                              loss = "val_c_loss" ,
+                              loss = "val_r_loss" ,
                               pruning = True ,
                               step = 1 )
 
@@ -270,5 +276,7 @@ for iTrial in range(num_jobs):
                             num_epochs = hp["num_epochs"] ,
                             validation_split = hp["validation_split"] ,
                             callbacks = [lr_scheduler, timer, initializer, pruner, model_saver] ,
-                            produce_report = (trial.id >= 20) ,
+                            produce_report = True ,
                             verbose = 1 )
+
+    del trainer
