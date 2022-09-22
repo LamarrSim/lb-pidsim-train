@@ -26,7 +26,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -56,7 +56,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -86,7 +86,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -115,7 +115,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -149,7 +149,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
@@ -171,7 +171,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -204,7 +204,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
@@ -226,7 +226,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -259,7 +259,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
@@ -281,7 +281,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -313,7 +313,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
     
     # <---- | Simu samples | 2016 Mag Up | ---->
@@ -335,7 +335,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->

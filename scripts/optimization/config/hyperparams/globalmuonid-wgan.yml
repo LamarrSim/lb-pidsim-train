@@ -9,7 +9,7 @@ with-weights:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : 1000000   # 23 mln
+      chunk_size : 2500000   # 23 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -26,7 +26,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -39,7 +39,7 @@ with-weights:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : null   # 2 mln
+      chunk_size : 80000000   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -56,7 +56,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -69,7 +69,7 @@ with-weights:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : null   # 2 mln
+      chunk_size : 70000000   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -86,7 +86,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -98,7 +98,7 @@ with-weights:
   Proton:
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : null   # 5 mln
+      chunk_size : 5000000   # 5 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -115,7 +115,7 @@ with-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -132,7 +132,7 @@ no-weights:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : 1000000   # 23 mln
+      chunk_size : 2500000   # 23 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -149,7 +149,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
@@ -171,7 +171,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -187,7 +187,7 @@ no-weights:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : null   # 2 mln
+      chunk_size : 80000000   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -204,12 +204,12 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : null   # 8 mln
+      chunk_size : 20000000   # 8 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -226,7 +226,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -242,7 +242,7 @@ no-weights:
 
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : null   # 2 mln
+      chunk_size : 70000000   # 2 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -259,12 +259,12 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Simu samples | 2016 Mag Up | ---->
     2016-MagUp-simu:
-      chunk_size : null   # 1.5 mln
+      chunk_size : 25000000   # 1.5 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -281,7 +281,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
@@ -296,7 +296,7 @@ no-weights:
   Proton:
     # <---- | Calib samples | 2016 Mag Up | ---->
     2016-MagUp-data:
-      chunk_size : null   # 5 mln
+      chunk_size : 5000000   # 5 mln
       d_num_layers  : 5
       d_num_nodes   : 128
       d_alpha_leaky : 0.05
@@ -313,7 +313,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
     
     # <---- | Simu samples | 2016 Mag Up | ---->
@@ -335,7 +335,7 @@ no-weights:
       lr_sched_factor : 0.90
       lr_sched_step : 10
       batch_size : 512
-      num_epochs : 250
+      num_epochs : 500
       validation_split : 0.2
 
     # <---- | Calib samples | 2016 Mag Down | ---->
