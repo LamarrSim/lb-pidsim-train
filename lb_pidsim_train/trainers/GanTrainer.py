@@ -310,7 +310,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.ylabel (f"{self.model.loss_name}", fontsize = 12)
     plt.plot (history.history["d_loss"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_loss"], linewidth = 1.5, color = "coral", label = "generator")
-    plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
+    plt.legend (title = "Adversarial players:", loc = "upper left", fontsize = 10)
     y_min = min ( min(history.history["d_loss"][int(n_epochs/2):]), min(history.history["g_loss"][int(n_epochs/2):]) )
     y_max = max ( max(history.history["d_loss"][int(n_epochs/2):]), max(history.history["g_loss"][int(n_epochs/2):]) )
     y_min -= 0.2 * np.abs (y_max)
@@ -327,7 +327,7 @@ class GanTrainer (TensorTrainer):   # TODO class description
     plt.plot (history.history["d_lr"], linewidth = 1.5, color = "dodgerblue", label = "discriminator")
     plt.plot (history.history["g_lr"], linewidth = 1.5, color = "coral", label = "generator")
     plt.yscale ("log")
-    plt.legend (title = "Adversarial players:", loc = "lower left", fontsize = 10)
+    plt.legend (title = "Adversarial players:", loc = "upper right", fontsize = 10)
 
     report.add_figure (options = "width=45%"); plt.clf(); plt.close()
 

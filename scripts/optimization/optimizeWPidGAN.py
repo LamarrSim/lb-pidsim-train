@@ -151,18 +151,10 @@ for iTrial in range(num_jobs):
                                      chunk_size = hp["chunk_size"] , 
                                      verbose = 1 )
 
-    if args.model == "Rich":   # compute RichDLLpk to replace RichDLLp
-      trainer._datachunk["RichDLLpk"] = trainer._datachunk["probe_Brunel_RichDLLp"] - \
-                                        trainer._datachunk["probe_Brunel_RichDLLk"]
-      trainer._Y_vars[-1] = "RichDLLpk"
-    elif args.model == "Muon":   # compute MuonLL to replace MuonBgLL
+    if args.model == "Muon":   # compute MuonLL to replace MuonBgLL
       trainer._datachunk["MuonLL"] = trainer._datachunk["probe_Brunel_MuonMuLL"] - \
                                      trainer._datachunk["probe_Brunel_MuonBgLL"]
       trainer._Y_vars[-1] = "MuonLL"
-    elif args.model == "GlobalPID":   # compute PIDpk to replace PIDp
-      trainer._datachunk["PIDpk"] = trainer._datachunk["probe_Brunel_PIDp"] - \
-                                    trainer._datachunk["probe_Brunel_PIDK"]
-      trainer._Y_vars[2] = "PIDpk"
 
     columns = trainer.X_vars + trainer.Y_vars + trainer.w_var if trainer.w_var else trainer.X_vars + trainer.Y_vars
     trainer._datachunk = trainer._datachunk[columns]
@@ -251,9 +243,9 @@ for iTrial in range(num_jobs):
     lr_scheduler = ExpLrScheduler ( factor = trainer.params.get ( "lr_sched_factor" , hp["lr_sched_factor"] ) , 
                                     step   = trainer.params.get ( "lr_sched_step"   , hp["lr_sched_step"]   ) )
 
-    timer = StopWatch ( timeout = 15000, min_epochs_to_stop = 100 )
+    timer = StopWatch ( timeout = 15000, min_epochs_to_stop = 150 )
 
-    initializer = RefereeInitializer ( step = 5 )
+    initializer = RefereeInitializer ( step = 10 )
 
     pruner = HopaasReporter ( trial = trial ,
                               loss = "val_r_loss" ,
