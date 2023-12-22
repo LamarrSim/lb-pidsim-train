@@ -1,9 +1,0 @@
-tensorflow>=2.5
-scikit-learn>=1.0
-uproot>=4.0
-matplotlib>=3.4
-html-reports>=0.2
-scikinC>=0.2.6
-numpy
-pandas
-hopaas_client
