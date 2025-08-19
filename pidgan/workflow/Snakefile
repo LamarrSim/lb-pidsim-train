@@ -44,39 +44,21 @@ rule preprocessing:
         notebook="workflow/notebooks/{model}-preprocessing.ipynb",
 
     output:
-        hook = touch("/tmp/preprocessing-{model}.touch"),
-        muon_train=directory(config['temp_dir']+"/{model}-muon-train"),
-        pion_train=directory(config['temp_dir']+"/{model}-pion-train"),
-        kaon_train=directory(config['temp_dir']+"/{model}-kaon-train"),
-        proton_train=directory(config['temp_dir']+"/{model}-proton-train"),
+        hook = touch("/tmp/preprocessing-{model}-{particle}.touch"),
+        train=directory(config['temp_dir']+"/{model}-{particle}-train"),
+        test=directory(config['temp_dir']+"/{model}-{particle}-test"),
+        validation=directory(config['temp_dir']+"/{model}-{particle}-validation"),
 
-        muon_test=directory(config['temp_dir']+"/{model}-muon-test"),
-        pion_test=directory(config['temp_dir']+"/{model}-pion-test"),
-        kaon_test=directory(config['temp_dir']+"/{model}-kaon-test"),
-        proton_test=directory(config['temp_dir']+"/{model}-proton-test"),
+        preprocessing_x=smkstore('{model}/{particle}/tX.pkl', 's3models'),
+        preprocessing_y=smkstore('{model}/{particle}/tY.pkl', 's3models'),
 
-        muon_validation=directory(config['temp_dir']+"/{model}-muon-validation"),
-        pion_validation=directory(config['temp_dir']+"/{model}-pion-validation"),
-        kaon_validation=directory(config['temp_dir']+"/{model}-kaon-validation"),
-        proton_validation=directory(config['temp_dir']+"/{model}-proton-validation"),
+        report=report(
+            smkstore("{model}-{particle}-preprocessing.html", 's3reports'),
+            category="Preprocessing",
+            labels=dict(model="{model}", particle="{particle}")
+        )
 
-        muon_preprocessing_x=smkstore('{model}/muon/tX.pkl', 's3models'),
-        pion_preprocessing_x=smkstore('{model}/pion/tX.pkl', 's3models'),
-        kaon_preprocessing_x=smkstore('{model}/kaon/tX.pkl', 's3models'),
-        proton_preprocessing_x=smkstore('{model}/proton/tX.pkl', 's3models'),
-
-        muon_preprocessing_y=smkstore('{model}/muon/tY.pkl', 's3models'),
-        pion_preprocessing_y=smkstore('{model}/pion/tY.pkl', 's3models'),
-        kaon_preprocessing_y=smkstore('{model}/kaon/tY.pkl', 's3models'),
-        proton_preprocessing_y=smkstore('{model}/proton/tY.pkl', 's3models'),
-
-        #report=report(
-        #    smkstore("{model}-preprocessing.html", 's3reports'),
-        #    category="Preprocessing",
-        #    labels=dict(model="{model}")
-        #)
-
-    log: smkstore("{model}-preprocessing.html", 's3reports')
+    log: smkstore("{model}-{particle}-preprocessing.html", 's3reports')
     
     container: config['apptainer_cached_image']
 
@@ -95,26 +77,12 @@ rule preprocessing:
     shell:
         """
         INPUT_FILES='{params.data_files}' \
-        {params.model}_MUON_TRAIN='{output.muon_train}' \
-        {params.model}_MUON_TEST='{output.muon_test}' \
-        {params.model}_MUON_VALIDATION='{output.muon_validation}' \
-        {params.model}_PION_TRAIN='{output.pion_train}' \
-        {params.model}_PION_TEST='{output.pion_test}' \
-        {params.model}_PION_VALIDATION='{output.pion_validation}' \
-        {params.model}_KAON_TRAIN='{output.kaon_train}' \
-        {params.model}_KAON_TEST='{output.kaon_test}' \
-        {params.model}_KAON_VALIDATION='{output.kaon_validation}' \
-        {params.model}_PROTON_TRAIN='{output.proton_train}' \
-        {params.model}_PROTON_TEST='{output.proton_test}' \
-        {params.model}_PROTON_VALIDATION='{output.proton_validation}' \
-        {params.model}_MUON_PREPROCESSING_X='{output.muon_preprocessing_x}' \
-        {params.model}_PION_PREPROCESSING_X='{output.pion_preprocessing_x}' \
-        {params.model}_KAON_PREPROCESSING_X='{output.kaon_preprocessing_x}' \
-        {params.model}_PROTON_PREPROCESSING_X='{output.proton_preprocessing_x}' \
-        {params.model}_MUON_PREPROCESSING_Y='{output.muon_preprocessing_y}' \
-        {params.model}_PION_PREPROCESSING_Y='{output.pion_preprocessing_y}' \
-        {params.model}_KAON_PREPROCESSING_Y='{output.kaon_preprocessing_y}' \
-        {params.model}_PROTON_PREPROCESSING_Y='{output.proton_preprocessing_y}' \
+        TRAIN='{output.train}' \
+        TEST='{output.test}' \
+        VALIDATION='{output.validation}' \
+        PARTICLE='{wildcards.particle}' \
+        PREPROCESSING_X='{output.preprocessing_x}' \
+        PREPROCESSING_Y='{output.preprocessing_y}' \
         jupyter nbconvert --to html --execute \
         --ExecutePreprocessor.timeout=-1 \
         --ExecutePreprocessor.kernel_name=python3 \
@@ -154,11 +122,11 @@ rule train:
         output_validation_set=smkstore("ready2validate/{model}-{particle}.npz", 's3reports'),
         output_model=smkstore("{model}/{particle}.keras", "s3models"),
 
-        # report=report(
-        #     smkstore("{model}-{particle}-train.html", 's3reports'),
-        #     category="Preprocessing",
-        #     labels=dict(model="{model}")
-        # )
+        report=report(
+            smkstore("{model}-{particle}-train.html", 's3reports'),
+            category="Preprocessing",
+            labels=dict(model="{model}")
+        )
 
     log: smkstore("{model}-{particle}-train.html", 's3reports')
     

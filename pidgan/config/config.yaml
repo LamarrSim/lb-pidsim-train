@@ -15,14 +15,15 @@ training_data:
     - training-data/2016MU-sim10b/LamarrTraining-j109.0.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.1.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.10.root
-other:
     - training-data/2016MU-sim10b/LamarrTraining-j109.100.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.101.root
+
     - training-data/2016MU-sim10b/LamarrTraining-j109.102.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.103.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.104.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.105.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.106.root
+
     - training-data/2016MU-sim10b/LamarrTraining-j109.107.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.108.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.109.root

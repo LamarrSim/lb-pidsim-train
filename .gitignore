@@ -152,3 +152,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Secrets
+**/secret*.yaml
+**/secret*.yml
+**/secret*.json
+**/secret*.csv
+
