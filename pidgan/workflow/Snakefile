@@ -1,0 +1,211 @@
+from snakemake_storage_helper import smkstore
+import os.path
+
+configfile: "config/config.yaml"
+include: "rules/storage.smk"
+
+
+rule build_container:
+  input:
+    definition_file="workflow/envs/pidgan.def"
+
+  output:
+    sif=smkstore("lhcb-pidsim.sif", 's3images')
+
+  params:
+    unpacked=config['apptainer_image'],
+    wait4cvfms=f"{config['cvmfs_repo']}/{config['apptainer_image']}",
+    push=0, # Set to 1 to push to harbor
+
+  shell:
+    """
+    apptainer build {output.sif} {input.definition_file}
+
+    if [ {params.push} -eq 1 ]; then
+      apptainer push  {output.sif} oras://{params.unpacked}
+
+      echo "Waiting for cvmfs repo: {params.wait4cvfms}"
+      while true; 
+      do 
+        ls {params.wait4cvfms} &> /dev/null || ( sleep 5 && echo "Still waiting..." ) ;
+      done
+    fi
+    """
+
+
+rule cache_container:
+  input: ancient(smkstore("lhcb-pidsim.sif", 's3images'))
+  output: config['apptainer_cached_image']
+  shell: "cp {input} {output}"
+
+rule preprocessing:
+    input: 
+        image=config['apptainer_cached_image'],
+        notebook="workflow/notebooks/{model}-preprocessing.ipynb",
+
+    output:
+        hook = touch("/tmp/preprocessing-{model}.touch"),
+        muon_train=directory(config['temp_dir']+"/{model}-muon-train"),
+        pion_train=directory(config['temp_dir']+"/{model}-pion-train"),
+        kaon_train=directory(config['temp_dir']+"/{model}-kaon-train"),
+        proton_train=directory(config['temp_dir']+"/{model}-proton-train"),
+
+        muon_test=directory(config['temp_dir']+"/{model}-muon-test"),
+        pion_test=directory(config['temp_dir']+"/{model}-pion-test"),
+        kaon_test=directory(config['temp_dir']+"/{model}-kaon-test"),
+        proton_test=directory(config['temp_dir']+"/{model}-proton-test"),
+
+        muon_validation=directory(config['temp_dir']+"/{model}-muon-validation"),
+        pion_validation=directory(config['temp_dir']+"/{model}-pion-validation"),
+        kaon_validation=directory(config['temp_dir']+"/{model}-kaon-validation"),
+        proton_validation=directory(config['temp_dir']+"/{model}-proton-validation"),
+
+        muon_preprocessing_x=smkstore('{model}/muon/tX.pkl', 's3models'),
+        pion_preprocessing_x=smkstore('{model}/pion/tX.pkl', 's3models'),
+        kaon_preprocessing_x=smkstore('{model}/kaon/tX.pkl', 's3models'),
+        proton_preprocessing_x=smkstore('{model}/proton/tX.pkl', 's3models'),
+
+        muon_preprocessing_y=smkstore('{model}/muon/tY.pkl', 's3models'),
+        pion_preprocessing_y=smkstore('{model}/pion/tY.pkl', 's3models'),
+        kaon_preprocessing_y=smkstore('{model}/kaon/tY.pkl', 's3models'),
+        proton_preprocessing_y=smkstore('{model}/proton/tY.pkl', 's3models'),
+
+        #report=report(
+        #    smkstore("{model}-preprocessing.html", 's3reports'),
+        #    category="Preprocessing",
+        #    labels=dict(model="{model}")
+        #)
+
+    log: smkstore("{model}-preprocessing.html", 's3reports')
+    
+    container: config['apptainer_cached_image']
+
+    params:
+        data_files=lambda w: get_presigned_url(config['training_data'], 's3data'),
+        sample=config['sample'],
+        local="no",
+        model=lambda w: w.model.upper().replace('-', '_'),
+        additional_flags=config['nbconvert_args'],
+
+    resources:
+        cpu=8,
+        mem_mb=32000,
+        gpu=0
+
+    shell:
+        """
+        INPUT_FILES='{params.data_files}' \
+        {params.model}_MUON_TRAIN='{output.muon_train}' \
+        {params.model}_MUON_TEST='{output.muon_test}' \
+        {params.model}_MUON_VALIDATION='{output.muon_validation}' \
+        {params.model}_PION_TRAIN='{output.pion_train}' \
+        {params.model}_PION_TEST='{output.pion_test}' \
+        {params.model}_PION_VALIDATION='{output.pion_validation}' \
+        {params.model}_KAON_TRAIN='{output.kaon_train}' \
+        {params.model}_KAON_TEST='{output.kaon_test}' \
+        {params.model}_KAON_VALIDATION='{output.kaon_validation}' \
+        {params.model}_PROTON_TRAIN='{output.proton_train}' \
+        {params.model}_PROTON_TEST='{output.proton_test}' \
+        {params.model}_PROTON_VALIDATION='{output.proton_validation}' \
+        {params.model}_MUON_PREPROCESSING_X='{output.muon_preprocessing_x}' \
+        {params.model}_PION_PREPROCESSING_X='{output.pion_preprocessing_x}' \
+        {params.model}_KAON_PREPROCESSING_X='{output.kaon_preprocessing_x}' \
+        {params.model}_PROTON_PREPROCESSING_X='{output.proton_preprocessing_x}' \
+        {params.model}_MUON_PREPROCESSING_Y='{output.muon_preprocessing_y}' \
+        {params.model}_PION_PREPROCESSING_Y='{output.pion_preprocessing_y}' \
+        {params.model}_KAON_PREPROCESSING_Y='{output.kaon_preprocessing_y}' \
+        {params.model}_PROTON_PREPROCESSING_Y='{output.proton_preprocessing_y}' \
+        jupyter nbconvert --to html --execute \
+        --ExecutePreprocessor.timeout=-1 \
+        --ExecutePreprocessor.kernel_name=python3 \
+        --no-prompt \
+        {params.additional_flags} \
+        {input.notebook} --output {log}
+        """
+
+
+################################################################################
+
+rule train:
+    input: 
+        image=config['apptainer_cached_image'],
+        notebook="workflow/notebooks/{model}-train.ipynb",
+        model_yaml_file=os.path.join(workflow.basedir, "notebooks/models.yaml"),
+        training_data=config['temp_dir']+"/{model}-{particle}-train",
+        validation_data=config['temp_dir']+"/{model}-{particle}-validation",
+        test_data=config['temp_dir']+"/{model}-{particle}-test",
+        preprocessing_x=smkstore('{model}/{particle}/tX.pkl', 's3models'),
+        preprocessing_y=smkstore('{model}/{particle}/tY.pkl', 's3models'),
+        
+
+    output:
+        hook = touch("/tmp/train-{model}-{particle}.touch"),
+
+        generator_png=touch(config['temp_dir'] + "/images/generator-{model}-{particle}.png"),
+        discriminator_png=touch(config['temp_dir'] + "/images/discriminator-{model}-{particle}.png"),
+        referee_png=touch(config['temp_dir'] + "/images/referee-{model}-{particle}.png"),
+
+        history_csv=report(
+            smkstore("history/generator-{model}-{particle}.csv", 's3reports'),
+            category="Training",
+            labels=dict(model="{model}", particle="{particle}")
+        ),
+
+        output_validation_set=smkstore("ready2validate/{model}-{particle}.npz", 's3reports'),
+        output_model=smkstore("{model}/{particle}.keras", "s3models"),
+
+        # report=report(
+        #     smkstore("{model}-{particle}-train.html", 's3reports'),
+        #     category="Preprocessing",
+        #     labels=dict(model="{model}")
+        # )
+
+    log: smkstore("{model}-{particle}-train.html", 's3reports')
+    
+    container: config['apptainer_cached_image']
+
+    resources:
+        cpu=8,
+        mem_mb=32000,
+        gpu=1
+
+    params:
+        sample=config['sample'],
+        local="no",
+        model=lambda w: w.model.upper().replace('-', '_'),
+        particle=lambda w: w.particle.upper().replace('-', '_'),
+        max_epochs=str(10),
+        max_files=str(2),
+        training_time_limit_seconds=str(config['training_time_limit_seconds']),
+        additional_flags=config['nbconvert_args'],
+        
+
+    shell:
+        """
+        LOCAL=no \
+        TEST=no \
+        SAMPLE='{params.sample}' \
+        PARTICLE='{wildcards.particle}' \
+        {params.model}_TRAIN_DATA='{input.training_data}' \
+        {params.model}_TEST_DATA='{input.test_data}' \
+        {params.model}_VAL_DATA='{input.validation_data}' \
+        MODEL_YAML_FILE='{input.model_yaml_file}' \
+        PNG_GENERATOR='{output.generator_png}' \
+        PNG_DISCRIMINATOR='{output.discriminator_png}' \
+        PNG_REFEREE='{output.referee_png}' \
+        MAX_EPOCHS='{params.max_epochs}' \
+        MAX_FILES='{params.max_files}' \
+        TRAINING_TIME_LIMIT_SECONDS='{params.training_time_limit_seconds}' \
+        HISTORY_CSV='{output.history_csv}' \
+        {params.model}_PREPROCESSING_{params.particle}_X='{input.preprocessing_x}' \
+        {params.model}_PREPROCESSING_{params.particle}_Y='{input.preprocessing_y}' \
+        OUTPUT_VALIDATION_DATASET='{output.output_validation_set}' \
+        OUTPUT_MODEL='{output.output_model}' \
+        jupyter nbconvert --to html --execute \
+        --ExecutePreprocessor.timeout=-1 \
+        --ExecutePreprocessor.kernel_name=python3 \
+        --no-prompt \
+        {params.additional_flags} \
+        {input.notebook} --output {log}
+        """
+

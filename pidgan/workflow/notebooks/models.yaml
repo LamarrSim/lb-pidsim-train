@@ -1,0 +1,173 @@
+GlobalPID-im:
+    muon: &gpid-im
+        generator:
+            class: ResGenerator
+            params: 
+                latent_dim: 64
+                num_hidden_layers: 5
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                output_activation: null
+
+        discriminator:
+            class: AuxDiscriminator
+            params:
+                num_hidden_layers: 5
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                enable_residual_blocks: True
+                output_activation: "sigmoid"
+                aux_features:
+                    - "3 - 0"
+                    - "2 - 1"
+
+        referee:
+            class: Classifier
+            params:
+                    num_hidden_layers: 5
+                    mlp_hidden_units:  128
+                    mlp_hidden_activation: "relu"
+                    mlp_hidden_kernel_regularizer: null
+                    mlp_dropout_rates: 0.0
+
+    pion: 
+        <<: *gpid-im               
+    kaon: 
+        <<: *gpid-im
+    proton: 
+        <<: *gpid-im
+        
+GlobalPID-nm:
+    muon: &gpid-nm
+        generator:
+            class: ResGenerator
+            params: 
+                latent_dim: 64
+                num_hidden_layers: 5
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                output_activation: null
+
+        discriminator:
+            class: AuxDiscriminator
+            params:
+                num_hidden_layers: 5
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                enable_residual_blocks: False
+                output_activation: "sigmoid"
+                aux_features:
+                    - "3 - 0"
+                    - "2 - 1"
+
+        referee:
+            class: Classifier
+            params:
+                    num_hidden_layers: 5
+                    mlp_hidden_units:  128
+                    mlp_hidden_activation: "relu"
+                    mlp_hidden_kernel_regularizer: null
+                    mlp_dropout_rates: 0.0
+
+    pion: 
+        <<: *gpid-nm               
+    kaon: 
+        <<: *gpid-nm
+    proton: 
+        <<: *gpid-nm
+
+
+Rich:
+    muon: &rich
+        generator:
+            class: ResGenerator
+            params: 
+                latent_dim: 64
+                num_hidden_layers: 10
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                output_activation: null
+
+        discriminator:
+            class: AuxDiscriminator
+            params:
+                num_hidden_layers: 10
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                enable_residual_blocks: True
+                output_activation: "sigmoid"
+                aux_features:
+                    - "1 - 0"
+                    - "3 - 2"
+
+        referee:
+            class: Classifier
+            params:
+                    num_hidden_layers: 5
+                    mlp_hidden_units:  128
+                    mlp_hidden_activation: "relu"
+                    mlp_hidden_kernel_regularizer: null
+                    mlp_dropout_rates: 0.0
+
+    pion: 
+        <<: *rich               
+    kaon: 
+        <<: *rich               
+    proton: 
+        <<: *rich               
+
+
+Muon:
+    muon: &muon
+        generator:
+            class: ResGenerator
+            params: 
+                latent_dim: 64
+                num_hidden_layers: 10
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                output_activation: null
+
+        discriminator:
+            class: AuxDiscriminator
+            params:
+                num_hidden_layers: 10
+                mlp_hidden_units: 128
+                mlp_dropout_rates: 0.0
+                enable_residual_blocks: True
+                output_activation: "sigmoid"
+                aux_features:
+                    - "1 - 0"
+
+        referee:
+            class: Classifier
+            params:
+                    num_hidden_layers: 5
+                    mlp_hidden_units:  128
+                    mlp_hidden_activation: "relu"
+                    mlp_hidden_kernel_regularizer: null
+                    mlp_dropout_rates: 0.0
+
+    pion: 
+        <<: *muon               
+    kaon: 
+        <<: *muon               
+    proton: 
+        <<: *muon               
+
+isMuon:
+    muon: &ismuon
+        referee:
+            class: Classifier
+            params:
+                num_hidden_layers: 10
+                mlp_hidden_units: 128
+                mlp_hidden_activation: "relu"
+                mlp_dropout_rates: 0.0
+    pion: 
+        <<: *ismuon               
+    kaon: 
+        <<: *ismuon               
+    proton: 
+        <<: *ismuon               
+
