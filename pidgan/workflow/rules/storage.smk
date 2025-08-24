@@ -2,17 +2,27 @@ import snakemake_storage_helper
 
 include: snakemake_storage_helper.__file__
 
+class CustomS3(S3StorageProvider):
+    @property 
+    def _connector(self):
+        return "s3://%(bucket)s" + f"/{config.get('storage_folder', '')}/".replace('//', '/')
+
+    @_connector.setter
+    def _connector(self, new_value):
+        pass
+
+
 storage s3data:
     **S3StorageProvider.from_secrets('s3data', config.get('secrets_file'))
 
-storage s3models:
-    **S3StorageProvider.from_secrets('s3models', config.get('secrets_file'))
-
-storage s3reports:
-    **S3StorageProvider.from_secrets('s3reports', config.get('secrets_file'))
-
 storage s3images:
     **S3StorageProvider.from_secrets('s3images', config.get('secrets_file'))
+
+storage s3models:
+    **CustomS3.from_secrets('s3models', config.get('secrets_file'))
+
+storage s3reports:
+    **CustomS3.from_secrets('s3reports', config.get('secrets_file'))
 
     
 def get_presigned_url(filenames, provider):

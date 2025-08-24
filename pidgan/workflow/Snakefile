@@ -4,6 +4,10 @@ import os.path
 configfile: "config/config.yaml"
 include: "rules/storage.smk"
 
+MODELS = ['isMuon', 'Rich', 'Muon', 'GlobalPID-im', 'GlobalPID-nm']
+PARTICLES = ['muon', 'pion', 'kaon', 'proton']
+ITEMS = ['model.keras', 'tX.pkl', 'tY.pkl']
+
 
 rule build_container:
   input:
@@ -120,17 +124,18 @@ rule train:
         ),
 
         output_validation_set=smkstore("ready2validate/{model}-{particle}.npz", 's3reports'),
-        output_model=smkstore("{model}/{particle}.keras", "s3models"),
+        output_model=smkstore("{model}/{particle}/model.keras", "s3models"),
 
         report=report(
             smkstore("{model}-{particle}-train.html", 's3reports'),
             category="Preprocessing",
-            labels=dict(model="{model}")
+            labels=dict(model="{model}", particle="{particle}")
         )
 
     log: smkstore("{model}-{particle}-train.html", 's3reports')
     
     container: config['apptainer_cached_image']
+
 
     resources:
         cpu=8,
@@ -142,7 +147,7 @@ rule train:
         local="no",
         model=lambda w: w.model.upper().replace('-', '_'),
         particle=lambda w: w.particle.upper().replace('-', '_'),
-        max_epochs=str(10),
+        max_epochs=str(1000),
         max_files=str(2),
         training_time_limit_seconds=str(config['training_time_limit_seconds']),
         additional_flags=config['nbconvert_args'],
@@ -177,3 +182,103 @@ rule train:
         {input.notebook} --output {log}
         """
 
+rule deploy:
+    input:
+        image=config['apptainer_cached_image'],
+        notebook="workflow/notebooks/Deploy.ipynb",
+        models=smkstore(
+            expand("{model}/{particle}/{item}", model=MODELS, particle=PARTICLES, item=ITEMS),
+            's3models',
+        ),
+      
+    output:
+        hook=touch("/tmp/deploy.touch"),
+        generated_c_file="/tmp/compiled_pid_model.c",
+        generated_library=smkstore("pid_compiled_model/generated.so", 's3models'),
+        report=report(
+            smkstore("deploy.html", 's3reports'),
+            category="Deploy",
+            labels=dict(model="ALL", particle="ALL")
+        )
+
+    params:
+        sample=config['sample'],
+        additional_flags=config['nbconvert_args'],
+        env_vars=[
+                f"{model.upper().replace('-', '_')}_{particle.upper()}_MODEL="+
+                smkstore(f"{model}/{particle}/model.keras", "s3models")
+                for model in MODELS for particle in PARTICLES 
+            ],
+
+    log: smkstore("deploy.html", 's3reports')
+
+    container: config['apptainer_cached_image']
+
+    shell:
+        """
+        LOCAL=no \
+        TEST=no \
+        SAMPLE='{params.sample}' \
+        {params.env_vars} \
+        GENERATED_LIBRARY='{output.generated_library}' \
+        GENERATED_C_FILE='{output.generated_c_file}' \
+        jupyter nbconvert --to html --execute \
+        --ExecutePreprocessor.timeout=-1 \
+        --ExecutePreprocessor.kernel_name=python3 \
+        --no-prompt \
+        {params.additional_flags} \
+        {input.notebook} --output {log}
+        """
+
+################################################################################
+
+rule validate:
+    input: 
+        image=config['apptainer_cached_image'],
+        notebook="workflow/notebooks/validate.ipynb",
+        generated_library=smkstore("pid_compiled_model/generated.so", 's3models'),
+
+    output:
+        hook=touch("/tmp/validate-{particle}.touch"),
+
+        report=report(
+            smkstore("validate-{particle}.html", 's3reports'),
+            category="Preprocessing",
+            labels=dict(model="ALL", particle="{particle}")
+        )
+
+    log: smkstore("validate-{particle}.html", 's3reports')
+    
+    container: config['apptainer_cached_image']
+
+    params:
+        data_files=lambda w: get_presigned_url(config['training_data'], 's3data'),
+        sample=config['sample'],
+        local="no",
+        additional_flags=config['nbconvert_args'],
+        max_entries=config['entries_for_validation'],
+
+    resources:
+        cpu=8,
+        mem_mb=32000,
+        gpu=0
+
+    shell:
+        """
+        INPUT_FILES='{params.data_files}' \
+        PARTICLE='{wildcards.particle}' \
+        GENERATED_LIBRARY='{input.generated_library}' \
+        MAX_ENTRIES='{params.max_entries}' \
+        SAMPLE='{params.sample}' \
+        jupyter nbconvert --to html --execute \
+        --ExecutePreprocessor.timeout=-1 \
+        --ExecutePreprocessor.kernel_name=python3 \
+        --no-prompt \
+        {params.additional_flags} \
+        {input.notebook} --output {log}
+        """
+
+rule validate_all:
+    input: smkstore(expand("validate-{particle}.html", particle=PARTICLES), 's3reports')
+
+        

@@ -170,6 +170,8 @@ FLOAT_T* gan_pipe ( mlfun tX               ,
     printf("Preprocessed output\n");
     for (i = 0; i < nOut; ++i)
         printf("pout[%d] -> out[%d] : %.2f -> %.2f\n", i, i, buf_output[i], output[i]); 
+    #else
+    (void)(nOut); // Suppress unused nOut warning
     #endif 
 
     return output; 
@@ -246,8 +248,8 @@ FLOAT_T* GenericPipe ( FLOAT_T* output , const FLOAT_T *input , const FLOAT_T *r
         FLOAT_T gpidmu_output [N_OUTPUT_GLOBALPID_MU];
         j = 0;
 
-        // p, eta, nTracks, charge
-        for (i = 0; i < N_INPUT_RICH; ++i)
+        // p, eta, nTracks
+        for (i = 0; i < N_INPUT_RICH - 1; ++i)
             gpidmu_input[j++] = input[i]; 
 
         // dlle, dllmu, dllk, dllp
@@ -257,6 +259,9 @@ FLOAT_T* GenericPipe ( FLOAT_T* output , const FLOAT_T *input , const FLOAT_T *r
         // mullmu, mullbg
         for (i = 0; i < N_OUTPUT_MUON; ++i)
             gpidmu_input[j++] = muondll[i]; 
+
+        // charge
+        gpidmu_input[j++] = input[N_INPUT_RICH]; 
 
         #ifdef DEBUG
         printf (" === GLOBAL PID MUON === \n");
@@ -291,13 +296,16 @@ FLOAT_T* GenericPipe ( FLOAT_T* output , const FLOAT_T *input , const FLOAT_T *r
         FLOAT_T gpidh_output [N_OUTPUT_GLOBALPID_HAD];
         j = 0;
 
-        // p, eta, nTracks, charge
-        for (i = 0; i < N_INPUT_RICH; ++i)
+        // p, eta, nTracks
+        for (i = 0; i < N_INPUT_RICH - 1; ++i)
             gpidh_input[j++] = input[i]; 
 
         // dlle, dllmu, dllk, dllp
         for (i = 0; i < N_OUTPUT_RICH; ++i)
             gpidh_input[j++] = richdll[i];
+
+        // charge
+        gpidh_input[j++] = input[N_INPUT_RICH]; 
 
         #ifdef DEBUG
         printf (" === GLOBAL PID HADRON === \n");

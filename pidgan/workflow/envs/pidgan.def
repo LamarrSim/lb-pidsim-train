@@ -34,6 +34,7 @@ From: python:3.12
         pidgan \
         pydot \
         mplhep \
+        scikit-hep \
         ipykernel 
 
     

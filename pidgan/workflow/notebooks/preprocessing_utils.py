@@ -4,6 +4,8 @@ import os.path
 import os
 from IPython.display import HTML
 from feather_io import FeatherWriter, FeatherReader
+from sklearn.preprocessing import FunctionTransformer
+import numpy as np
 
 def store_as_pickle(obj, path_in_env: str, default_path: str):
     """
@@ -64,7 +66,7 @@ def split_and_store(dataset, fracs_and_dirs: list, chunksize: int, **kwargs):
             split
             .repartition(partition_size=chunksize)
             .map_partitions(FeatherWriter(output_dir=path, **kwargs))
-            .compute()
+            .compute(num_workers=8)
             .sum()
         )
 
@@ -135,6 +137,29 @@ class DecorrTransformer:
         X = dX.dot (self.eig.T) 
         return X 
 
+def c_impl(c_str):
+    """Simple decorator to define C implementation of a function for scikinC"""
+    def decorator(f):
+        f.inC = c_str
+        return f
+    return decorator
+
+@c_impl("log(1e-7 + ({x}/(1e-7 + (1 - {x}))))")
+def ProbNNTransformer_fwd(X):
+    return np.log(1e-7 + X/(1e-7 + (1 - X)))
+
+@c_impl("1 / (1 + exp(-{x}))")
+def ProbNNTransformer_bwd(Y):
+    return 1 / (1 + np.exp(-Y))
+
+def makeProbNNTransformer():
+    ret = FunctionTransformer(
+        func=ProbNNTransformer_fwd,
+        inverse_func=ProbNNTransformer_bwd,
+        check_inverse=False,
+    )
+
+    return ret
 
     
 if __name__ == '__main__':

@@ -9,10 +9,26 @@ import pickle
 import numpy as np
 import tensorflow as tf
 import sklearn
+import sklearn.pipeline
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.compose import ColumnTransformer
 import scikinC, scikinC.layers
 
 
 class hacks:
+    
+    @staticmethod
+    def _restore_c_impl(transformer):
+        if isinstance(transformer, ColumnTransformer):
+            return [hacks._restore_c_impl(t) for _, t, _ in transformer.transformers_]
+        
+        if isinstance(transformer, FunctionTransformer) and hasattr(transformer.func, 'inC'):
+            print (f"Injecting func_inC in {transformer.__class__.__name__}")
+            transformer.func_inC = transformer.func.inC
+        if isinstance(transformer, FunctionTransformer) and hasattr(transformer.inverse_func, 'inC'):
+            print (f"Injecting inverse_func_inC in {transformer.__class__.__name__}")
+            transformer.inverse_func_inC = transformer.inverse_func.inC
+    
     
     @staticmethod
     def copy_dense(layer_from, layer_to):
@@ -95,9 +111,10 @@ class LamarrModel:
         algos.append(("dnn", self.collapsed_model))
         
         if self.tY is not None:
-            algos.append(("postprocessing", self.tX))
+            algos.append(("postprocessing", self.tY))
             
         return sklearn.pipeline.Pipeline(algos)
+
     
     @staticmethod
     def from_saved_model_pb(filename):
@@ -105,9 +122,13 @@ class LamarrModel:
         tX = tY = None
         if os.path.exists(os.path.join(model_dir, "tX.pkl")):
             tX = pickle.load(open(os.path.join(model_dir, "tX.pkl"), 'rb'))
+            hacks._restore_c_impl(tX)
         if os.path.exists(os.path.join(model_dir, "tY.pkl")):
             tY = pickle.load(open(os.path.join(model_dir, "tY.pkl"), 'rb'))
-    
+            hacks._restore_c_impl(tY)
+            
+            
+            
         print (
             f"Loading model from '{model_dir}'.  "
             f"Preprocessing: {'👌' if tX is not None else '😞'}." 
@@ -118,7 +139,12 @@ class LamarrModel:
     @staticmethod
     def collapse_model (model):
         collapsed_layers = []
-        layer_seq = model.layers + [None]
+        skipped_layers = ['input', 'concatenate', 'dropout']
+        layer_seq = [
+            layer for layer in model.layers 
+            if not any([n in layer.name.lower() for n in skipped_layers])
+        ]+ [None]
+        
         for layer, next_layer in zip(layer_seq[:-1], layer_seq[1:]):
             if 'input' in layer.name.lower(): continue 
             if 'concatenate' in layer.name.lower(): continue
@@ -173,4 +199,30 @@ class LamarrModel:
 
     
 
+from scikinC.validation import MLFunction
+
+class GanFunction (MLFunction):
+    def __init__(self, lib_path, function_name, n_inputs, n_outputs, float_type=np.float32):
+        MLFunction.__init__(self, lib_path, function_name, n_inputs, n_outputs, float_type=np.float32)
+        # Define the C type of the arguments as C float (or numpy float32).
+        self._f.argtypes = [np.ctypeslib.ndpointer(dtype=np.float32) for _ in (1, 2, 3)]
+        
+    def __call__ (self, data_in, data_rnd):
+        # Define a buffer to store the output according to the size of the output array
+        obuf = np.empty(self.n_outputs, dtype=np.float32)
+        
+        # Convert the input features and the random noise to float32 
+        data_in_f = data_in.astype(np.float32)
+        data_rnd_f = data_rnd.astype(np.float32)
+        
+        # Run on each row of the input, and its random noise 
+        # evaluate the C function and copies the output in a list
+        output_rows = []
+        for row_in, row_rnd in zip(data_in_f, data_rnd_f):
+            self._f(obuf, row_in, row_rnd)
+            output_rows.append(obuf.copy())
+            
+        # Build a 2D array from the list and set it back to float64 (numpy standard)
+        return np.array(output_rows).astype(np.float64)
+        
    

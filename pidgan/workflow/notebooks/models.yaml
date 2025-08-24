@@ -54,7 +54,7 @@ GlobalPID-nm:
                 num_hidden_layers: 5
                 mlp_hidden_units: 128
                 mlp_dropout_rates: 0.0
-                enable_residual_blocks: False
+                enable_residual_blocks: True
                 output_activation: "sigmoid"
                 aux_features:
                     - "3 - 0"
@@ -134,7 +134,7 @@ Muon:
                 num_hidden_layers: 10
                 mlp_hidden_units: 128
                 mlp_dropout_rates: 0.0
-                enable_residual_blocks: True
+                enable_residual_blocks: False
                 output_activation: "sigmoid"
                 aux_features:
                     - "1 - 0"
