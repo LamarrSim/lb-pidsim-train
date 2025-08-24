@@ -9,6 +9,10 @@ PARTICLES = ['muon', 'pion', 'kaon', 'proton']
 ITEMS = ['model.keras', 'tX.pkl', 'tY.pkl']
 
 
+rule validate_all:
+    input: smkstore(expand("validate-{particle}.html", particle=PARTICLES), 's3reports')
+
+
 rule build_container:
   input:
     definition_file="workflow/envs/pidgan.def"
@@ -278,7 +282,5 @@ rule validate:
         {input.notebook} --output {log}
         """
 
-rule validate_all:
-    input: smkstore(expand("validate-{particle}.html", particle=PARTICLES), 's3reports')
 
         
