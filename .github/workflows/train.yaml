@@ -11,7 +11,7 @@ concurrency:
 
 
 jobs:
-    trk-2016MagUp-Sim10b:
+    pid-2016MagUp-Sim10b:
         uses: LamarrSim/release-models/.github/workflows/release.yaml@main
         permissions:
           contents: write
@@ -21,7 +21,7 @@ jobs:
             snakemake_dir: pidgan
             target: cache_container validate_all
             additional_config: |
-                storage_folder: ${{ inputs.name }}
+                storage_folder: pid-2016MagUp-Sim10b
 
             additional_profile: ""
             generated_model_path: /tmp/compiled_pid_model.c
