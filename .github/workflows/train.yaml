@@ -20,7 +20,9 @@ jobs:
             name: pp-2016-MU-Sim10b-${{ github.head_ref }}
             snakemake_dir: pidgan
             target: cache_container validate_all
-            additional_config: ""
+            additional_config: |
+                storage_folder: ${{ inputs.name }}
+
             additional_profile: ""
             generated_model_path: /tmp/compiled_pid_model.c
         secrets:
