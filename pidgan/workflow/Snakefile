@@ -13,31 +13,31 @@ rule validate_all:
     input: smkstore(expand("validate-{particle}.html", particle=PARTICLES), 's3reports')
 
 
-rule build_apptainer_image:
-  input:
-    definition_file="workflow/envs/pidgan.def"
-
-  output:
-    sif=smkstore("lhcb-pidsim.sif", 's3images')
-
-  params:
-    unpacked=config['apptainer_image'],
-    wait4cvfms=f"{config['cvmfs_repo']}/{config['apptainer_image']}",
-    push=0, # Set to 1 to push to harbor
-
-  shell:
-    """
-    apptainer build {output.sif} {input.definition_file}
-
-    if [ {params.push} -eq 1 ]; then
-      apptainer push  {output.sif} oras://{params.unpacked}
-
-      echo "Waiting for cvmfs repo: {params.wait4cvfms}"
-      while true; 
-      do 
-        ls {params.wait4cvfms} &> /dev/null || ( sleep 5 && echo "Still waiting..." ) ;
-      done
-    fi
+# rule build_apptainer_image:
+#   input:
+#     definition_file="workflow/envs/pidgan.def"
+# 
+#   output:
+#     sif=smkstore("lhcb-pidsim.sif", 's3images')
+# 
+#   params:
+#     unpacked=config['apptainer_image'],
+#     wait4cvfms=f"{config['cvmfs_repo']}/{config['apptainer_image']}",
+#     push=0, # Set to 1 to push to harbor
+# 
+#   shell:
+#     """
+#     apptainer build {output.sif} {input.definition_file}
+# 
+#     if [ {params.push} -eq 1 ]; then
+#       apptainer push  {output.sif} oras://{params.unpacked}
+# 
+#       echo "Waiting for cvmfs repo: {params.wait4cvfms}"
+#       while true; 
+#       do 
+#         ls {params.wait4cvfms} &> /dev/null || ( sleep 5 && echo "Still waiting..." ) ;
+#       done
+#     fi
     """
 
 
