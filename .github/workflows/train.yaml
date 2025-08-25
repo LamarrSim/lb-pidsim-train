@@ -24,7 +24,7 @@ jobs:
                 storage_folder: pid-2016MagUp-Sim10b
 
             additional_profile: ""
-            generated_model_path: /tmp/compiled_pid_model.c
+            generated_model_path: /tmp/compiled_model.c
         secrets:
             SECRETS_YAML: ${{ secrets.STORAGE_SECRETS }}
 
