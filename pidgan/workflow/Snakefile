@@ -132,7 +132,7 @@ rule train:
 
         report=report(
             smkstore("{model}-{particle}-train.html", 's3reports'),
-            category="Preprocessing",
+            category="Training",
             labels=dict(model="{model}", particle="{particle}", type='html')
         )
 
