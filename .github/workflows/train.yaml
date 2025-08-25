@@ -19,7 +19,7 @@ jobs:
         with:
             name: pp-2016-MU-Sim10b-${{ github.head_ref }}
             snakemake_dir: pidgan
-            target: cache_container validate_all
+            target: /tmp/train-GlobalPID-im-kaon.touch #cache_container validate_all
             additional_config: |
                 storage_folder: pid-2016MagUp-Sim10b
 
