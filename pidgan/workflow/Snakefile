@@ -142,8 +142,8 @@ rule train:
 
 
     resources:
-        cpu=8,
-        mem_mb=32000,
+        cpu=4,
+        mem_mb=15000,
         gpu=1
 
     params:
@@ -263,8 +263,8 @@ rule validate:
         max_entries=config['entries_for_validation'],
 
     resources:
-        cpu=8,
-        mem_mb=32000,
+        cpu=4,
+        mem_mb=15000,
         gpu=0
 
     shell:
