@@ -63,7 +63,7 @@ rule preprocessing:
         report=report(
             smkstore("{model}-{particle}-preprocessing.html", 's3reports'),
             category="Preprocessing",
-            labels=dict(model="{model}", particle="{particle}")
+            labels=dict(model="{model}", particle="{particle}", type='html')
         )
 
     log: smkstore("{model}-{particle}-preprocessing.html", 's3reports')
@@ -124,7 +124,7 @@ rule train:
         history_csv=report(
             smkstore("history/generator-{model}-{particle}.csv", 's3reports'),
             category="Training",
-            labels=dict(model="{model}", particle="{particle}")
+            labels=dict(model="{model}", particle="{particle}", type='csv')
         ),
 
         output_validation_set=smkstore("ready2validate/{model}-{particle}.npz", 's3reports'),
@@ -133,7 +133,7 @@ rule train:
         report=report(
             smkstore("{model}-{particle}-train.html", 's3reports'),
             category="Preprocessing",
-            labels=dict(model="{model}", particle="{particle}")
+            labels=dict(model="{model}", particle="{particle}", type='html')
         )
 
     log: smkstore("{model}-{particle}-train.html", 's3reports')
@@ -197,12 +197,12 @@ rule deploy:
       
     output:
         hook=touch("/tmp/deploy.touch"),
-        generated_c_file="/tmp/compiled_pid_model.c",
+        generated_c_file="/tmp/compiled_model.c",
         generated_library=smkstore("pid_compiled_model/generated.so", 's3models'),
         report=report(
             smkstore("deploy.html", 's3reports'),
             category="Deploy",
-            labels=dict(model="ALL", particle="ALL")
+            labels=dict(model="ALL", particle="ALL", type='html')
         )
 
     params:
@@ -247,8 +247,8 @@ rule validate:
 
         report=report(
             smkstore("validate-{particle}.html", 's3reports'),
-            category="Preprocessing",
-            labels=dict(model="ALL", particle="{particle}")
+            category="Validation",
+            labels=dict(model="ALL", particle="{particle}", type="html")
         )
 
     log: smkstore("validate-{particle}.html", 's3reports')
@@ -271,7 +271,7 @@ rule validate:
         """
         INPUT_FILES='{params.data_files}' \
         PARTICLE='{wildcards.particle}' \
-        GENERATED_LIBRARY='{input.generated_library}' \
+        SHARED_OBJECT='{input.generated_library}' \
         MAX_ENTRIES='{params.max_entries}' \
         SAMPLE='{params.sample}' \
         jupyter nbconvert --to html --execute \
