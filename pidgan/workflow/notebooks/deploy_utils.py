@@ -17,17 +17,17 @@ import scikinC, scikinC.layers
 
 class hacks:
     
-    @staticmethod
-    def _restore_c_impl(transformer):
-        if isinstance(transformer, ColumnTransformer):
-            return [hacks._restore_c_impl(t) for _, t, _ in transformer.transformers_]
+    # @staticmethod
+    # def _restore_c_impl(transformer):
+    #     if isinstance(transformer, ColumnTransformer):
+    #         return [hacks._restore_c_impl(t) for _, t, _ in transformer.transformers_]
         
-        if isinstance(transformer, FunctionTransformer) and hasattr(transformer.func, 'inC'):
-            print (f"Injecting func_inC in {transformer.__class__.__name__}")
-            transformer.func_inC = transformer.func.inC
-        if isinstance(transformer, FunctionTransformer) and hasattr(transformer.inverse_func, 'inC'):
-            print (f"Injecting inverse_func_inC in {transformer.__class__.__name__}")
-            transformer.inverse_func_inC = transformer.inverse_func.inC
+    #     if isinstance(transformer, FunctionTransformer) and hasattr(transformer.func, 'inC'):
+    #         print (f"Injecting func_inC in {transformer.__class__.__name__}")
+    #         transformer.func_inC = transformer.func.inC
+    #     if isinstance(transformer, FunctionTransformer) and hasattr(transformer.inverse_func, 'inC'):
+    #         print (f"Injecting inverse_func_inC in {transformer.__class__.__name__}")
+    #         transformer.inverse_func_inC = transformer.inverse_func.inC
     
     
     @staticmethod
@@ -122,10 +122,10 @@ class LamarrModel:
         tX = tY = None
         if os.path.exists(os.path.join(model_dir, "tX.pkl")):
             tX = pickle.load(open(os.path.join(model_dir, "tX.pkl"), 'rb'))
-            hacks._restore_c_impl(tX)
+            # hacks._restore_c_impl(tX)
         if os.path.exists(os.path.join(model_dir, "tY.pkl")):
             tY = pickle.load(open(os.path.join(model_dir, "tY.pkl"), 'rb'))
-            hacks._restore_c_impl(tY)
+            # hacks._restore_c_impl(tY)
             
             
             
