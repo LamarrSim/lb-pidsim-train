@@ -6,8 +6,8 @@ apptainer_cached_image: /tmp/lb-pidsim-train.sif
 sample: 2016MU
 storage_folder: tests
 temp_dir: /tmp
-training_time_limit_seconds: 60 #0
-entries_for_validation: 10000 #00
+training_time_limit_seconds: 1000
+entries_for_validation: 1000000
 
 nbconvert_args:
     - --allow-errors
@@ -19,7 +19,6 @@ training_data:
     - training-data/2016MU-sim10b/LamarrTraining-j109.10.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.100.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.101.root
-other:
 
     - training-data/2016MU-sim10b/LamarrTraining-j109.102.root
     - training-data/2016MU-sim10b/LamarrTraining-j109.103.root
