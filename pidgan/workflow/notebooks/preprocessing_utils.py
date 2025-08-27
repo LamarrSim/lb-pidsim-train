@@ -149,7 +149,7 @@ def c_impl(c_str):
 def ProbNNTransformer_fwd(X):
     return 0.3*np.log(1e-7 + X/(1e-7 + (1 - X)))
 
-@inline_c("1 / (1 + exp(-{x/0.3}))")
+@inline_c("1 / (1 + exp(-{x}/0.3))")
 def ProbNNTransformer_bwd(Y):
     return 1 / (1 + np.exp(-Y/0.3))
 
