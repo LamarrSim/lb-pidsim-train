@@ -6,6 +6,7 @@ from IPython.display import HTML
 from feather_io import FeatherWriter, FeatherReader
 from sklearn.preprocessing import FunctionTransformer
 import numpy as np
+from scikinC.decorators import inline_c
 
 def store_as_pickle(obj, path_in_env: str, default_path: str):
     """
@@ -144,13 +145,13 @@ def c_impl(c_str):
         return f
     return decorator
 
-@c_impl("log(1e-7 + ({x}/(1e-7 + (1 - {x}))))")
+@inline_c("0.3*log(1e-7 + ({x}/(1e-7 + (1 - {x}))))")
 def ProbNNTransformer_fwd(X):
-    return np.log(1e-7 + X/(1e-7 + (1 - X)))
+    return 0.3*np.log(1e-7 + X/(1e-7 + (1 - X)))
 
-@c_impl("1 / (1 + exp(-{x}))")
+@inline_c("1 / (1 + exp(-{x}/0.3))")
 def ProbNNTransformer_bwd(Y):
-    return 1 / (1 + np.exp(-Y))
+    return 1 / (1 + np.exp(-Y/0.3))
 
 def makeProbNNTransformer():
     ret = FunctionTransformer(
