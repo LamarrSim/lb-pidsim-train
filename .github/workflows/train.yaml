@@ -20,12 +20,19 @@ jobs:
             name: pp-2016-MU-Sim10b-${{ github.head_ref }}
             snakemake_dir: pidgan
             target: cache_container validate_all
+            main_runner: aiinfn-lamarrsim-4gpus
             model_prefix: pid
             additional_config: |
                 storage_folder: pid-2016MagUp-Sim10b
 
             additional_profile: |
-                jobs: 1
+                jobs: 4
+                cores: 32
+
+                resources:
+                  mem_mb: 500000
+                  millicpu: 32000
+                  gpu: 4
 
             generated_model_path: /tmp/compiled_model.c
         secrets:
