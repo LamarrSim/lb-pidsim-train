@@ -6,7 +6,7 @@ apptainer_cached_image: /tmp/lb-pidsim-train.sif
 sample: 2016MU
 storage_folder: tests
 temp_dir: /tmp
-training_time_limit_seconds: 600
+training_time_limit_seconds: 1200
 entries_for_validation: 1000000
 
 nbconvert_args:
